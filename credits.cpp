@@ -2,6 +2,7 @@
 
 #include <credits.hpp>
 #include <engine.hpp>
+#include <viewport.hpp>
 
 #include <hgeresource.h>
 
@@ -9,7 +10,7 @@
 Credits::Credits()
     :
     Context(),
-    m_timer( 0.0f )
+    m_interact( false )
 {
 }
 
@@ -24,7 +25,14 @@ Credits::~Credits()
 void
 Credits::init()
 {
-    m_timer = 0.0f;
+    ViewPort * vp( Engine::vp() );
+
+    vp->offset().x = 0.0f;
+    vp->offset().y = 0.0f;
+    vp->bounds().x = 80.0f;
+    vp->bounds().y = 60.0f;
+
+    m_interact = false;
 }
 
 //------------------------------------------------------------------------------
@@ -37,12 +45,61 @@ Credits::fini()
 bool
 Credits::update( float dt )
 {
-    if ( m_timer > 4.0f )
+    HGE * hge( Engine::hge() );
+    ViewPort * vp( Engine::vp() );
+    const Controller & pad( Engine::instance()->getController() );
+
+    if ( vp->bounds().x < 800.0f && ! m_interact )
     {
-        Engine::instance()->switchContext( STATE_MENU );
+        vp->bounds() *= ( 1.0f + dt * 0.6f );
+        return false;
     }
 
-    m_timer += dt;
+    if ( hge->Input_GetKey() != 0 &&
+         ! Engine::instance()->handledKey() )
+    {
+        Engine::instance()->switchContext( STATE_MENU );
+        return false;
+    }
+    if ( pad.buttonDown( XPAD_BUTTON_A ) ||
+         pad.buttonDown( XPAD_BUTTON_B ) ||
+         pad.buttonDown( XPAD_BUTTON_START ) ||
+         pad.buttonDown( XPAD_BUTTON_BACK ) )
+    {
+        Engine::instance()->switchContext( STATE_MENU );
+        return false;
+    }
+
+    if ( pad.buttonDown( XPAD_BUTTON_BUTTON_Y ) )
+    {
+        m_interact = true;
+    }
+
+    if ( m_interact )
+    {
+        b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
+        float length( offset.Normalize() );
+        if ( length > 0.9f )
+        {
+            b2Vec2 vertical( 0.0f, 1.0f );
+            float angle( acosf( b2Dot( offset, vertical ) ) );
+            if ( b2Cross( offset, vertical ) < 0.0f )
+            {
+                angle = -angle;
+            }
+            vp->setAngle( angle );
+        }
+        vp->offset().x += pad.getStick( XPAD_THUMBSTICK_LEFT ).x * dt * 50.0f;
+        vp->offset().y += pad.getStick( XPAD_THUMBSTICK_LEFT ).y * dt * 50.0f;
+        if ( vp->bounds().x > 80.0f )
+        {
+            vp->bounds() *= ( 1.0f - pad.getTrigger( XPAD_TRIGGER_LEFT ) * dt * 10.0f );
+        }
+        if ( vp->bounds().x < 1600.0f )
+        {
+            vp->bounds() *= 1.0f / ( 1.0f - pad.getTrigger( XPAD_TRIGGER_RIGHT ) * dt * 10.0f );
+        }
+    }
 
     return false;
 }
@@ -53,22 +110,36 @@ Credits::render()
 {
     hgeResourceManager * rm( Engine::rm() );
     hgeSprite * sprite( 0 );
+    ViewPort * vp( Engine::vp() );
+    vp->setTransform();
 
-    int width( Engine::hge()->System_GetState( HGE_SCREENWIDTH ) );
-    int height( Engine::hge()->System_GetState( HGE_SCREENHEIGHT ) );
+    Engine::instance()->setColour( 0xFF555555 );
 
-    Engine::instance()->setColour( 0xFFFFFFFF );
-    if ( m_timer > 2.0f )
-    {
-        sprite = rm->GetSprite( "publisher" );
-    }
-    else
-    {
-        sprite = rm->GetSprite( "developer" );
-    }
+    hgeFont * font( rm->GetFont( "menu" ) );
 
-    sprite->RenderEx( 0.5f * static_cast<float>( width ),
-                      0.5f * static_cast<float>( height ), 0.0f, 0.5f );
+    font->SetColor( 0xFF000000 );
+
+    font->printf( 0.0, -250.0f, HGETEXT_CENTER,
+                  "+++ B R O W N | C L O U D +++" );
+    font->printf( 0.0, -220.0f, HGETEXT_CENTER,
+                  "BY THE KRANZKY BROTHERS" );
+    font->printf( 0.0, -150.0f, HGETEXT_CENTER,
+                  "JASON HUTCHENS" );
+    font->printf( 0.0, -120.0f, HGETEXT_CENTER,
+                  "ROBERT BARNETT" );
+    font->printf( 0.0, -90.0f, HGETEXT_CENTER,
+                  "NIGEL" );
+
+    font->printf( 0.0, 0.0f, HGETEXT_CENTER,
+                  "MADE FOR GLOBAL GAME JAM 2009" );
+
+    font->printf( 0.0, 100.0f, HGETEXT_CENTER,
+                  "PERTH SPONSORS" );
+
+    rm->GetSprite( "murdoch" )->RenderEx( -300.0f, 200.0f, 0.0f, 0.5f );
+    rm->GetSprite( "subversive" )->RenderEx( -100.0f, 200.0f, 0.0f, 0.5f );
+    rm->GetSprite( "transmin" )->RenderEx( 100.0f, 200.0f, 0.0f, 0.5f );
+    rm->GetSprite( "rv" )->RenderEx( 300.0f, 200.0f, 0.0f, 0.5f );
 }
 
 //==============================================================================

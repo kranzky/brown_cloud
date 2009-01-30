@@ -1,4 +1,3 @@
-
 Texture publisher
 {
     filename=APP_logo.png
@@ -6,6 +5,22 @@ Texture publisher
 Texture developer
 {
     filename=Kranzky_Brothers_Logo.png
+}
+Texture murdoch
+{
+    filename=murdoch.png
+}
+Texture subversive
+{
+    filename=subversive.png
+}
+Texture transmin
+{
+    filename=transmin.png
+}
+Texture rv
+{
+    filename=rv.png
 }
 Texture cursor
 {
@@ -34,6 +49,30 @@ Sprite developer
     texture=developer
     rect=0,0,400,513
     hotspot=200,260
+}
+Sprite murdoch
+{
+    texture=murdoch
+    rect=0,0,197,160
+    hotspot=98,80
+}
+Sprite subversive
+{
+    texture=subversive
+    rect=0,0,200,141
+    hotspot=100,70
+}
+Sprite transmin
+{
+    texture=transmin
+    rect=0,0,300,100
+    hotspot=150,50
+}
+Sprite rv
+{
+    texture=rv
+    rect=0,0,200,119
+    hotspot=100,60
 }
 Sprite cursor
 {
