@@ -1,3 +1,4 @@
+
 Texture publisher
 {
     filename=APP_logo.png
@@ -51,4 +52,9 @@ Sprite cloud
     texture=cloud
     rect=0,0,16,16
     hotspot=8,8
+}
+Particle cloud
+{
+    filename=cloud.psi
+    sprite=cloud
 }

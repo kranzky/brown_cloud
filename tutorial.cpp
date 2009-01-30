@@ -48,6 +48,7 @@ Tutorial::init()
 void
 Tutorial::fini()
 {
+    Engine::instance()->getConfig().menu = 2;
     Engine::em()->fini();
 }
 

@@ -20,6 +20,7 @@ class Config
     int screenHeight;
     bool fullScreen;
     std::string userName;
+    int menu;
 };
 
 #endif
