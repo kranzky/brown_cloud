@@ -66,41 +66,10 @@ bool
 Menu::update( float dt )
 {
     HGE * hge( Engine::hge() );
+    Engine * engine( Engine::instance() );
 
-    const Controller & pad( Engine::instance()->getController() );
-    int select( 0 );
-
-    if ( pad.isConnected() && ! Engine::instance()->isPaused() )
-    {
-        int focus( m_gui->GetFocus() );
-        if ( pad.buttonDown( XPAD_BUTTON_START ) )
-        {
-            focus = Engine::instance()->getConfig().menu;
-            m_gui->SetFocus( focus );
-        }
-        if ( pad.buttonDown( XPAD_BUTTON_A ) ||
-             pad.buttonDown( XPAD_BUTTON_START ) )
-        {
-            select = focus;
-        }
-        if ( pad.buttonDown( XPAD_BUTTON_DPAD_UP ) && focus > 1 )
-        {
-            --focus;
-            m_gui->SetFocus( focus );
-        }
-        if ( pad.buttonDown( XPAD_BUTTON_DPAD_DOWN )  && focus < 5 )
-        {
-            ++focus;
-            m_gui->SetFocus( focus );
-        }
-    }
-
-    if ( select == 0 )
-    {
-        select = static_cast< Control >( m_gui->Update( dt ) );
-    }
-
-    switch ( select )
+    switch ( static_cast< Control >( engine->updateGUI( dt, m_gui,
+                                     engine->getConfig().menu, 5 ) ) )
     {
         case CTRL_TUTORIAL:
         {

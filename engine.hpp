@@ -88,6 +88,7 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     const Mouse & getMouse();
     const Controller & getController();
     Config & getConfig();
+    int updateGUI( float dt, hgeGUI * gui, int default_focus, int max );
     virtual void Violation( b2Body * body );
     virtual void Add( b2ContactPoint * point );
     virtual void Persist( b2ContactPoint * point );

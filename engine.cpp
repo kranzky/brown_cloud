@@ -281,6 +281,46 @@ Engine::getConfig()
 }
 
 //------------------------------------------------------------------------------
+int
+Engine::updateGUI( float dt, hgeGUI * gui, int default_focus, int max )
+{
+    const Controller & pad( Engine::instance()->getController() );
+    int select( 0 );
+
+    if ( pad.isConnected() )
+    {
+        int focus( gui->GetFocus() );
+        if ( pad.buttonDown( XPAD_BUTTON_START ) )
+        {
+            focus = default_focus;
+            gui->SetFocus( focus );
+        }
+        if ( pad.buttonDown( XPAD_BUTTON_A ) ||
+             pad.buttonDown( XPAD_BUTTON_START ) )
+        {
+            select = focus;
+        }
+        if ( pad.buttonDown( XPAD_BUTTON_DPAD_UP ) && focus > 1 )
+        {
+            --focus;
+            gui->SetFocus( focus );
+        }
+        if ( pad.buttonDown( XPAD_BUTTON_DPAD_DOWN )  && focus < max )
+        {
+            ++focus;
+            gui->SetFocus( focus );
+        }
+    }
+
+    if ( select == 0 )
+    {
+        select = static_cast< Control >( gui->Update( dt ) );
+    }
+
+    return select;
+}
+
+//------------------------------------------------------------------------------
 // physics:
 //------------------------------------------------------------------------------
 void
@@ -469,6 +509,7 @@ Engine::_update()
         if ( m_controller.buttonDown( XPAD_BUTTON_START ) )
         {
             m_paused = ! m_paused;
+            m_controller.clear();
         }
     }
 
@@ -524,8 +565,8 @@ Engine::_update()
 
     if ( m_paused )
     {
-        int select( m_gui->Update( dt ) );
-        switch ( select )
+        switch ( static_cast< EngineControl >( updateGUI( dt, m_gui,
+                                                          EC_CONTINUE, 2 ) ) )
         {
             case EC_CONTINUE:
             {
