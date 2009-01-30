@@ -12,7 +12,6 @@
 Menu::Menu()
     :
     Context(),
-    m_cursor( 0 ),
     m_font( 0 ),
     m_gui( 0 )
 {
@@ -33,7 +32,6 @@ Menu::init()
     ViewPort * vp( Engine::vp() );
 
     m_font = rm->GetFont( "menu" );
-    m_cursor = rm->GetSprite( "cursor" );
     m_gui = new hgeGUI();
     float cx( 0.5f * vp->screen().x );
     float cy( 0.5f * vp->screen().y );
@@ -44,12 +42,9 @@ Menu::init()
     m_gui->AddCtrl( new MenuItem( CTRL_CREDITS, cx, cy + 90, "Credits",
                                   m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_EXIT, cx, cy + 150, "Exit", m_font ) );
-    m_gui->SetNavMode( HGEGUI_UPDOWN | HGEGUI_CYCLED );
-    m_gui->SetCursor( m_cursor );
-    m_gui->SetFocus( 1 );
+    m_gui->SetNavMode( HGEGUI_UPDOWN );
+    m_gui->SetFocus( Engine::instance()->getConfig().menu );
     m_gui->Enter();
-    Engine::instance()->setMouse( "cursor" );
-    Engine::instance()->showMouse();
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +59,6 @@ Menu::fini()
     delete m_gui;
     m_gui = 0;
     m_font = 0;
-    m_cursor = 0;
 }
 
 //------------------------------------------------------------------------------

@@ -30,11 +30,11 @@ MenuItem::Render()
 {
     if ( m_focused )
     {
-        m_font->SetColor( 0xFF888888 );
+        m_font->SetColor( 0xFFFFFFFF );
     }
     else
     {
-        m_font->SetColor( 0xFFFFFFFF );
+        m_font->SetColor( 0x55888888 );
     }
     m_font->Render( rect.x1, rect.y1, HGETEXT_LEFT, m_title );
 }
@@ -75,37 +75,20 @@ MenuItem::Focus( bool focused )
 void
 MenuItem::MouseOver( bool over )
 {
-    if ( over )
-    {
-        gui->SetFocus( id );
-    }
 }
 
 //------------------------------------------------------------------------------
 bool
 MenuItem::MouseLButton( bool down )
 {
-    if ( down )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
 bool
 MenuItem::KeyClick( int key, int chr )
 {
-    if ( key == HGEK_ENTER || key == HGEK_SPACE )
-    {
-        MouseLButton( true );
-        return MouseLButton( false );
-    }
-
-    return false;
+    return ( key == HGEK_ENTER || key == HGEK_SPACE );
 }
 
 //==============================================================================
