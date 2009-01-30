@@ -152,7 +152,7 @@ Engine::start()
         _loadData();
         m_vp->restore();
 #ifdef _DEBUG
-        switchContext( STATE_MENU );
+        switchContext( STATE_SPLASH );
 #else
         switchContext( STATE_SPLASH );
 #endif

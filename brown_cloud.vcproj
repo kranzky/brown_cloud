@@ -246,6 +246,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\menu_item.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\mouse.hpp"
 				>
 			</File>
@@ -377,6 +381,10 @@
 			</File>
 			<File
 				RelativePath=".\menu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\menu_item.cpp"
 				>
 			</File>
 			<File

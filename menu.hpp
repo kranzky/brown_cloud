@@ -6,12 +6,12 @@
 #pragma once
 
 #include <hge.h>
-#include <hgegui.h>
 
 #include <context.hpp>
 
 class hgeSprite;
 class hgeFont;
+class hgeGUI;
 
 enum Control
 {
@@ -44,28 +44,6 @@ class Menu : public Context
     hgeSprite * m_cursor;
     hgeFont * m_font;
     hgeGUI * m_gui;
-};
-
-//------------------------------------------------------------------------------
-class MenuItem : public hgeGUIObject
-{
-  public:
-    MenuItem( Control control, float x, float y, const char * title,
-              hgeFont * font ); 
-
-    virtual void    Render();
-    virtual void    Update( float dt );
-    virtual void    Enter();
-    virtual void    Leave();
-    virtual bool    IsDone();
-    virtual void    Focus( bool focused );
-    virtual void    MouseOver( bool over );
-    virtual bool    MouseLButton( bool down );
-    virtual bool    KeyClick( int key, int chr );
-
-  private:
-    hgeFont * m_font;
-    const char * m_title;
 };
 
 #endif

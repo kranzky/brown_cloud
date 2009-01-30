@@ -1,6 +1,7 @@
 //==============================================================================
 
 #include <menu.hpp>
+#include <menu_item.hpp>
 #include <engine.hpp>
 #include <viewport.hpp>
 
@@ -112,101 +113,8 @@ Menu::render()
 
     m_gui->Render();
     float cx( 0.5f * vp->screen().x );
+    m_font->SetColor( 0xFFFFAA88 );
     m_font->printf( cx, 80.0f, HGETEXT_CENTER, "B R O W N   C L O U D" );
-}
-
-//==============================================================================
-MenuItem::MenuItem( Control control, float x, float y, const char * title,
-                    hgeFont * font )
-    :
-    hgeGUIObject(),
-    m_title( title ),
-    m_font( font )
-
-{
-    id = static_cast<int>( control );
-
-    bStatic=false;
-    bVisible=true;
-    bEnabled=true;
-
-    float width( m_font->GetStringWidth( title ) );
-    rect.Set( x - width / 2, y, x + width / 2, y + m_font->GetHeight() );
-}
- 
-//------------------------------------------------------------------------------
-void
-MenuItem::Render()
-{
-    m_font->Render( rect.x1, rect.y1, HGETEXT_LEFT, m_title );
-}
-
-//------------------------------------------------------------------------------
-void
-MenuItem::Update( float dt )
-{
-}
-
-//------------------------------------------------------------------------------
-void
-MenuItem::Enter()
-{
-}
-
-//------------------------------------------------------------------------------
-void
-MenuItem::Leave()
-{
-}
-
-//------------------------------------------------------------------------------
-bool
-MenuItem::IsDone()
-{
-    return true;
-}
-
-//------------------------------------------------------------------------------
-void
-MenuItem::Focus( bool focused )
-{
-}
-
-//------------------------------------------------------------------------------
-void
-MenuItem::MouseOver( bool over )
-{
-    if ( over )
-    {
-        gui->SetFocus( id );
-    }
-}
-
-//------------------------------------------------------------------------------
-bool
-MenuItem::MouseLButton( bool down )
-{
-    if ( down )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-//------------------------------------------------------------------------------
-bool
-MenuItem::KeyClick( int key, int chr )
-{
-    if ( key == HGEK_ENTER || key == HGEK_SPACE )
-    {
-        MouseLButton( true );
-        return MouseLButton( false );
-    }
-
-    return false;
 }
 
 //==============================================================================
