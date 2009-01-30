@@ -62,8 +62,6 @@ Tutorial::update( float dt )
          Engine::instance()->isPaused() )
     {
         Engine::instance()->switchContext( STATE_MENU );
-        Context * context( Engine::instance()->getContext() );
-        static_cast< Score * >( context )->setValue( 13 );
         return false;
     }
 

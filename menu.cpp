@@ -55,9 +55,10 @@ Menu::init()
 void
 Menu::fini()
 {
-    m_gui->DelCtrl( CTRL_TITLES );
+    m_gui->DelCtrl( CTRL_TUTORIAL );
     m_gui->DelCtrl( CTRL_START );
     m_gui->DelCtrl( CTRL_SCORE );
+    m_gui->DelCtrl( CTRL_CREDITS );
     m_gui->DelCtrl( CTRL_EXIT );
     delete m_gui;
     m_gui = 0;
@@ -73,9 +74,9 @@ Menu::update( float dt )
 
     switch ( static_cast< Control >( m_gui->Update( dt ) ) )
     {
-        case CTRL_TITLES:
+        case CTRL_TUTORIAL:
         {
-            Engine::instance()->switchContext( STATE_SPLASH );
+            Engine::instance()->switchContext( STATE_TUTORIAL );
             break;
         }
         case CTRL_START:
@@ -86,6 +87,11 @@ Menu::update( float dt )
         case CTRL_SCORE:
         {
             Engine::instance()->switchContext( STATE_SCORE );
+            break;
+        }
+        case CTRL_CREDITS:
+        {
+            Engine::instance()->switchContext( STATE_CREDITS );
             break;
         }
         case CTRL_EXIT:

@@ -16,10 +16,11 @@ class hgeFont;
 enum Control
 {
     CTRL_NONE = 0,
-    CTRL_TITLES = 1,
-    CTRL_START = 2,
-    CTRL_SCORE = 3,
-    CTRL_EXIT = 4
+    CTRL_CREDITS = 1,
+    CTRL_TUTORIAL = 2,
+    CTRL_START = 3,
+    CTRL_SCORE = 4,
+    CTRL_EXIT = 5
 };
 
 //------------------------------------------------------------------------------

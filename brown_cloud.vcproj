@@ -194,6 +194,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\cloud.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\config.hpp"
 				>
 			</File>
@@ -203,6 +207,10 @@
 			</File>
 			<File
 				RelativePath=".\controller.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\credits.hpp"
 				>
 			</File>
 			<File
@@ -226,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fujin.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\game.hpp"
 				>
 			</File>
@@ -246,15 +258,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fujin.hpp"
-				>
-			</File>
-			<File
 				RelativePath=".\splash.hpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cloud.hpp"
+				RelativePath=".\tutorial.hpp"
 				>
 			</File>
 			<File
@@ -268,6 +276,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\brown_cloud.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cloud.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\config.cpp"
 				>
 			</File>
@@ -277,6 +293,10 @@
 			</File>
 			<File
 				RelativePath=".\controller.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\credits.cpp"
 				>
 			</File>
 			<File
@@ -348,11 +368,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\game.cpp"
+				RelativePath=".\fujin.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\brown_cloud.cpp"
+				RelativePath=".\game.cpp"
 				>
 			</File>
 			<File
@@ -368,15 +388,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fujin.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\splash.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cloud.cpp"
+				RelativePath=".\tutorial.cpp"
 				>
 			</File>
 			<File
