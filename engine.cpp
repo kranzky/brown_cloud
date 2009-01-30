@@ -146,12 +146,12 @@ Engine::start()
     if ( m_hge->System_Initiate() )
     {
         _loadData();
+        m_vp->restore();
 #ifdef _DEBUG
-        switchContext( STATE_GAME );
+        switchContext( STATE_MENU );
 #else
         switchContext( STATE_SPLASH );
 #endif
-        m_vp->restore();
         m_hge->Random_Seed();
         m_hge->System_Start();
     }
@@ -594,7 +594,7 @@ Engine::_initGraphics()
     m_hge->System_SetState( HGE_FRAMEFUNC, s_update );
     m_hge->System_SetState( HGE_RENDERFUNC, s_render );
     m_hge->System_SetState( HGE_EXITFUNC, s_exit );
-    m_hge->System_SetState( HGE_TITLE, "+++ K R A N Z K Y | E N G I N E +++" );
+    m_hge->System_SetState( HGE_TITLE, "+++ B R O W N | C L O U D +++" );
     m_hge->System_SetState( HGE_ICON, MAKEINTRESOURCE( IDI_ICON1 ) );
     m_hge->System_SetState( HGE_SCREENBPP, 32 );
     m_hge->System_SetState( HGE_USESOUND, true );

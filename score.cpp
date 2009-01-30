@@ -206,7 +206,8 @@ Score::render()
         }
         case SCORE_SHOW:
         {
-            font->printf( cx, 60.0f, HGETEXT_CENTER, "B E S T   G U Y S" );
+            font->printf( cx, 60.0f, HGETEXT_CENTER,
+                          "Y O U   A L L   B L O W" );
             Engine::hge()->Gfx_SetClipping( 10, 120,
                 static_cast< int >( Engine::vp()->screen().x ) - 20,
                 static_cast< int >( Engine::vp()->screen().y ) - 130 );
@@ -296,8 +297,13 @@ Score::_updateScore()
     char buffer[65536];
     buffer[0] = '\0';
 
+#ifdef _DEBUG
     curl_easy_setopt( curl, CURLOPT_URL,
                       "http://gamejam.org/teams/KranzkySoftware/scores/" );
+#else
+    curl_easy_setopt( curl, CURLOPT_URL,
+                      "http://gamejam.org/teams/BrownCloud/scores/" );
+#endif
     curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, writer );
     curl_easy_setopt( curl, CURLOPT_WRITEDATA, buffer );
     curl_easy_perform( curl );
@@ -347,12 +353,20 @@ Score::_insertScore( const char * name, int value )
     curl_formadd( & form, & last, CURLFORM_COPYNAME, "value",
         CURLFORM_COPYCONTENTS, stringValue,
         CURLFORM_END );
+#ifdef _DEBUG
     curl_formadd( & form, & last, CURLFORM_COPYNAME, "key",
         CURLFORM_COPYCONTENTS, "5ddc27012824dadf705049e39386f1c9",
         CURLFORM_END );
-
     curl_easy_setopt( curl, CURLOPT_URL,
                       "http://gamejam.org/teams/KranzkySoftware/setscore/" );
+#else
+    curl_formadd( & form, & last, CURLFORM_COPYNAME, "key",
+        CURLFORM_COPYCONTENTS, "79df3c86a699f13c35177e2ce82b8284",
+        CURLFORM_END );
+    curl_easy_setopt( curl, CURLOPT_URL,
+                      "http://gamejam.org/teams/BrownCloud/setscore/" );
+#endif
+
     curl_easy_setopt( curl, CURLOPT_HTTPPOST, form );
     curl_easy_perform( curl );
     curl_formfree( form );
