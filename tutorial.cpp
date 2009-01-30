@@ -58,14 +58,6 @@ Tutorial::update( float dt )
 {
     HGE * hge( Engine::hge() );
 
-    if ( ( Engine::instance()->getController().buttonDown( XPAD_BUTTON_BACK ) ||
-           hge->Input_GetKeyState(HGEK_ESCAPE) ) &&
-         Engine::instance()->isPaused() )
-    {
-        Engine::instance()->switchContext( STATE_MENU );
-        return false;
-    }
-
     Engine::em()->update( dt );
 
     return false;

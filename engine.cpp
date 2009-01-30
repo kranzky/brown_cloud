@@ -5,6 +5,7 @@
 #include <splash.hpp>
 #include <credits.hpp>
 #include <menu.hpp>
+#include <menu_item.hpp>
 #include <tutorial.hpp>
 #include <game.hpp>
 #include <score.hpp>
@@ -43,7 +44,8 @@ Engine::Engine()
     m_running( false ),
     m_show_mouse( false ),
     m_mouse_sprite( 0 ),
-    m_time_ratio( 1.0f )
+    m_time_ratio( 1.0f ),
+    m_gui( 0 )
 {
     m_vp = new ViewPort();
     m_em = new EntityManager();
@@ -54,6 +56,10 @@ Engine::~Engine()
 {
     m_config.fini();
     m_controller.fini();
+
+    m_gui->DelCtrl( EC_CONTINUE );
+    m_gui->DelCtrl( EC_QUIT );
+    delete m_gui;
 
     std::vector< Context * >::iterator i;
     for ( i = m_contexts.begin(); i != m_contexts.end(); ++i )
@@ -149,13 +155,12 @@ Engine::start()
     if ( m_hge->System_Initiate() )
     {
         _loadData();
-        m_vp->restore();
+        init();
 #ifdef _DEBUG
         switchContext( STATE_MENU );
 #else
         switchContext( STATE_SPLASH );
 #endif
-        m_hge->Random_Seed();
         m_hge->System_Start();
     }
     else
@@ -163,6 +168,27 @@ Engine::start()
         MessageBox( NULL, m_hge->System_GetErrorMessage(), "Error",
                     MB_OK | MB_ICONERROR | MB_APPLMODAL );
     }
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::init()
+{
+    hgeFont * font( m_rm->GetFont( "menu" ) );
+
+    m_vp->restore();
+
+    m_gui = new hgeGUI();
+    float cx( 0.5f * m_vp->screen().x );
+    float cy( 0.5f * m_vp->screen().y );
+    m_gui->AddCtrl( new MenuItem( EC_CONTINUE, cx, cy - 15, "Continue",
+                                  font ) );
+    m_gui->AddCtrl( new MenuItem( EC_QUIT, cx, cy + 15 , "Quit", font ) );
+    m_gui->SetNavMode( HGEGUI_UPDOWN );
+    m_gui->SetFocus( 1 );
+    m_gui->Enter();
+
+    m_hge->Random_Seed();
 }
 
 //------------------------------------------------------------------------------
@@ -498,6 +524,22 @@ Engine::_update()
 
     if ( m_paused )
     {
+        int select( m_gui->Update( dt ) );
+        switch ( select )
+        {
+            case EC_CONTINUE:
+            {
+                m_paused = false;
+                m_gui->SetFocus( 1 );
+                break;
+            }
+            case EC_QUIT:
+            {
+                m_gui->SetFocus( 1 );
+                switchContext( STATE_SCORE );
+                break;
+            }
+        }
         dt = 0.0f;
     }
     else
@@ -568,24 +610,25 @@ Engine::_pauseOverlay()
     }
 
     hgeFont * font( m_rm->GetFont( "menu" ) );
-    float width =
-        static_cast< float >( m_hge->System_GetState( HGE_SCREENWIDTH ) );
-    float height =
-        static_cast< float >( m_hge->System_GetState( HGE_SCREENHEIGHT ) );
+
+    float width( m_vp->screen().x );
+    float height( m_vp->screen().y );
+
     if ( m_paused )
     {
         m_overlay->RenderStretch( 0.0f, 0.0f, width, height );
-        font->Render( width / 2.0f, 0.0f, HGETEXT_CENTER,
-                      "+++ P A U S E D +++" );
+        m_gui->Render();
     }
     else if ( m_time_ratio != 1.0f )
     {
-        font->printf( width / 2.0f, 0.0f, HGETEXT_CENTER,
+        font->SetColor( 0x88FFFFFF );
+        font->printf( 0.5f * width, 0.0f, HGETEXT_CENTER,
                       "+++ %2.2f +++", m_time_ratio );
     }
     if ( m_dd->GetFlags() != 0 )
     {
-        font->Render( width / 2.0f, height - font->GetHeight(), HGETEXT_CENTER,
+        font->SetColor( 0x88FFFFFF );
+        font->Render( 0.5f * width, height - font->GetHeight(), HGETEXT_CENTER,
                       "+++ D E B U G +++" );
     }
 }
@@ -617,7 +660,7 @@ Engine::_initGraphics()
     m_hge->System_SetState( HGE_WINDOWED, ! m_config.fullScreen );
 
     m_overlay = new hgeSprite( 0, 0, 0, 1, 1 );
-    m_overlay->SetColor( 0xBB000000 );
+    m_overlay->SetColor( 0xCC000000 );
 }
 
 //------------------------------------------------------------------------------
