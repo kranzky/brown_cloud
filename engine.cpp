@@ -144,7 +144,6 @@ Engine::start()
     _initGraphics();
     _initPhysics();
 
-    m_mouse.clear();
     m_controller.init();
 
     if ( m_hge->System_Initiate() )
@@ -182,6 +181,9 @@ Engine::switchContext( EngineState state )
     hgeInputEvent event;
     while ( m_hge->Input_GetEvent( & event ) );
     hideMouse();
+
+    m_mouse.clear();
+    m_controller.clear();
 
     m_state = state;
     m_paused = false;

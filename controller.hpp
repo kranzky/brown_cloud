@@ -21,6 +21,7 @@ class Controller
     Controller & operator=( const Controller & );
 
   public:
+    void clear();
     void init();
     void fini();
     void update( float dt );

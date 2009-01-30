@@ -21,16 +21,21 @@ Controller::~Controller()
 
 //------------------------------------------------------------------------------
 void
-Controller::init()
+Controller::clear()
 {
-    m_duration = 0.0f;
-    XenonPad()->SetController( XPAD_CONTROLLER1 );
     XenonPad()->UpdateState();
     m_pad = XenonPad()->GetState();
     for ( int i = 0; i < XPAD_NUM_BUTTONS; ++i )
     {
         m_buttons[i] = m_pad.button[i].isPressed;
     }
+}
+
+//------------------------------------------------------------------------------
+void
+Controller::init()
+{
+    XenonPad()->SetController( XPAD_CONTROLLER1 );
 }
 
 //------------------------------------------------------------------------------
