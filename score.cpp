@@ -148,13 +148,23 @@ Score::update( float dt )
         }
         case SCORE_SHOW:
         {
+            const Controller & pad( Engine::instance()->getController() );
+
             if ( hge->Input_GetKey() != 0 &&
                  ! Engine::instance()->handledKey() )
             {
                 Engine::instance()->switchContext( STATE_MENU );
                 return false;
             }
-            const Controller & pad( Engine::instance()->getController() );
+            if ( pad.buttonDown( XPAD_BUTTON_A ) ||
+                 pad.buttonDown( XPAD_BUTTON_B ) ||
+                 pad.buttonDown( XPAD_BUTTON_START ) ||
+                 pad.buttonDown( XPAD_BUTTON_BACK ) )
+            {
+                Engine::instance()->switchContext( STATE_MENU );
+                return false;
+            }
+
             b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_LEFT ) );
             if ( offset.y > 0.2f || offset.y < -0.2f )
             {
@@ -206,11 +216,15 @@ Score::render()
         }
         case SCORE_SHOW:
         {
+            font->SetColor( 0xFFFFFFFF );
             font->printf( cx, 60.0f, HGETEXT_CENTER,
-                          "Y O U   A L L   B L O W" );
+                          "B L O W   H A R D S" );
+            font->printf( cx, 2.0f * cy - 90.0f, HGETEXT_CENTER,
+                          "Y O U   S U C K   T H E   M O S T" );
+            font->SetColor( 0xCCFFFFFF );
             Engine::hge()->Gfx_SetClipping( 10, 120,
                 static_cast< int >( Engine::vp()->screen().x ) - 20,
-                static_cast< int >( Engine::vp()->screen().y ) - 130 );
+                static_cast< int >( Engine::vp()->screen().y ) - 250 );
             std::vector< ScoreData >::iterator j( m_high_score.begin() );
             float my( 0.0f );
             for( int i = 0; j != m_high_score.end(); ++i, ++j )
@@ -258,9 +272,9 @@ Score::render()
                     break;
                 }
             }
-            if ( my + m_dy < Engine::vp()->screen().y - 50.0f )
+            if ( my + m_dy < Engine::vp()->screen().y - 160.0f )
             {
-                m_dy = Engine::vp()->screen().y - 50.0f - my;
+                m_dy = Engine::vp()->screen().y - 160.0f - my;
             }
             Engine::hge()->Gfx_SetClipping();
             break;

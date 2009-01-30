@@ -129,6 +129,7 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     hgeSprite * m_mouse_sprite;
     float m_time_ratio;
     hgeGUI * m_gui;
+    bool m_stick;
 };
 
 #endif

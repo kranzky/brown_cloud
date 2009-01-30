@@ -45,7 +45,8 @@ Engine::Engine()
     m_show_mouse( false ),
     m_mouse_sprite( 0 ),
     m_time_ratio( 1.0f ),
-    m_gui( 0 )
+    m_gui( 0 ),
+    m_stick( false )
 {
     m_vp = new ViewPort();
     m_em = new EntityManager();
@@ -211,6 +212,8 @@ Engine::switchContext( EngineState state )
     m_mouse.clear();
     m_controller.clear();
 
+    m_stick = false;
+
     m_state = state;
     m_paused = false;
     m_handled_key = false;
@@ -300,15 +303,24 @@ Engine::updateGUI( float dt, hgeGUI * gui, int default_focus, int max )
         {
             select = focus;
         }
-        if ( pad.buttonDown( XPAD_BUTTON_DPAD_UP ) && focus > 1 )
+        float dy( pad.getStick( XPAD_THUMBSTICK_LEFT ).y );
+        if ( m_stick && dy < 0.8f && dy > -0.8f )
+        {
+            m_stick = false;
+        }
+        if ( ( ! m_stick && dy > 0.8f ||
+               pad.buttonDown( XPAD_BUTTON_DPAD_UP ) ) && focus > 1 )
         {
             --focus;
             gui->SetFocus( focus );
+            m_stick = true;
         }
-        if ( pad.buttonDown( XPAD_BUTTON_DPAD_DOWN )  && focus < max )
+        if ( ( ! m_stick && dy < -0.8f ||
+               pad.buttonDown( XPAD_BUTTON_DPAD_DOWN ) ) && focus < max )
         {
             ++focus;
             gui->SetFocus( focus );
+            m_stick = true;
         }
     }
 
