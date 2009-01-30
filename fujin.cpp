@@ -65,14 +65,14 @@ Fujin::doInit()
 {
     b2PolygonDef shapeDef;
     shapeDef.vertexCount = 4;
-    shapeDef.vertices[0].Set( 0.0f, -32.0f * m_scale );
-    shapeDef.vertices[1].Set( 64.0f * m_scale, -32.0f * m_scale );
-    shapeDef.vertices[2].Set( 64.0f * m_scale, 32.0f * m_scale );
-    shapeDef.vertices[3].Set( 0.0f * m_scale, 32.0f * m_scale );
+    shapeDef.vertices[0].Set( -32.0f* m_scale, -32.0f * m_scale );
+    shapeDef.vertices[1].Set( 32.0f * m_scale, -32.0f * m_scale );
+    shapeDef.vertices[2].Set( 32.0f * m_scale, 32.0f * m_scale );
+    shapeDef.vertices[3].Set( -32.0f * m_scale, 32.0f * m_scale );
 	shapeDef.groupIndex=-1;
    // shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
-    shapeDef.density = 1.0f;
-    shapeDef.friction = 1.0f;
+    shapeDef.density = 1.1f;
+    shapeDef.friction =0.0f;
     shapeDef.restitution = 0.0f;
 
     b2BodyDef bodyDef;
@@ -111,46 +111,36 @@ Fujin::doUpdate( float dt )
     }
 	else if(! Engine::instance()->isPaused() )
 	{
-		
-		switch(Engine::hge()->Input_GetKey())
-		{
-		case HGEK_W:
+		float xForce = 0;
+		float yForce = 0;
+		b2Vec2 direction( 1.0f, 1.0f );
+		if(Engine::hge()->Input_GetKeyState(HGEK_W))
 			{
 
-				float force( 0.1f );
-				b2Vec2 direction( 0.0f, -1.0f );
+				yForce =  -0.5f ;
+				
 			
-				m_body->SetLinearVelocity( force * direction);
 			}
-			break;
-		case HGEK_S:
-			{
-
-
-				float force( 0.1f );
-				b2Vec2 direction( 0.0f, 1.0f );
-				
-				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
-			}
-			break;
-		case HGEK_A:
-			{
-				float force( 0.1f );
-				b2Vec2 direction( -1.0f, 0.0f );
-				
-				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
-			}
-			break;
-		case HGEK_D:
-			{
-				float force( 0.1f );
-				b2Vec2 direction( 1.0f, 0.0f );
-				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
-			}
-			break;
-		default:
-			break;
+		if (Engine::hge()->Input_GetKeyState(HGEK_S))
+		{
+				yForce = 0.5f;
 		}
+
+		if (Engine::hge()->Input_GetKeyState(HGEK_A))
+			{
+				xForce=  -0.5f ;
+				
+			}
+			
+		if (Engine::hge()->Input_GetKeyState(HGEK_D))
+			{
+				xForce = 0.5f ;
+				
+				
+			}
+		direction.x = xForce * direction.x;
+		direction.y = yForce * direction.y;
+		m_body->ApplyForce(direction, m_body->GetWorldCenter());
 		
 	}
 
