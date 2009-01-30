@@ -35,3 +35,7 @@ When clouds collide they join / destroy as appropriate.
 
 If all the clouds are gone, new clouds appear. They are normal grey clouds. You
 can't earn any more points, you just need to wait for the clock to wind down.
+
+Clouds have eyes, brown clouds have angry eyes, grey clouds are asleep!
+
+Title screen is full of grey clouds. That's your destiny! Hey!
