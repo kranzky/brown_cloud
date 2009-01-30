@@ -405,7 +405,7 @@ bool
 Engine::_loseFocus()
 {
 #ifndef _DEBUG
-    m_paused = m_state == STATE_GAME;
+    m_paused = ( m_state == STATE_GAME || m_state == STATE_TUTORIAL );
 #endif
     return false;
 }
@@ -431,14 +431,17 @@ Engine::_update()
 {
     float dt( m_hge->Timer_GetDelta() );
 
-    if ( m_hge->Input_KeyDown( HGEK_P ) && m_state == STATE_GAME )
+    if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
     {
-        m_handled_key = true;
-        m_paused = ! m_paused;
-    }
-    if ( m_controller.buttonDown( XPAD_BUTTON_START ) && m_state == STATE_GAME )
-    {
-        m_paused = ! m_paused;
+        if ( m_hge->Input_KeyDown( HGEK_P ) )
+        {
+            m_handled_key = true;
+            m_paused = ! m_paused;
+        }
+        if ( m_controller.buttonDown( XPAD_BUTTON_START ) )
+        {
+            m_paused = ! m_paused;
+        }
     }
 
 #ifdef _DEBUG
@@ -472,7 +475,7 @@ Engine::_update()
         }
     }
 
-    if ( m_state == STATE_GAME )
+    if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
     {
         if ( m_controller.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) )
         {
