@@ -1,3 +1,4 @@
+
 Texture publisher
 {
     filename=APP_logo.png
@@ -43,8 +44,8 @@ Sprite cursor
 Sprite fujin
 {
     texture=fujin
-    rect=0,0,32,32
-    hotspot=16,16
+    rect=0,0,64,64
+    hotspot=32,32
 }
 Sprite cloud
 {

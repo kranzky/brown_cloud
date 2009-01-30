@@ -64,21 +64,24 @@ void
 Fujin::doInit()
 {
     b2PolygonDef shapeDef;
-    shapeDef.vertexCount = 5;
-    shapeDef.vertices[0].Set( 0.0f, -16.0f * m_scale );
-    shapeDef.vertices[1].Set( 15.0f * m_scale, 4.0f * m_scale );
-    shapeDef.vertices[2].Set( 13.0f * m_scale, 16.0f * m_scale );
-    shapeDef.vertices[3].Set( -13.0f * m_scale, 16.0f * m_scale );
-    shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
-    shapeDef.density = 5.0f;
-    shapeDef.friction = 0.3f;
-    shapeDef.restitution = 0.4f;
+    shapeDef.vertexCount = 4;
+    shapeDef.vertices[0].Set( 0.0f, -32.0f * m_scale );
+    shapeDef.vertices[1].Set( 64.0f * m_scale, -32.0f * m_scale );
+    shapeDef.vertices[2].Set( 64.0f * m_scale, 32.0f * m_scale );
+    shapeDef.vertices[3].Set( 0.0f * m_scale, 32.0f * m_scale );
+	shapeDef.groupIndex=-1;
+   // shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
+    shapeDef.density = 1.0f;
+    shapeDef.friction = 1.0f;
+    shapeDef.restitution = 0.0f;
 
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
+	m_body->m_linearDamping = 0.99f;
+	
 }
 
 //------------------------------------------------------------------------------
@@ -86,7 +89,7 @@ void
 Fujin::doUpdate( float dt )
 {
     const Controller & pad( Engine::instance()->getController() );
-
+	const Mouse & mouse (Engine::instance()->getMouse());
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_LEFT ) );
@@ -106,6 +109,50 @@ Fujin::doUpdate( float dt )
         direction = b2Mul( m_body->GetXForm().R, direction );
         m_body->ApplyForce( force * direction, m_body->GetPosition() );
     }
+	else if(! Engine::instance()->isPaused() )
+	{
+		
+		switch(Engine::hge()->Input_GetKey())
+		{
+		case HGEK_W:
+			{
+
+				float force( 0.1f );
+				b2Vec2 direction( 0.0f, -1.0f );
+			
+				m_body->SetLinearVelocity( force * direction);
+			}
+			break;
+		case HGEK_S:
+			{
+
+
+				float force( 0.1f );
+				b2Vec2 direction( 0.0f, 1.0f );
+				
+				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
+			}
+			break;
+		case HGEK_A:
+			{
+				float force( 0.1f );
+				b2Vec2 direction( -1.0f, 0.0f );
+				
+				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
+			}
+			break;
+		case HGEK_D:
+			{
+				float force( 0.1f );
+				b2Vec2 direction( 1.0f, 0.0f );
+				m_body->ApplyImpulse( force * direction, m_body->GetWorldCenter());
+			}
+			break;
+		default:
+			break;
+		}
+		
+	}
 
     updateDamageable( dt );
 }
