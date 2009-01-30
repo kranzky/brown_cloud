@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KranzkyEngine", "kranzky_engine.vcproj", "{3D34AF6B-C499-404A-90C8-E746F3C38D83}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BrownCloud", "brown_cloud.vcproj", "{3D34AF6B-C499-404A-90C8-E746F3C38D83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
