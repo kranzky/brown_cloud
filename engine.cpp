@@ -3,7 +3,9 @@
 #include <engine.hpp>
 #include <entity_manager.hpp>
 #include <splash.hpp>
+#include <credits.hpp>
 #include <menu.hpp>
+#include <tutorial.hpp>
 #include <game.hpp>
 #include <score.hpp>
 #include <debug.hpp>
@@ -132,8 +134,10 @@ Engine::start()
 {
     m_contexts.push_back( new Splash() );
     m_contexts.push_back( new Menu() );
+    m_contexts.push_back( new Tutorial() );
     m_contexts.push_back( new Game() );
     m_contexts.push_back( new Score() );
+    m_contexts.push_back( new Credits() );
 
     m_pm = new hgeParticleManager();
 
