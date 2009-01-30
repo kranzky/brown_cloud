@@ -1,0 +1,644 @@
+//==============================================================================
+
+#include <engine.hpp>
+#include <entity_manager.hpp>
+#include <splash.hpp>
+#include <menu.hpp>
+#include <game.hpp>
+#include <score.hpp>
+#include <debug.hpp>
+#include <entity.hpp>
+#include <viewport.hpp>
+
+#include <hgesprite.h>
+#include <hgeresource.h>
+
+#include "resource.h"
+
+//------------------------------------------------------------------------------
+
+Engine * Engine::s_instance( 0 );
+
+//------------------------------------------------------------------------------
+Engine::Engine()
+    :
+    m_rm( 0 ),
+    m_pm( 0 ),
+    m_hge( 0 ),
+    m_b2d( 0 ),
+    m_vp( 0 ),
+    m_em( 0 ),
+    m_colour( 0 ),
+    m_dd( 0 ),
+    m_overlay( 0 ),
+    m_contexts(),
+    m_state( STATE_NONE ),
+    m_mouse(),
+    m_controller(),
+    m_config(),
+    m_handled_key( false ),
+    m_paused( false ),
+    m_running( false ),
+    m_show_mouse( false ),
+    m_mouse_sprite( 0 ),
+    m_time_ratio( 1.0f )
+{
+    m_vp = new ViewPort();
+    m_em = new EntityManager();
+}
+
+//------------------------------------------------------------------------------
+Engine::~Engine()
+{
+    m_config.fini();
+    m_controller.fini();
+
+    std::vector< Context * >::iterator i;
+    for ( i = m_contexts.begin(); i != m_contexts.end(); ++i )
+    {
+        Context * context( * i );
+        context->fini();
+        delete context;
+    }
+    m_contexts.clear();
+
+    delete m_pm;
+    m_pm = 0;
+
+    m_rm->Purge();
+    delete m_rm;
+    m_rm = 0;
+
+    if ( m_hge != 0 )
+    {
+        m_hge->System_Shutdown();
+        m_hge->Release();
+        m_hge = 0;
+    }
+
+    delete m_b2d;
+    delete m_dd;
+    delete m_overlay;
+    delete m_vp;
+    delete m_em;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::handledKey()
+{
+    return m_handled_key;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::isPaused()
+{
+    return m_paused;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::isDebug()
+{
+    return m_dd->GetFlags() != 0;
+}
+
+//------------------------------------------------------------------------------
+float
+Engine::getTimeRatio()
+{
+    return m_time_ratio;
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::error( const char * format, ... )
+{
+    char message[1024];
+
+    va_list ap;
+    va_start( ap, format );
+    vsprintf_s( message, 1024, format, ap );
+    va_end( ap );
+
+    m_hge->System_Log( "Error: %s", message );
+    MessageBox( NULL, message, "Error", MB_OK | MB_ICONERROR | MB_APPLMODAL);
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::start()
+{
+    m_contexts.push_back( new Splash() );
+    m_contexts.push_back( new Menu() );
+    m_contexts.push_back( new Game() );
+    m_contexts.push_back( new Score() );
+
+    m_pm = new hgeParticleManager();
+
+    _initGraphics();
+    _initPhysics();
+
+    m_mouse.clear();
+    m_controller.init();
+
+    if ( m_hge->System_Initiate() )
+    {
+        _loadData();
+#ifdef _DEBUG
+        switchContext( STATE_GAME );
+#else
+        switchContext( STATE_SPLASH );
+#endif
+        m_vp->restore();
+        m_hge->Random_Seed();
+        m_hge->System_Start();
+    }
+    else
+    {
+        MessageBox( NULL, m_hge->System_GetErrorMessage(), "Error",
+                    MB_OK | MB_ICONERROR | MB_APPLMODAL );
+    }
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::switchContext( EngineState state )
+{
+    m_running = false;
+    m_colour = 0;
+
+    if ( m_state != STATE_NONE )
+    {
+        m_contexts[m_state]->fini();
+    }
+
+    m_pm->KillAll();
+    hgeInputEvent event;
+    while ( m_hge->Input_GetEvent( & event ) );
+    hideMouse();
+
+    m_state = state;
+    m_paused = false;
+    m_handled_key = false;
+    m_time_ratio = 1.0f;
+
+    if ( m_state != STATE_NONE )
+    {
+        m_contexts[m_state]->init();
+    }
+
+    m_running = true;
+}
+
+//------------------------------------------------------------------------------
+Context *
+Engine::getContext()
+{
+    return m_contexts[m_state];
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::setColour( DWORD colour )
+{
+    m_colour = colour;
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::showMouse()
+{
+    m_show_mouse = true;
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::setMouse( const char * name )
+{
+    m_mouse_sprite = m_rm->GetSprite( name );
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::hideMouse()
+{
+    m_show_mouse = false;
+}
+
+//------------------------------------------------------------------------------
+const Mouse &
+Engine::getMouse()
+{
+    return m_mouse;
+}
+
+//------------------------------------------------------------------------------
+const Controller &
+Engine::getController()
+{
+    return m_controller;
+}
+
+//------------------------------------------------------------------------------
+Config &
+Engine::getConfig()
+{
+    return m_config;
+}
+
+//------------------------------------------------------------------------------
+// physics:
+//------------------------------------------------------------------------------
+void
+Engine::Violation( b2Body * body )
+{
+    m_hge->System_Log( "Body left world" );
+    Entity * entity( static_cast<Entity *>( body->GetUserData() ) );
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::Add( b2ContactPoint * point )
+{
+    Entity * entity1 =
+        static_cast< Entity * >( point->shape1->GetBody()->GetUserData() );
+    Entity * entity2 =
+        static_cast< Entity * >( point->shape2->GetBody()->GetUserData() );
+    entity1->collide( entity2, point );
+    entity2->collide( entity1, point );
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::Persist( b2ContactPoint * point )
+{
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::Remove( b2ContactPoint * point )
+{
+}
+
+//------------------------------------------------------------------------------
+//static:
+//------------------------------------------------------------------------------
+Engine *
+Engine::instance()
+{
+    if ( s_instance == 0 )
+    {
+        s_instance = new Engine;
+    }
+    return s_instance;
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::destroy()
+{
+    delete s_instance;
+    s_instance = 0;
+}
+
+//------------------------------------------------------------------------------
+HGE *
+Engine::hge()
+{
+    return instance()->m_hge;
+}
+
+//------------------------------------------------------------------------------
+b2World *
+Engine::b2d()
+{
+    return instance()->m_b2d;
+}
+
+//------------------------------------------------------------------------------
+ViewPort *
+Engine::vp()
+{
+    return instance()->m_vp;
+}
+
+//------------------------------------------------------------------------------
+EntityManager *
+Engine::em()
+{
+    return instance()->m_em;
+}
+
+//------------------------------------------------------------------------------
+hgeResourceManager *
+Engine::rm()
+{
+    return instance()->m_rm;
+}
+
+//------------------------------------------------------------------------------
+hgeParticleManager *
+Engine::pm()
+{
+    return instance()->m_pm;
+}
+
+//------------------------------------------------------------------------------
+DebugDraw *
+Engine::dd()
+{
+    return instance()->m_dd;
+}
+
+//------------------------------------------------------------------------------
+//private:
+//------------------------------------------------------------------------------
+bool
+Engine::s_loseFocus()
+{
+    return s_instance->_loseFocus();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::s_gainFocus()
+{
+    return s_instance->_gainFocus();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::s_restore()
+{
+    return s_instance->_restore();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::s_update()
+{
+    return s_instance->_update();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::s_render()
+{
+    return s_instance->_render();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::s_exit()
+{
+    return s_instance->_exit();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_loseFocus()
+{
+#ifndef _DEBUG
+    m_paused = m_state == STATE_GAME;
+#endif
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_gainFocus()
+{
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_restore()
+{
+    _loseFocus();
+    return m_vp->restore();
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_update()
+{
+    float dt( m_hge->Timer_GetDelta() );
+
+    if ( m_hge->Input_KeyDown( HGEK_P ) && m_state == STATE_GAME )
+    {
+        m_handled_key = true;
+        m_paused = ! m_paused;
+    }
+    if ( m_controller.buttonDown( XPAD_BUTTON_START ) && m_state == STATE_GAME )
+    {
+        m_paused = ! m_paused;
+    }
+
+#ifdef _DEBUG
+    if ( m_hge->Input_KeyDown( HGEK_O ) && m_state != STATE_SCORE  )
+    {
+        m_handled_key = true;
+        int flags( b2DebugDraw::e_shapeBit |
+                   b2DebugDraw::e_aabbBit |
+                   b2DebugDraw::e_obbBit );
+        if ( m_dd->GetFlags() != 0 )
+        {
+            m_dd->ClearFlags( flags );
+            m_time_ratio = 1.0f;
+        }
+        else
+        {
+            m_dd->SetFlags( flags );
+        }
+    }
+#endif
+
+    if ( m_dd->GetFlags() != 0 )
+    {
+        if ( m_hge->Input_KeyDown( HGEK_EQUALS ) )
+        {
+            m_time_ratio *= 0.5f;
+        }
+        if ( m_hge->Input_KeyDown( HGEK_MINUS ) )
+        {
+            m_time_ratio *= 2.0f;
+        }
+    }
+
+    if ( m_state == STATE_GAME )
+    {
+        if ( m_controller.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) )
+        {
+            m_time_ratio *= 0.5f;
+        }
+        else if ( m_controller.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) )
+        {
+            m_time_ratio *= 2.0f;
+        }
+    }
+
+    if ( m_dd->GetFlags() != 0 )
+    {
+        m_hge->Gfx_BeginScene();
+        m_hge->Gfx_Clear( 0 );
+        m_contexts[m_state]->render();
+    }      
+
+    if ( m_paused )
+    {
+        dt = 0.0f;
+    }
+    else
+    {
+        dt *= m_time_ratio;
+    }
+
+    m_mouse.update( dt );
+    m_controller.update( dt );
+
+    m_b2d->Step( dt, 10 );
+    bool retval( m_contexts[m_state]->update( dt ) );
+    m_pm->Update( dt );
+
+    if ( m_dd->GetFlags() != 0 )
+    {
+        m_hge->Gfx_SetTransform();
+        _pauseOverlay();
+        m_hge->Gfx_EndScene();
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_render()
+{
+    if ( ! m_running )
+    {
+        return false;
+    }
+
+    if ( m_dd->GetFlags() == 0 )
+    {
+        m_hge->Gfx_BeginScene();
+        m_hge->Gfx_Clear( m_colour );
+        m_contexts[m_state]->render();
+        m_hge->Gfx_SetTransform();
+        if ( m_show_mouse && m_mouse_sprite != 0 )
+        {
+            float x( 0.0f ); 
+            float y( 0.0f );
+            m_hge->Input_GetMousePos( & x, & y );
+            m_mouse_sprite->Render( x, y );
+        }
+        _pauseOverlay();
+        m_hge->Gfx_EndScene();
+    }
+
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool
+Engine::_exit()
+{
+    return false;
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::_pauseOverlay()
+{
+    if ( ! m_paused && m_dd->GetFlags() == 0 && m_time_ratio == 1.0f )
+    {
+        return;
+    }
+
+    hgeFont * font( m_rm->GetFont( "menu" ) );
+    float width =
+        static_cast< float >( m_hge->System_GetState( HGE_SCREENWIDTH ) );
+    float height =
+        static_cast< float >( m_hge->System_GetState( HGE_SCREENHEIGHT ) );
+    if ( m_paused )
+    {
+        m_overlay->RenderStretch( 0.0f, 0.0f, width, height );
+        font->Render( width / 2.0f, 0.0f, HGETEXT_CENTER,
+                      "+++ P A U S E D +++" );
+    }
+    else if ( m_time_ratio != 1.0f )
+    {
+        font->printf( width / 2.0f, 0.0f, HGETEXT_CENTER,
+                      "+++ %2.2f +++", m_time_ratio );
+    }
+    if ( m_dd->GetFlags() != 0 )
+    {
+        font->Render( width / 2.0f, height - font->GetHeight(), HGETEXT_CENTER,
+                      "+++ D E B U G +++" );
+    }
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::_initGraphics()
+{
+    m_hge = hgeCreate( HGE_VERSION );
+    m_hge->System_SetState( HGE_LOGFILE, "kranzky.log" );
+    m_hge->System_SetState( HGE_INIFILE, "kranzky.ini" );
+    m_hge->System_SetState( HGE_FOCUSLOSTFUNC, s_loseFocus );
+    m_hge->System_SetState( HGE_FOCUSGAINFUNC, s_gainFocus );
+    m_hge->System_SetState( HGE_GFXRESTOREFUNC, s_restore );
+    m_hge->System_SetState( HGE_FRAMEFUNC, s_update );
+    m_hge->System_SetState( HGE_RENDERFUNC, s_render );
+    m_hge->System_SetState( HGE_EXITFUNC, s_exit );
+    m_hge->System_SetState( HGE_TITLE, "+++ K R A N Z K Y | E N G I N E +++" );
+    m_hge->System_SetState( HGE_ICON, MAKEINTRESOURCE( IDI_ICON1 ) );
+    m_hge->System_SetState( HGE_SCREENBPP, 32 );
+    m_hge->System_SetState( HGE_USESOUND, true );
+    m_hge->System_SetState( HGE_SHOWSPLASH, false );
+    m_hge->System_SetState( HGE_FPS, HGEFPS_UNLIMITED );
+
+    m_config.init();
+
+    m_hge->System_SetState( HGE_SCREENWIDTH, m_config.screenWidth );
+    m_hge->System_SetState( HGE_SCREENHEIGHT, m_config.screenHeight );
+    m_hge->System_SetState( HGE_WINDOWED, ! m_config.fullScreen );
+
+    m_overlay = new hgeSprite( 0, 0, 0, 1, 1 );
+    m_overlay->SetColor( 0xBB000000 );
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::_initPhysics()
+{
+    b2AABB worldAABB;
+    worldAABB.lowerBound.Set( -2500.0f, -2500.0f );
+    worldAABB.upperBound.Set( 2500.0f, 2500.0f );
+    b2Vec2 gravity( 0.0f, 0.0f );
+    m_b2d = new b2World( worldAABB, gravity, true );
+    m_dd = new DebugDraw( m_hge, m_vp );
+    m_b2d->SetDebugDraw( m_dd );
+    m_b2d->SetListener( static_cast< b2ContactListener *>( this ) );
+    m_b2d->SetListener( static_cast< b2BoundaryListener *>( this ) );
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::_loadData()
+{
+    if ( ! m_hge->Resource_AttachPack( "resources.dat" ) )
+    {
+        error( "Cannot load '%s'", "resources.dat" );
+    }
+
+    m_rm = new hgeResourceManager( "data.res" );
+    m_rm->Precache();
+
+    m_hge->Resource_RemovePack( "resources.dat" );
+}
+
+//==============================================================================

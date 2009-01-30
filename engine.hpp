@@ -1,0 +1,123 @@
+//==============================================================================
+
+#ifndef ArseEngine
+#define ArseEngine
+
+#pragma once
+
+#include <vector>
+
+#include <hge.h>
+#include <Box2D.h>
+
+#include <mouse.hpp>
+#include <controller.hpp>
+#include <config.hpp>
+
+class hgeResourceManager;
+class hgeParticleManager;
+class hgeSprite;
+
+class DebugDraw;
+class Context;
+class ViewPort;
+class EntityManager;
+
+//------------------------------------------------------------------------------
+enum EngineState
+{
+    STATE_NONE = -1, 
+    STATE_SPLASH = 0,
+    STATE_MENU = 1,
+    STATE_GAME = 2,
+    STATE_SCORE = 3
+};
+
+//------------------------------------------------------------------------------
+class Engine : public b2BoundaryListener, public b2ContactListener
+{
+  public:
+    static Engine * instance();
+    static void destroy();
+    static HGE * hge();
+    static b2World * b2d();
+    static ViewPort * vp();
+    static EntityManager * em();
+    static hgeResourceManager * rm();
+    static hgeParticleManager * pm();
+    static DebugDraw * dd();
+
+  private:
+    static bool s_loseFocus();
+    static bool s_gainFocus();
+    static bool s_restore();
+    static bool s_update();
+    static bool s_render();
+    static bool s_exit();
+    
+  protected:
+    Engine();
+    Engine( const Engine & );
+    Engine & operator=( const Engine & );
+    ~Engine();
+
+  public:
+    bool handledKey();
+    bool isPaused();
+    bool isDebug();
+    float getTimeRatio();
+    void error( const char * format, ... );
+    void start();
+    void switchContext( EngineState state );
+    Context * getContext();
+    void setColour( DWORD colour );
+    void showMouse();
+    void setMouse( const char * name );
+    void hideMouse();
+    const Mouse & getMouse();
+    const Controller & getController();
+    Config & getConfig();
+    virtual void Violation( b2Body * body );
+    virtual void Add( b2ContactPoint * point );
+    virtual void Persist( b2ContactPoint * point );
+    virtual void Remove( b2ContactPoint * point );
+
+  private:
+    bool _loseFocus();
+    bool _gainFocus();
+    bool _restore();
+    bool _update();
+    bool _render();
+    bool _exit();
+    void _pauseOverlay();
+    void _initGraphics();
+    void _initPhysics();
+    void _loadData();
+
+  private:
+    static Engine * s_instance;
+    hgeResourceManager * m_rm;
+    hgeParticleManager * m_pm;
+    HGE * m_hge;
+    b2World * m_b2d;
+    ViewPort * m_vp;
+    EntityManager * m_em;
+    DWORD m_colour;
+    DebugDraw * m_dd;
+    hgeSprite * m_overlay;
+    std::vector< Context * > m_contexts;
+    EngineState m_state;
+    Mouse m_mouse;
+    Controller m_controller;
+    Config m_config;
+    bool m_handled_key;
+    bool m_paused;
+    bool m_running;
+    bool m_show_mouse;
+    hgeSprite * m_mouse_sprite;
+    float m_time_ratio;
+};
+
+#endif
+
+//==============================================================================
