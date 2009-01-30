@@ -589,7 +589,7 @@ Engine::_update()
             case EC_QUIT:
             {
                 m_gui->SetFocus( 1 );
-                switchContext( STATE_SCORE );
+                switchContext( STATE_MENU );
                 break;
             }
         }
