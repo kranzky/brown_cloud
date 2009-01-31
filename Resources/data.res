@@ -98,8 +98,8 @@ Sprite breath
 }
 Sprite cloud
 {
-    texture=cloud
-    rect=0,0,16,16
+    texture=particles
+    rect=0,128,32,32
     hotspot=8,8
 }
 Particle cloud

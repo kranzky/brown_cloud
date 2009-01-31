@@ -144,4 +144,3 @@ Credits::render()
 }
 
 //==============================================================================
->>>>>>> fab9aab2c72fec17624ad07d4f46dcd3fe5e91fd:Projects/BrownCloud/credits.cpp
