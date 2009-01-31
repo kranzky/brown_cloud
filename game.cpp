@@ -43,7 +43,7 @@ Game::init()
     Cloud::registerEntity();
     Girder::registerEntity();
 
-    m_zoom = 1.0f;
+    m_zoom = 4.0f;
 
     Engine::em()->init();
 	Engine::cm()->init();
