@@ -71,10 +71,11 @@ Game::init()
 	for (int i = 0; i < 10; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
-		b2Vec2 position( Engine::hge()->Random_Float(-3.0f, 3.0f), Engine::hge()->Random_Float(-3.0f, 3.0f) );
+		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
+                         Engine::hge()->Random_Float( -300.0f, 300.0f) );
 		float angle( 0.f );
 		entity->setSprite( "cloud" );
-		entity->setScale( 0.03f );
+		entity->setScale( 1.0f );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
 	}
