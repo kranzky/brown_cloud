@@ -49,6 +49,7 @@ class Entity
 
     void setType( unsigned int type );
     void setSpriteID( sqlite3_int64 sprite_id );
+    virtual void onSetScale();
     virtual void doInit() = 0;
     virtual void doUpdate( float dt ) = 0;
     virtual void doRender() = 0;

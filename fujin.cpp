@@ -63,27 +63,40 @@ Fujin::registerEntity()
 // protected:
 //------------------------------------------------------------------------------
 void
-Fujin::doInit()
+Fujin::onSetScale()
 {
+    if ( m_body == 0 )
+    {
+        return;
+    }
+    b2Shape * shape;
+    while ( shape = m_body->GetShapeList() )
+    {
+        m_body->DestroyShape( shape );
+    }
     b2PolygonDef shapeDef;
-    shapeDef.vertexCount = 4;
-    shapeDef.vertices[0].Set( -32.0f* m_scale, -32.0f * m_scale );
-    shapeDef.vertices[1].Set( 32.0f * m_scale, -32.0f * m_scale );
-    shapeDef.vertices[2].Set( 32.0f * m_scale, 32.0f * m_scale );
-    shapeDef.vertices[3].Set( -32.0f * m_scale, 32.0f * m_scale );
+    shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
 	shapeDef.groupIndex=-1;
-   // shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
     shapeDef.density = 1.1f;
     shapeDef.friction =0.0f;
     shapeDef.restitution = 0.0f;
+    m_body->CreateShape( & shapeDef );
+    m_body->SetMassFromShapes();
+}
 
+//------------------------------------------------------------------------------
+void
+Fujin::doInit()
+{
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
-    m_body->CreateShape( & shapeDef );
-    m_body->SetMassFromShapes();
 	m_body->m_linearDamping = 0.5f;
+
+    onSetScale();
+
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
+
 	const Controller & pad( Engine::instance()->getController() );
 	if(! pad.isConnected())
 	{
@@ -93,7 +106,6 @@ Fujin::doInit()
 	{
 		Engine::instance()->hideMouse();
 	}
-
 }
 
 //------------------------------------------------------------------------------

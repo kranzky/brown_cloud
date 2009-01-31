@@ -28,6 +28,7 @@ class Fujin : public Entity, public Damageable
     Fujin( const Fujin & );
     Fujin & operator=( const Fujin & );
 
+    virtual void onSetScale();
     virtual void doInit();
     virtual void doUpdate( float dt );
     virtual void doRender();
