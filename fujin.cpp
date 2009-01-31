@@ -9,6 +9,8 @@
 #include <sqlite3.h>
 #include <Database.h>
 #include <Query.h>
+#include <hgeparticle.h>
+#include <hgeresource.h>
 
 //==============================================================================
 Fujin::Fujin( float max_strength, float scale )
@@ -64,21 +66,34 @@ void
 Fujin::doInit()
 {
     b2PolygonDef shapeDef;
-    shapeDef.vertexCount = 5;
-    shapeDef.vertices[0].Set( 0.0f, -16.0f * m_scale );
-    shapeDef.vertices[1].Set( 15.0f * m_scale, 4.0f * m_scale );
-    shapeDef.vertices[2].Set( 13.0f * m_scale, 16.0f * m_scale );
-    shapeDef.vertices[3].Set( -13.0f * m_scale, 16.0f * m_scale );
-    shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
-    shapeDef.density = 5.0f;
-    shapeDef.friction = 0.3f;
-    shapeDef.restitution = 0.4f;
+    shapeDef.vertexCount = 4;
+    shapeDef.vertices[0].Set( -32.0f* m_scale, -32.0f * m_scale );
+    shapeDef.vertices[1].Set( 32.0f * m_scale, -32.0f * m_scale );
+    shapeDef.vertices[2].Set( 32.0f * m_scale, 32.0f * m_scale );
+    shapeDef.vertices[3].Set( -32.0f * m_scale, 32.0f * m_scale );
+	shapeDef.groupIndex=-1;
+   // shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
+    shapeDef.density = 1.1f;
+    shapeDef.friction =0.0f;
+    shapeDef.restitution = 0.0f;
 
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
+	m_body->m_linearDamping = 0.5f;
+	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
+	const Controller & pad( Engine::instance()->getController() );
+	if(! pad.isConnected())
+	{
+		Engine::instance()->showMouse();
+	}
+	else
+	{
+		Engine::instance()->hideMouse();
+	}
+
 }
 
 //------------------------------------------------------------------------------
@@ -86,6 +101,11 @@ void
 Fujin::doUpdate( float dt )
 {
     const Controller & pad( Engine::instance()->getController() );
+	const Mouse &mouse(Engine::instance()->getMouse());
+	
+	const Mouse::MouseButton & leftMouseBtn(mouse.getLeft());
+
+	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
@@ -106,8 +126,59 @@ Fujin::doUpdate( float dt )
         direction = b2Mul( m_body->GetXForm().R, direction );
         m_body->ApplyForce( force * direction, m_body->GetPosition() );
     }
+	else if(! Engine::instance()->isPaused() )
+	{
+		float xForce = 0;
+		float yForce = 0;
+		b2Vec2 direction( 1.0f, 1.0f );
+		if(Engine::hge()->Input_GetKeyState(HGEK_W))
+			{
 
-    updateDamageable( dt );
+				yForce =  -0.5f ;
+				
+			
+			}
+		if (Engine::hge()->Input_GetKeyState(HGEK_S))
+		{
+				yForce = 0.5f;
+		}
+
+		if (Engine::hge()->Input_GetKeyState(HGEK_A))
+			{
+				xForce=  -0.5f ;
+				
+			}
+			
+		if (Engine::hge()->Input_GetKeyState(HGEK_D))
+			{
+				xForce = 0.5f ;
+				
+				
+			}
+		if(leftMouseBtn.dragging())
+		{
+			// we are blowing, better make sure we are displaying the particles
+			breath->Fire();
+
+		}
+		
+		if ( breath->GetParticlesAlive() > 0 )
+		{
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, -1.0f );
+			direction = b2Mul( m_body->GetXForm().R, direction );
+			position = position - 32.0f * m_scale * direction;
+			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+		}
+		breath->Update( dt );
+
+		direction.x = xForce * direction.x;
+		direction.y = yForce * direction.y;
+		m_body->ApplyForce(direction, m_body->GetWorldCenter());
+		
+	}
+
+   // updateDamageable( dt );
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +187,9 @@ Fujin::doRender()
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
+	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
     m_sprite->RenderEx( position.x, position.y, angle, m_scale );
+	breath->Render();
     renderDamageable( position, m_scale );
 }
 

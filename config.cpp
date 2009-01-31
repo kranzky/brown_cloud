@@ -11,7 +11,8 @@ Config::Config()
     screenWidth( 800 ),
     screenHeight( 600 ),
     fullScreen( false ),
-    userName( "Lloyd" )
+    userName( "Lloyd" ),
+    menu( 1 )
 {
 }
 
@@ -32,6 +33,7 @@ Config::init()
                                             fullScreen ? 1 : 0 ) == 1;
     userName = Engine::hge()->Ini_GetString( "kranzky", "username",
                                              userName.c_str() );
+    menu = Engine::hge()->Ini_GetInt( "kranzky", "menu", menu );
 }
 
 //------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ Config::fini()
     Engine::hge()->Ini_SetInt( "kranzky","height", screenHeight );
     Engine::hge()->Ini_SetInt( "kranzky", "fullscreen", fullScreen ? 1 : 0 );
     Engine::hge()->Ini_SetString( "kranzky", "username", userName.c_str() );
+    Engine::hge()->Ini_SetInt( "kranzky", "menu", menu );
 }
 
 //==============================================================================

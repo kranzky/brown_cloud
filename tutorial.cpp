@@ -42,12 +42,14 @@ Tutorial::init()
     vp->offset().y = 0.0f;
     vp->bounds().x = 8.0f;
     vp->bounds().y = 6.0f;
+    vp->setAngle( 0.0f );
 }
 
 //------------------------------------------------------------------------------
 void
 Tutorial::fini()
 {
+    Engine::instance()->getConfig().menu = 2;
     Engine::em()->fini();
 }
 
@@ -56,14 +58,6 @@ bool
 Tutorial::update( float dt )
 {
     HGE * hge( Engine::hge() );
-
-    if ( ( Engine::instance()->getController().buttonDown( XPAD_BUTTON_BACK ) ||
-           hge->Input_GetKeyState(HGEK_ESCAPE) ) &&
-         Engine::instance()->isPaused() )
-    {
-        Engine::instance()->switchContext( STATE_MENU );
-        return false;
-    }
 
     Engine::em()->update( dt );
 

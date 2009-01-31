@@ -65,8 +65,8 @@ class Mouse
     void clear();
     void update( float dt );
 
-    const MouseButton & getLeft();
-    const MouseButton & getRight();
+    const MouseButton & getLeft() const;
+    const MouseButton & getRight()const;
 
   private:
     MouseButton m_left;

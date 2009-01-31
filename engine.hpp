@@ -17,6 +17,7 @@
 class hgeResourceManager;
 class hgeParticleManager;
 class hgeSprite;
+class hgeGUI;
 
 class DebugDraw;
 class Context;
@@ -33,6 +34,13 @@ enum EngineState
     STATE_GAME = 3,
     STATE_SCORE = 4,
     STATE_CREDITS
+};
+
+enum EngineControl
+{
+    EC_NONE = 0,
+    EC_CONTINUE = 1,
+    EC_QUIT = 2
 };
 
 //------------------------------------------------------------------------------
@@ -70,6 +78,7 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     float getTimeRatio();
     void error( const char * format, ... );
     void start();
+    void init();
     void switchContext( EngineState state );
     Context * getContext();
     void setColour( DWORD colour );
@@ -79,6 +88,7 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     const Mouse & getMouse();
     const Controller & getController();
     Config & getConfig();
+    int updateGUI( float dt, hgeGUI * gui, int default_focus, int max );
     virtual void Violation( b2Body * body );
     virtual void Add( b2ContactPoint * point );
     virtual void Persist( b2ContactPoint * point );
@@ -118,6 +128,8 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     bool m_show_mouse;
     hgeSprite * m_mouse_sprite;
     float m_time_ratio;
+    hgeGUI * m_gui;
+    bool m_stick;
 };
 
 #endif

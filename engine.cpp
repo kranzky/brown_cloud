@@ -5,6 +5,7 @@
 #include <splash.hpp>
 #include <credits.hpp>
 #include <menu.hpp>
+#include <menu_item.hpp>
 #include <tutorial.hpp>
 #include <game.hpp>
 #include <score.hpp>
@@ -43,7 +44,9 @@ Engine::Engine()
     m_running( false ),
     m_show_mouse( false ),
     m_mouse_sprite( 0 ),
-    m_time_ratio( 1.0f )
+    m_time_ratio( 1.0f ),
+    m_gui( 0 ),
+    m_stick( false )
 {
     m_vp = new ViewPort();
     m_em = new EntityManager();
@@ -54,6 +57,10 @@ Engine::~Engine()
 {
     m_config.fini();
     m_controller.fini();
+
+    m_gui->DelCtrl( EC_CONTINUE );
+    m_gui->DelCtrl( EC_QUIT );
+    delete m_gui;
 
     std::vector< Context * >::iterator i;
     for ( i = m_contexts.begin(); i != m_contexts.end(); ++i )
@@ -144,19 +151,17 @@ Engine::start()
     _initGraphics();
     _initPhysics();
 
-    m_mouse.clear();
     m_controller.init();
 
     if ( m_hge->System_Initiate() )
     {
         _loadData();
-        m_vp->restore();
+        init();
 #ifdef _DEBUG
-        switchContext( STATE_GAME );
+        switchContext( STATE_MENU );
 #else
         switchContext( STATE_SPLASH );
 #endif
-        m_hge->Random_Seed();
         m_hge->System_Start();
     }
     else
@@ -164,6 +169,27 @@ Engine::start()
         MessageBox( NULL, m_hge->System_GetErrorMessage(), "Error",
                     MB_OK | MB_ICONERROR | MB_APPLMODAL );
     }
+}
+
+//------------------------------------------------------------------------------
+void
+Engine::init()
+{
+    hgeFont * font( m_rm->GetFont( "menu" ) );
+
+    m_vp->restore();
+
+    m_gui = new hgeGUI();
+    float cx( 0.5f * m_vp->screen().x );
+    float cy( 0.5f * m_vp->screen().y );
+    m_gui->AddCtrl( new MenuItem( EC_CONTINUE, cx, cy - 15, "Continue",
+                                  font ) );
+    m_gui->AddCtrl( new MenuItem( EC_QUIT, cx, cy + 15 , "Quit", font ) );
+    m_gui->SetNavMode( HGEGUI_UPDOWN );
+    m_gui->SetFocus( 1 );
+    m_gui->Enter();
+
+    m_hge->Random_Seed();
 }
 
 //------------------------------------------------------------------------------
@@ -182,6 +208,11 @@ Engine::switchContext( EngineState state )
     hgeInputEvent event;
     while ( m_hge->Input_GetEvent( & event ) );
     hideMouse();
+
+    m_mouse.clear();
+    m_controller.clear();
+
+    m_stick = false;
 
     m_state = state;
     m_paused = false;
@@ -250,6 +281,55 @@ Config &
 Engine::getConfig()
 {
     return m_config;
+}
+
+//------------------------------------------------------------------------------
+int
+Engine::updateGUI( float dt, hgeGUI * gui, int default_focus, int max )
+{
+    const Controller & pad( Engine::instance()->getController() );
+    int select( 0 );
+
+    if ( pad.isConnected() )
+    {
+        int focus( gui->GetFocus() );
+        if ( pad.buttonDown( XPAD_BUTTON_START ) )
+        {
+            focus = default_focus;
+            gui->SetFocus( focus );
+        }
+        if ( pad.buttonDown( XPAD_BUTTON_A ) ||
+             pad.buttonDown( XPAD_BUTTON_START ) )
+        {
+            select = focus;
+        }
+        float dy( pad.getStick( XPAD_THUMBSTICK_LEFT ).y );
+        if ( m_stick && dy < 0.8f && dy > -0.8f )
+        {
+            m_stick = false;
+        }
+        if ( ( ! m_stick && dy > 0.8f ||
+               pad.buttonDown( XPAD_BUTTON_DPAD_UP ) ) && focus > 1 )
+        {
+            --focus;
+            gui->SetFocus( focus );
+            m_stick = true;
+        }
+        if ( ( ! m_stick && dy < -0.8f ||
+               pad.buttonDown( XPAD_BUTTON_DPAD_DOWN ) ) && focus < max )
+        {
+            ++focus;
+            gui->SetFocus( focus );
+            m_stick = true;
+        }
+    }
+
+    if ( select == 0 )
+    {
+        select = static_cast< Control >( gui->Update( dt ) );
+    }
+
+    return select;
 }
 
 //------------------------------------------------------------------------------
@@ -433,14 +513,17 @@ Engine::_update()
 
     if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
     {
-        if ( m_hge->Input_KeyDown( HGEK_P ) )
+        if ( m_hge->Input_KeyDown( HGEK_P ) ||
+             m_hge->Input_KeyDown( HGEK_ESCAPE ) )
         {
             m_handled_key = true;
             m_paused = ! m_paused;
         }
-        if ( m_controller.buttonDown( XPAD_BUTTON_START ) )
+        if ( m_controller.buttonDown( XPAD_BUTTON_START ) ||
+             m_controller.buttonDown( XPAD_BUTTON_BACK ) )
         {
             m_paused = ! m_paused;
+            m_controller.clear();
         }
     }
 
@@ -496,6 +579,22 @@ Engine::_update()
 
     if ( m_paused )
     {
+        switch ( static_cast< EngineControl >( updateGUI( dt, m_gui,
+                                                          EC_CONTINUE, 2 ) ) )
+        {
+            case EC_CONTINUE:
+            {
+                m_paused = false;
+                m_gui->SetFocus( 1 );
+                break;
+            }
+            case EC_QUIT:
+            {
+                m_gui->SetFocus( 1 );
+                switchContext( STATE_MENU );
+                break;
+            }
+        }
         dt = 0.0f;
     }
     else
@@ -566,24 +665,25 @@ Engine::_pauseOverlay()
     }
 
     hgeFont * font( m_rm->GetFont( "menu" ) );
-    float width =
-        static_cast< float >( m_hge->System_GetState( HGE_SCREENWIDTH ) );
-    float height =
-        static_cast< float >( m_hge->System_GetState( HGE_SCREENHEIGHT ) );
+
+    float width( m_vp->screen().x );
+    float height( m_vp->screen().y );
+
     if ( m_paused )
     {
         m_overlay->RenderStretch( 0.0f, 0.0f, width, height );
-        font->Render( width / 2.0f, 0.0f, HGETEXT_CENTER,
-                      "+++ P A U S E D +++" );
+        m_gui->Render();
     }
     else if ( m_time_ratio != 1.0f )
     {
-        font->printf( width / 2.0f, 0.0f, HGETEXT_CENTER,
+        font->SetColor( 0x88FFFFFF );
+        font->printf( 0.5f * width, 0.0f, HGETEXT_CENTER,
                       "+++ %2.2f +++", m_time_ratio );
     }
     if ( m_dd->GetFlags() != 0 )
     {
-        font->Render( width / 2.0f, height - font->GetHeight(), HGETEXT_CENTER,
+        font->SetColor( 0x88FFFFFF );
+        font->Render( 0.5f * width, height - font->GetHeight(), HGETEXT_CENTER,
                       "+++ D E B U G +++" );
     }
 }
@@ -615,7 +715,7 @@ Engine::_initGraphics()
     m_hge->System_SetState( HGE_WINDOWED, ! m_config.fullScreen );
 
     m_overlay = new hgeSprite( 0, 0, 0, 1, 1 );
-    m_overlay->SetColor( 0xBB000000 );
+    m_overlay->SetColor( 0xCC000000 );
 }
 
 //------------------------------------------------------------------------------
@@ -649,3 +749,4 @@ Engine::_loadData()
 }
 
 //==============================================================================
+

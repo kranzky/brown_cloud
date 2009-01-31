@@ -25,7 +25,7 @@ class Credits : public Context
     virtual void render();
 
   private:
-    float m_timer;
+    bool m_interact;
 };
 
 #endif

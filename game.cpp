@@ -43,6 +43,7 @@ Game::init()
     vp->offset().y = 0.0f;
     vp->bounds().x = 8.0f;
     vp->bounds().y = 6.0f;
+    vp->setAngle( 0.0f );
 }
 
 //------------------------------------------------------------------------------
@@ -58,9 +59,7 @@ Game::update( float dt )
 {
     HGE * hge( Engine::hge() );
 
-    if ( ( Engine::instance()->getController().buttonDown( XPAD_BUTTON_BACK ) ||
-           hge->Input_GetKeyState(HGEK_ESCAPE) ) &&
-         Engine::instance()->isPaused() )
+    if ( false )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
@@ -91,5 +90,3 @@ Game::render()
         }
     }
 }
-
-//==============================================================================
