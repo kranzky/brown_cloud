@@ -211,7 +211,7 @@ Score::render()
         }
         case SCORE_CALCULATE:
         {
-            font->printf( cx, 80.0f, HGETEXT_CENTER, "G A M E   O V E R" );
+            font->printf( cx, 80.0f, HGETEXT_CENTER, "F R O W N   T O W N" );
             break;
         }
         case SCORE_SHOW:
