@@ -30,6 +30,10 @@ Texture fujin
 {
     filename=fujin.png
 }
+Texture particles
+{
+    filename=particles.png
+}
 Texture cloud
 {
     filename=cloud.png
@@ -86,6 +90,12 @@ Sprite fujin
     rect=0,0,64,64
     hotspot=32,32
 }
+Sprite breath
+{
+    texture=particles
+    rect=0,64,32,32
+    hotspot=16,16
+}
 Sprite cloud
 {
     texture=cloud
@@ -96,4 +106,9 @@ Particle cloud
 {
     filename=cloud.psi
     sprite=cloud
+}
+Particle breath
+{
+    filename=breath.psi
+    sprite=breath
 }

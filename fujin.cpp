@@ -9,6 +9,8 @@
 #include <sqlite3.h>
 #include <Database.h>
 #include <Query.h>
+#include <hgeparticle.h>
+#include <hgeresource.h>
 
 //==============================================================================
 Fujin::Fujin( float max_strength, float scale )
@@ -80,8 +82,18 @@ Fujin::doInit()
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
-	m_body->m_linearDamping = 0.99f;
-	
+	m_body->m_linearDamping = 0.5f;
+	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
+	const Controller & pad( Engine::instance()->getController() );
+	if(! pad.isConnected())
+	{
+		Engine::instance()->showMouse();
+	}
+	else
+	{
+		Engine::instance()->hideMouse();
+	}
+
 }
 
 //------------------------------------------------------------------------------
@@ -89,7 +101,12 @@ void
 Fujin::doUpdate( float dt )
 {
     const Controller & pad( Engine::instance()->getController() );
-	const Mouse & mouse (Engine::instance()->getMouse());
+	const Mouse &mouse(Engine::instance()->getMouse());
+	
+	const Mouse::MouseButton & leftMouseBtn(mouse.getLeft());
+
+	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
+
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_LEFT ) );
@@ -138,13 +155,30 @@ Fujin::doUpdate( float dt )
 				
 				
 			}
+		if(leftMouseBtn.dragging())
+		{
+			// we are blowing, better make sure we are displaying the particles
+			breath->Fire();
+
+		}
+		
+		if ( breath->GetParticlesAlive() > 0 )
+		{
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, -1.0f );
+			direction = b2Mul( m_body->GetXForm().R, direction );
+			position = position - 32.0f * m_scale * direction;
+			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+		}
+		breath->Update( dt );
+
 		direction.x = xForce * direction.x;
 		direction.y = yForce * direction.y;
 		m_body->ApplyForce(direction, m_body->GetWorldCenter());
 		
 	}
 
-    updateDamageable( dt );
+   // updateDamageable( dt );
 }
 
 //------------------------------------------------------------------------------
@@ -153,7 +187,9 @@ Fujin::doRender()
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
+	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
     m_sprite->RenderEx( position.x, position.y, angle, m_scale );
+	breath->Render();
     renderDamageable( position, m_scale );
 }
 
