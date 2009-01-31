@@ -26,6 +26,9 @@ class Cloud : public Entity
 
     static void registerEntity();
 
+	Clump* getClump() const { return m_clump; }
+	void setClump(Clump* clump) { m_clump = clump; }
+
   protected:
     Cloud( const Cloud & );
     Cloud & operator=( const Cloud & );

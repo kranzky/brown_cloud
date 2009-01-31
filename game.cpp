@@ -90,7 +90,7 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
@@ -153,12 +153,12 @@ Game::update( float dt )
     else
     {
         if ( ( Engine::hge()->Input_KeyDown( HGEK_Q ) ||
-               hge->Input_GetMouseWheel() > 0 ) && m_zoom > 0 )
+               hge->Input_GetMouseWheel() < 0 ) && m_zoom > 0 )
         {
             --m_zoom;
         }
         else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
-                    hge->Input_GetMouseWheel() < 0 ) && m_zoom < 4 )
+                    hge->Input_GetMouseWheel() > 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
         }

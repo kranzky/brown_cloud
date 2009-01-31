@@ -16,7 +16,7 @@
 Fujin::Fujin( float max_strength, float scale )
     :
     Entity( scale ),
-    Damageable( max_strength )
+    Damageable( max_strength ), m_isBlowing(false)
 {
 }
 
@@ -84,6 +84,8 @@ Fujin::onSetScale()
 
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 	breath->SetScale(m_scale);
+
+	
 	
 }
 
@@ -95,7 +97,8 @@ Fujin::doInit()
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
 	m_body->m_linearDamping = 0.5f;
-
+	m_AABB.lowerBound= b2Vec2(-2.0f,-2.0f);
+	m_AABB.upperBound= b2Vec2(2.0f,2.0f);
     onSetScale();
 
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
@@ -144,11 +147,13 @@ Fujin::doUpdate( float dt )
 			position = position - 32.0f * m_scale * direction;
 			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
 			breath->Fire();
-			
+			Blow();
+			m_isBlowing=true;
 			breath->info.fDirection= angle -M_PI;
 		}
 		else
 		{
+			m_isBlowing=false;
 			breath->Stop();
 		}
 		
@@ -186,27 +191,41 @@ Fujin::doUpdate( float dt )
 			}
 		b2Vec2 position (m_body->GetPosition());
 		b2Vec2 mousePosition(mouse.getMousePos());
-		float angle = lookAt(mousePosition -position);
+		b2Vec2 newPos = mousePosition - position;
+		//newPos.x = newPos.x/newPos.Length();
+		//newPos.y = newPos.y/newPos.Length();
+		float angle = lookAt(newPos);
 		if(leftMouseBtn.dragging())
 		{
 			// we are blowing, better make sure we are displaying the particles
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, 1.0f );
+			direction = b2Mul( m_body->GetXForm().R, -direction );
+			position = position - 32.0f * m_scale * direction;
+			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+			breath->info.fDirection= angle -M_PI;
 			breath->Fire();
-
+			Blow();
+			m_isBlowing=true;
 		}
 		
-		else
+			else
 		{
-
+			m_isBlowing=false;
 			breath->Stop();
 		}
 		
 
-		direction.x = xForce * direction.x * 100000.0f * m_scale;
-		direction.y = yForce * direction.y* 100000.0f * m_scale;
+		direction.x = xForce * direction.x * 1000000.0f * m_scale;
+		direction.y = yForce * direction.y* 1000000.0f * m_scale;
 		m_body->ApplyForce(direction, m_body->GetWorldCenter());
 		
 	}
 	breath->Update( dt );
+
+	b2Vec2 position = m_body->GetWorldCenter();
+	m_AABB.lowerBound= b2Vec2(position.x-196.0f*m_scale,position.y-196.0f*m_scale);
+	m_AABB.upperBound= b2Vec2(position.x+196.0f*m_scale,position.y+196.0f*m_scale);
 
    // updateDamageable( dt );
 }
@@ -222,6 +241,9 @@ Fujin::doRender( float scale )
 	breath->Render();
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
+
+	Engine::hge()->Gfx_RenderLine(mouse.getMousePos().x, mouse.getMousePos().y,
+								  m_body->GetPosition().x, m_body->GetPosition().y);
 	
 	
 }
@@ -265,3 +287,42 @@ float Fujin::lookAt( const b2Vec2& targetPoint )
 }
 //==============================================================================
 
+
+void Fujin::Blow()
+{
+	const int32 k_bufferSize = 10;
+	b2Shape *buffer[k_bufferSize];
+	const Mouse &mouse(Engine::instance()->getMouse());
+	const b2Vec2 mousePosition =  mouse.getMousePos() - m_body->GetWorldCenter();
+//	float xDir = mousePosition.x/mousePosition.Length();
+//	float yDir = mousePosition.y/mousePosition.Length();
+	b2Vec2 direction(mousePosition);
+	//direction *= 128;
+	int32 count = Engine::b2d()->Query(m_AABB, buffer, k_bufferSize);
+	for (int32 i = 0; i < count; ++i)
+	{
+		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2)
+		{
+
+
+			// get the position of the item, dot product it, multiply force by dp
+			float dpAngleValue = -99;
+			b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
+			//currLocation.x = currLocation.x/currLocation.Length();
+			//currLocation.y = currLocation.y/currLocation.Length();
+			
+			dpAngleValue = acosf( b2Dot( direction, currLocation)/(direction.Normalize() * currLocation.Normalize()) )	 ;
+			int ival = 0;
+			if (dpAngleValue > -1 && dpAngleValue < 1)
+			{
+
+
+				float force = 100000.0f * dpAngleValue;
+				b2Vec2 directionForce(direction.x*force, direction.y*force);
+
+				buffer[i]->GetBody()->ApplyForce(directionForce, currLocation);
+			}
+		}
+	}
+
+}
