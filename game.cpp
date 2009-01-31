@@ -17,7 +17,8 @@ Game::Game()
     :
     Context(),
     m_last_zoom( 1.0f ),
-    m_zoom( 1.0f )
+    m_zoom( 1.0f ),
+    m_fujin( 0 )
 {
 }
 
@@ -52,13 +53,13 @@ Game::init()
     vp->setAngle( 0.0f );
     vp->setScale( m_zoom );
 
-    Entity * entity = Engine::em()->factory( Fujin::TYPE );
+    m_fujin = static_cast< Fujin * >( Engine::em()->factory( Fujin::TYPE ) );
     b2Vec2 position( 0.0f, 0.0f );
     float angle( 0.0f );
-    entity->setSprite( "fujin" );
-    entity->setScale( 1.0f / m_zoom );
-    entity->init();
-    entity->getBody()->SetXForm( position, angle );
+    m_fujin->setSprite( "fujin" );
+    m_fujin->setScale( 1.0f / m_zoom );
+    m_fujin->init();
+    m_fujin->getBody()->SetXForm( position, angle );
 
     _initArena();
 }
@@ -116,6 +117,8 @@ Game::update( float dt )
         m_last_zoom = m_zoom;
         vp->setScale( m_last_zoom );
     }
+
+    vp->offset() = m_fujin->getBody()->GetPosition();
 
     return false;
 }
