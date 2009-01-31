@@ -242,6 +242,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\girder.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\menu.hpp"
 				>
 			</File>
@@ -377,6 +381,10 @@
 			</File>
 			<File
 				RelativePath=".\game.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\girder.cpp"
 				>
 			</File>
 			<File

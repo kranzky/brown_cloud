@@ -34,6 +34,9 @@ class Entity
     void setID( sqlite_int64 id );
     sqlite_int64 getID();
 
+    void setScale( float scale );
+    void setSprite( const char * name );
+
     virtual void persistToDatabase() = 0;
     void deleteFromDatabase();
 

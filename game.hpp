@@ -23,6 +23,9 @@ class Game : public Context
     virtual void fini();
     virtual bool update( float dt );
     virtual void render();
+
+  private:
+    void _initArena();
 };
 
 #endif

@@ -16,7 +16,8 @@ EntityManager::EntityManager()
     :
     m_registry(),
     m_entities(),
-    m_sprites()
+    m_sprites(),
+    m_names()
 {
 }
 
@@ -38,12 +39,12 @@ EntityManager::init()
     while ( query.fetch_row() )
     {
         sqlite_int64 sprite_id( static_cast< sqlite_int64 >( query.getnum() ) );
-        m_sprites[sprite_id] = Engine::rm()->GetSprite( query.getstr() );
+        std::string name( query.getstr() );
+        m_names[name] = sprite_id;
+        m_sprites[sprite_id] = Engine::rm()->GetSprite( name.c_str() );
     }
 
     query.free_result();
-
-    m_entities = databaseFactory();
 }
 
 //------------------------------------------------------------------------------
@@ -68,6 +69,7 @@ EntityManager::fini()
     }
     m_registry.clear();
     m_sprites.clear();
+    m_names.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -89,8 +91,25 @@ EntityManager::registerEntity( unsigned int type, Entity * ( * factory )(),
 }
 
 //------------------------------------------------------------------------------
+sqlite_int64
+EntityManager::registerSprite( const char * cname )
+{
+    std::string name( cname );
+    std::map< std::string, sqlite_int64 >::iterator i( m_names.find( name ) );
+    if ( i != m_names.end() )
+    {
+        return m_names[name];
+    }
+    sqlite_int64 id( 0 );
+    for ( id = 0; m_sprites.find( id ) != m_sprites.end(); ++id );
+    m_names[name] = id;
+    m_sprites[id] = Engine::rm()->GetSprite( cname );
+    return id;
+}
+
+//------------------------------------------------------------------------------
 Entity *
-EntityManager::factory( unsigned int type )
+EntityManager::factory( unsigned int type, bool add )
 {
     std::map< unsigned int, EntityData >::iterator i( m_registry.find( type ) );
     if ( i == m_registry.end() )
@@ -100,6 +119,10 @@ EntityManager::factory( unsigned int type )
     }
     Entity * entity( i->second.m_factory() );
     entity->setType( type );
+    if ( add )
+    {
+        m_entities.push_back( entity );
+    }
     return entity;
 }
 
@@ -138,7 +161,7 @@ EntityManager::databaseFactory( unsigned int type )
 
     while ( query.fetch_row() )
     {
-        entities.push_back( factory( type ) );
+        entities.push_back( factory( type, false ) );
         entities.back()->initFromQuery( query );    
     }
 

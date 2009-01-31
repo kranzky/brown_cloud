@@ -52,7 +52,7 @@ Credits::update( float dt )
 
     if ( vp->bounds().x < 800.0f && ! m_interact )
     {
-        vp->bounds() *= ( 1.0f + dt * 0.6f );
+        vp->bounds() *= ( 1.0f + dt * 2.0f );
         return false;
     }
 

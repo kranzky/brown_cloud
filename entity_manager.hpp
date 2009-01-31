@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 #include <map>
 
@@ -26,8 +27,9 @@ class EntityManager
 
     void registerEntity( unsigned int type, Entity * ( * factory )(),
                          const char * table, const char * query );
+    sqlite_int64 registerSprite( const char * name );
 
-    Entity * factory( unsigned int type );
+    Entity * factory( unsigned int type, bool add = true );
     std::vector< Entity * > databaseFactory( unsigned int type = 0 );
 
     sqlite_int64 persistToDatabase( Entity * entity, char * rows[], ... );
@@ -49,6 +51,7 @@ class EntityManager
     std::map< unsigned int, EntityData > m_registry;
     std::vector< Entity * > m_entities;
     std::map< sqlite_int64, hgeSprite * > m_sprites;
+    std::map< std::string, sqlite_int64 > m_names;
 };
 
 #endif

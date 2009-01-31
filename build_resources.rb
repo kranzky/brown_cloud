@@ -19,7 +19,6 @@ def buildResources( target )
     FileUtils.cp( File.join( third_party, "sqlite", "sqlite3.dll" ), target )
     FileUtils.cp( File.join( third_party, "libcurl", "libcurl.dll" ), target )
     FileUtils.cp( File.join( third_party, "libcurl", "zlib1.dll" ), target )
-    FileUtils.cp( File.join( "Resources", "world.db3" ), target )
 end
 
 if __FILE__ == $0
