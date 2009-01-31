@@ -23,7 +23,7 @@ class Entity
 
     void init();
     void update( float dt );
-    void render();
+    void render( float scale );
 
     virtual void collide( Entity * entity, b2ContactPoint * point ) = 0;
 
@@ -53,7 +53,7 @@ class Entity
     virtual void onSetScale();
     virtual void doInit() = 0;
     virtual void doUpdate( float dt ) = 0;
-    virtual void doRender() = 0;
+    virtual void doRender( float scale ) = 0;
     virtual void initFromQuery( Query & query ) = 0;
 
   protected:
