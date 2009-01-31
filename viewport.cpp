@@ -53,10 +53,17 @@ void
 ViewPort::screenToWorld( b2Vec2 & point )
 {
     _updateRatios();
-	    point.x = point.x - ( 0.5f * m_screen.x - m_offset.x );
-	    point.y = point.y - ( 0.5f * m_screen.y - m_offset.y );
-		point.x /= m_hscale;
-		point.y /= m_vscale;
+	float tempOffsetX =0;
+	float tempOffsetY = 0;
+	
+
+	    point.x = point.x - ( 0.5f * m_screen.x);
+	    point.y = point.y - ( 0.5f * m_screen.y );
+			
+	///	point.x /= (m_hscale );
+	//	point.y /= (m_vscale);
+		
+
 }
 
 //------------------------------------------------------------------------------

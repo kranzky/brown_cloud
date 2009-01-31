@@ -76,17 +76,14 @@ Fujin::onSetScale()
     }
     b2PolygonDef shapeDef;
     shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
-    shapeDef.density = 1.1f;
+    shapeDef.density = 1.0f;
     shapeDef.friction =0.0f;
-    shapeDef.restitution = 0.0f;
+    shapeDef.restitution = 0.3f;
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
 
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 	breath->SetScale(m_scale);
-
-	
-	
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +93,7 @@ Fujin::doInit()
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
-	m_body->m_linearDamping = 0.5f;
+	m_body->m_linearDamping = 0.8f;
 	m_AABB.lowerBound= b2Vec2(-2.0f,-2.0f);
 	m_AABB.upperBound= b2Vec2(2.0f,2.0f);
     onSetScale();
@@ -129,14 +126,14 @@ Fujin::doUpdate( float dt )
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
+        offset.y *= -1.0f;
      
-       float angle = -lookAt(-offset);
+       float angle = lookAt(offset);
 
-        b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
-		force *=  (100000.0f * m_scale);
-        b2Vec2 direction( 1.0f, 1.0f );
-		direction.x *= force.x;
-		direction.y *= -force.y;
+        b2Vec2 acceleration( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
+		bool dead( acceleration.LengthSquared() < 0.2f );
+		    acceleration *=  ( 1000.0f * m_scale * dt );
+            acceleration.y *=  -1.0f;
 
 		if(pad.getTrigger(XPAD_TRIGGER_LEFT)>0)
 		{
@@ -151,15 +148,21 @@ Fujin::doUpdate( float dt )
 			m_isBlowing=true;
 			breath->info.fDirection= angle -M_PI;
 			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
-		}
+        }
 		else
 		{
 			m_isBlowing=false;
 			breath->Stop();
 		}
 		
-       // direction = b2Mul( m_body->GetXForm().R, direction );
-        m_body->ApplyForce( direction, m_body->GetWorldCenter() );
+        b2Vec2 velocity( m_body->GetLinearVelocity() );
+        velocity += acceleration;
+		if ( dead )
+		{
+			velocity *= 0.9f;
+		}
+			m_body->SetAngularVelocity( 0.0f );
+        m_body->SetLinearVelocity( velocity );
     }
 	else if(! Engine::instance()->isPaused() )
 	{
@@ -244,8 +247,8 @@ Fujin::doRender( float scale )
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
 
-	Engine::hge()->Gfx_RenderLine(mouse.getMousePos().x, mouse.getMousePos().y,
-								  m_body->GetPosition().x, m_body->GetPosition().y);
+// 	Engine::hge()->Gfx_RenderLine(mouse.getMousePos().x, mouse.getMousePos().y,
+// 								  m_body->GetPosition().x, m_body->GetPosition().y);
 	
 	
 }
@@ -303,26 +306,31 @@ void Fujin::Blow()
 	int32 count = Engine::b2d()->Query(m_AABB, buffer, k_bufferSize);
 	for (int32 i = 0; i < count; ++i)
 	{
-		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2)
+		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2  )
 		{
-
-
-			// get the position of the item, dot product it, multiply force by dp
-			float dpAngleValue = -99;
-			b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
-			//currLocation.x = currLocation.x/currLocation.Length();
-			//currLocation.y = currLocation.y/currLocation.Length();
-			
-			dpAngleValue = acosf( b2Dot( direction, currLocation)/(direction.Normalize() * currLocation.Normalize()) )	 ;
-			int ival = 0;
-			if (dpAngleValue > -1 && dpAngleValue < 1)
+			// check to see if we can push the cloud
+			if ( m_scale > ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale() * 0.99f &&
+				m_scale * 0.99f < ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale())
 			{
 
 
-				float force = 100000.0f * dpAngleValue;
-				b2Vec2 directionForce(direction.x*force, direction.y*force);
+				// get the position of the item, dot product it, multiply force by dp
+				float dpAngleValue = -99;
+				b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
+				direction.Normalize();
+				currLocation.Normalize();
 
-				buffer[i]->GetBody()->ApplyForce(directionForce, currLocation);
+				dpAngleValue = acosf( b2Dot( direction, currLocation) )	 ;
+				int ival = 0;
+				if (dpAngleValue > -1 && dpAngleValue < 1)
+				{
+
+
+					float force = 100000.0f * dpAngleValue;
+					b2Vec2 directionForce(direction.x*force, direction.y*force);
+
+					buffer[i]->GetBody()->ApplyImpulse(directionForce, buffer[i]->GetBody()->GetPosition());
+				}
 			}
 		}
 	}

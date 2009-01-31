@@ -134,3 +134,7 @@ Sound pant
 {
     filename=pant.wav
 }
+Sound music
+{
+    filename=Kranzky.mp3
+}
