@@ -132,9 +132,6 @@ Cloud::doRender( float scale )
 	info.colColorStart.r = RD[m_zoom] * ratio;
 	info.colColorStart.g = GN[m_zoom] * ratio;
 	info.colColorStart.b = BL[m_zoom] * ratio;
-	info.colColorEnd.r = 0.1f * info.colColorStart.r + 0.2f;
-	info.colColorEnd.g = 0.1f * info.colColorStart.g + 0.2f;
-	info.colColorEnd.b = 0.1f * info.colColorStart.b + 0.2f;
     m_particles->Render();
 }
 

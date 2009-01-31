@@ -13,29 +13,18 @@ http://www.microsoft.com/hardware/download/download.aspx?category=Gaming
 CONCEPT
 =======
 
-There are five cloud sizes, and five corresponding zoom levels.
+Fix scrolling
 
-Clouds and Fujin on the same level collide.
+Get suck / blow implemented
 
-Fujin will die if he runs out of energy, or if time reaches zero and he hasn't
-cleared everything!
+Get damage implemented
 
-Game starts with one brown cloud of maximum size.
+Get scoring implemented
 
-Only the clouds of maximum size fart out clouds (of minimum size).
+Hook up new gfx
 
-The fart rate increases as the timer counts down.
+Sounds for as many actions as possible
 
-Clouds slowly grow.
+Replace tutorial with controls, show controller, keyboard, mouse and blurb
 
-You can move a cloud between size levels by sucking it in, changing zoom and
-blowing out again.
-
-When clouds collide they join / destroy as appropriate.
-
-If all the clouds are gone, new clouds appear. They are normal grey clouds. You
-can't earn any more points, you just need to wait for the clock to wind down.
-
-Clouds have eyes, brown clouds have angry eyes, grey clouds are asleep!
-
-Title screen is full of grey clouds. That's your destiny! Hey!
+Write docs
