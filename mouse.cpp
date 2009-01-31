@@ -183,14 +183,14 @@ Mouse::update( float dt )
 
 //------------------------------------------------------------------------------
 const Mouse::MouseButton &
-Mouse::getLeft()
+Mouse::getLeft()const
 {
     return m_left;
 }
 
 //------------------------------------------------------------------------------
 const Mouse::MouseButton &
-Mouse::getRight()
+Mouse::getRight()const
 {
     return m_right;
 }

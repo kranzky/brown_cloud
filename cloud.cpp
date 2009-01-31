@@ -9,6 +9,8 @@
 #include <sqlite3.h>
 #include <Database.h>
 #include <Query.h>
+#include <hgeparticle.h>
+#include <hgeresource.h>
 
 //==============================================================================
 Cloud::Cloud( float scale )
@@ -56,20 +58,41 @@ Cloud::registerEntity()
 void
 Cloud::doInit()
 {
-    b2PolygonDef shapeDef;
-    shapeDef.SetAsBox( 0.5f * m_sprite->GetWidth() * m_scale,
-                       0.5f * m_sprite->GetHeight() * m_scale );
+	b2CircleDef shapeDef;
+	shapeDef.radius = 0.5f * m_sprite->GetWidth() * m_scale;
+	shapeDef.localPosition.Set(1.0f, 0.0f);
+	shapeDef.density = 1.0f;
+	shapeDef.friction = 0.3f;
 
-    b2BodyDef bodyDef;
-    bodyDef.userData = static_cast< void * >( this );
-    m_body = Engine::b2d()->CreateStaticBody( & bodyDef );
-    m_body->CreateShape( & shapeDef );
+    //b2PolygonDef shapeDef;
+    //shapeDef.SetAsBox( 0.5f * m_sprite->GetWidth() * m_scale,
+    //                   0.5f * m_sprite->GetHeight() * m_scale );
+
+	b2BodyDef bodyDef;
+	bodyDef.userData = static_cast<void*> (this);
+	m_body = Engine::b2d()->CreateDynamicBody(&bodyDef);
+	m_body->CreateShape(&shapeDef);
+	m_body->SetMassFromShapes();
+
+    //b2BodyDef bodyDef;
+    //bodyDef.userData = static_cast< void * >( this );
+    //m_body = Engine::b2d()->CreateStaticBody( & bodyDef );
+    //m_body->CreateShape( & shapeDef );
+
+
+	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
+    p->SetScale( m_scale * 0.3f );
+	p->Fire();
 }
 
 //------------------------------------------------------------------------------
 void
 Cloud::doUpdate( float dt )
 {
+	b2Vec2 position( m_body->GetPosition() );
+	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
+	p->MoveTo( position.x / (m_scale * 0.3f), position.y / (m_scale * 0.3f) );
+    p->Update( dt );
 }
 
 //------------------------------------------------------------------------------
@@ -78,7 +101,9 @@ Cloud::doRender()
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
-    m_sprite->RenderEx( position.x, position.y, angle, m_scale );
+    //m_sprite->RenderEx( position.x, position.y, angle, m_scale );
+	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
+    p->Render();
 }
 
 //------------------------------------------------------------------------------
