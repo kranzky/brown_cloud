@@ -129,8 +129,8 @@ Fujin::doUpdate( float dt )
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
-     
-       float angle = -lookAt(-offset);
+		//offset.y *= -1;
+       float angle = lookAt(-offset);
 
         b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
 		force *=  (100000.0f * m_scale);
@@ -308,10 +308,10 @@ void Fujin::Blow()
 			// get the position of the item, dot product it, multiply force by dp
 			float dpAngleValue = -99;
 			b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
-			//currLocation.x = currLocation.x/currLocation.Length();
-			//currLocation.y = currLocation.y/currLocation.Length();
+			direction.Normalize();
+			currLocation.Normalize();
 			
-			dpAngleValue = acosf( b2Dot( direction, currLocation)/(direction.Normalize() * currLocation.Normalize()) )	 ;
+			dpAngleValue = acosf( b2Dot( direction, currLocation) )	 ;
 			int ival = 0;
 			if (dpAngleValue > -1 && dpAngleValue < 1)
 			{
@@ -320,7 +320,7 @@ void Fujin::Blow()
 				float force = 100000.0f * dpAngleValue;
 				b2Vec2 directionForce(direction.x*force, direction.y*force);
 
-				buffer[i]->GetBody()->ApplyForce(directionForce, currLocation);
+				buffer[i]->GetBody()->ApplyImpulse(directionForce, buffer[i]->GetBody()->GetPosition());
 			}
 		}
 	}
