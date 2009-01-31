@@ -245,8 +245,8 @@ Fujin::doRender( float scale )
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
 
-	Engine::hge()->Gfx_RenderLine(mouse.getMousePos().x, mouse.getMousePos().y,
-								  m_body->GetPosition().x, m_body->GetPosition().y);
+// 	Engine::hge()->Gfx_RenderLine(mouse.getMousePos().x, mouse.getMousePos().y,
+// 								  m_body->GetPosition().x, m_body->GetPosition().y);
 	
 	
 }
@@ -304,26 +304,31 @@ void Fujin::Blow()
 	int32 count = Engine::b2d()->Query(m_AABB, buffer, k_bufferSize);
 	for (int32 i = 0; i < count; ++i)
 	{
-		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2)
+		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2  )
 		{
-
-
-			// get the position of the item, dot product it, multiply force by dp
-			float dpAngleValue = -99;
-			b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
-			direction.Normalize();
-			currLocation.Normalize();
-			
-			dpAngleValue = acosf( b2Dot( direction, currLocation) )	 ;
-			int ival = 0;
-			if (dpAngleValue > -1 && dpAngleValue < 1)
+			// check to see if we can push the cloud
+			if ( m_scale > ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale() * 0.99f &&
+				m_scale * 0.99f < ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale())
 			{
 
 
-				float force = 100000.0f * dpAngleValue;
-				b2Vec2 directionForce(direction.x*force, direction.y*force);
+				// get the position of the item, dot product it, multiply force by dp
+				float dpAngleValue = -99;
+				b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
+				direction.Normalize();
+				currLocation.Normalize();
 
-				buffer[i]->GetBody()->ApplyImpulse(directionForce, buffer[i]->GetBody()->GetPosition());
+				dpAngleValue = acosf( b2Dot( direction, currLocation) )	 ;
+				int ival = 0;
+				if (dpAngleValue > -1 && dpAngleValue < 1)
+				{
+
+
+					float force = 100000.0f * dpAngleValue;
+					b2Vec2 directionForce(direction.x*force, direction.y*force);
+
+					buffer[i]->GetBody()->ApplyImpulse(directionForce, buffer[i]->GetBody()->GetPosition());
+				}
 			}
 		}
 	}

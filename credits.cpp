@@ -129,7 +129,7 @@ Credits::render()
     font->printf( 0.0, -120.0f, HGETEXT_CENTER,
                   "Robert Barnett" );
     font->printf( 0.0, -90.0f, HGETEXT_CENTER,
-                  "Nigel" );
+                  "Nigel Budden" );
 
     font->printf( 0.0, 0.0f, HGETEXT_CENTER,
                   "Made for Global Game Jam 2009" );
