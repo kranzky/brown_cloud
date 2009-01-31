@@ -129,8 +129,9 @@ Fujin::doUpdate( float dt )
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
+        offset.y *= -1.0f;
      
-       float angle = -lookAt(-offset);
+       float angle = lookAt(offset);
 
         b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
 		force *=  (100000.0f * m_scale);
@@ -149,7 +150,7 @@ Fujin::doUpdate( float dt )
 			breath->Fire();
 			Blow();
 			m_isBlowing=true;
-			breath->info.fDirection= angle -M_PI;
+			breath->info.fDirection= angle - M_PI;
 		}
 		else
 		{
