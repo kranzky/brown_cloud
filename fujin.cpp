@@ -63,39 +63,54 @@ Fujin::registerEntity()
 // protected:
 //------------------------------------------------------------------------------
 void
-Fujin::doInit()
+Fujin::onSetScale()
 {
+    if ( m_body == 0 )
+    {
+        return;
+    }
+    b2Shape * shape;
+    while ( shape = m_body->GetShapeList() )
+    {
+        m_body->DestroyShape( shape );
+    }
     b2PolygonDef shapeDef;
-    shapeDef.vertexCount = 4;
-    shapeDef.vertices[0].Set( -32.0f* m_scale, -32.0f * m_scale );
-    shapeDef.vertices[1].Set( 32.0f * m_scale, -32.0f * m_scale );
-    shapeDef.vertices[2].Set( 32.0f * m_scale, 32.0f * m_scale );
-    shapeDef.vertices[3].Set( -32.0f * m_scale, 32.0f * m_scale );
+    shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
 	shapeDef.groupIndex=-1;
-   // shapeDef.vertices[4].Set( -15.0f * m_scale, 4.0f * m_scale );
     shapeDef.density = 1.1f;
     shapeDef.friction =0.0f;
     shapeDef.restitution = 0.0f;
+    m_body->CreateShape( & shapeDef );
+    m_body->SetMassFromShapes();
 
+	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
+	breath->SetScale(m_scale);
+	
+}
+
+//------------------------------------------------------------------------------
+void
+Fujin::doInit()
+{
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
-    m_body->CreateShape( & shapeDef );
-    m_body->SetMassFromShapes();
 	m_body->m_linearDamping = 0.5f;
+
+    onSetScale();
+
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
+
 	const Controller & pad( Engine::instance()->getController() );
 	if(! pad.isConnected())
 	{
 		Engine::instance()->setMouse("cursor");
 		Engine::instance()->showMouse();
-		
 	}
 	else
 	{
 		Engine::instance()->hideMouse();
 	}
-
 }
 
 //------------------------------------------------------------------------------
@@ -170,27 +185,14 @@ Fujin::doUpdate( float dt )
 				
 				
 			}
-
 		b2Vec2 position (m_body->GetPosition());
 		b2Vec2 mousePosition(mouse.getMousePos());
 		float angle = lookAt(mousePosition -position);
-
-		// move the objects to the origin
-		
-		//mousePosition = mousePosition - position;
-
-		
-		
 		if(leftMouseBtn.dragging())
 		{
 			// we are blowing, better make sure we are displaying the particles
-			b2Vec2 position( m_body->GetPosition() );
-			b2Vec2 direction( 0.0f, 1.0f );
-			direction = b2Mul( m_body->GetXForm().R, -direction );
-			position = position - 32.0f * m_scale * direction;
-			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
 			breath->Fire();
-			breath->info.fDirection= angle -M_PI;
+
 		}
 		
 		else
@@ -199,12 +201,11 @@ Fujin::doUpdate( float dt )
 			breath->Stop();
 		}
 		
-		
-		
 
 		direction.x = xForce * direction.x * 100000.0f * m_scale;
 		direction.y = yForce * direction.y* 100000.0f * m_scale;
 		m_body->ApplyForce(direction, m_body->GetWorldCenter());
+		
 	}
 	breath->Update( dt );
 
@@ -222,10 +223,7 @@ Fujin::doRender()
 	breath->Render();
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
-	/*
-	b2Vec2 position2 (m_body->GetPosition());
-		b2Vec2 mousePosition(mouse.getMousePos());
-		Engine::hge()->Gfx_RenderLine(position2.x, position2.y,mousePosition.x, mousePosition.y);*/
+	
 	
 }
 

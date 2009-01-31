@@ -7,6 +7,8 @@
 
 #include <context.hpp>
 
+class Fujin;
+
 //------------------------------------------------------------------------------
 class Game : public Context
 {
@@ -26,6 +28,9 @@ class Game : public Context
 
   private:
     void _initArena();
+    float m_last_zoom;
+    int m_zoom;
+    Fujin * m_fujin;
 };
 
 #endif

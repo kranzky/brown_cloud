@@ -96,6 +96,7 @@ void
 Entity::setScale( float scale )
 {
     m_scale = scale;
+    onSetScale();
 }
 
 //------------------------------------------------------------------------------
@@ -127,6 +128,12 @@ Entity::setSpriteID( sqlite3_int64 sprite_id )
 {
     m_sprite_id = sprite_id;
     m_sprite = Engine::em()->getSprite( sprite_id );
+}
+
+//------------------------------------------------------------------------------
+void
+Entity::onSetScale()
+{
 }
 
 //==============================================================================

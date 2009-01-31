@@ -77,6 +77,14 @@ ViewPort::vscale() const
 
 //------------------------------------------------------------------------------
 void
+ViewPort::setScale( float scale )
+{
+    m_bounds = ( 1.0f / scale ) * m_screen;
+    _updateRatios();
+}
+
+//------------------------------------------------------------------------------
+void
 ViewPort::setAngle( float angle )
 {
     m_angle = angle;

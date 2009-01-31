@@ -4,6 +4,7 @@
 #include <engine.hpp>
 #include <entity.hpp>
 #include <entity_manager.hpp>
+#include <clump_manager.hpp>
 #include <viewport.hpp>
 #include <fujin.hpp>
 #include <cloud.hpp>
@@ -12,10 +13,18 @@
 
 #include <hgeresource.h>
 
+namespace
+{
+    const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
+};
+
 //==============================================================================
 Game::Game()
     :
-    Context()
+    Context(),
+    m_last_zoom( 1.0f ),
+    m_zoom( 0 ),
+    m_fujin( 0 )
 {
 }
 
@@ -39,21 +48,36 @@ Game::init()
     Cloud::registerEntity();
     Girder::registerEntity();
 
+    m_zoom = 0;
+
     Engine::em()->init();
+	Engine::cm()->init();
 
     vp->offset().x = 0.0f;
     vp->offset().y = 0.0f;
     vp->bounds().x = 800.0f;
     vp->bounds().y = 600.0f;
     vp->setAngle( 0.0f );
+    vp->setScale( ZOOM[m_zoom] );
 
-    Entity * entity = Engine::em()->factory( Fujin::TYPE );
+    m_fujin = static_cast< Fujin * >( Engine::em()->factory( Fujin::TYPE ) );
     b2Vec2 position( 0.0f, 0.0f );
     float angle( 0.0f );
-    entity->setSprite( "fujin" );
-    entity->setScale( 1.0f );
-    entity->init();
-    entity->getBody()->SetXForm( position, angle );
+    m_fujin->setSprite( "fujin" );
+    m_fujin->setScale( 1.0f / ZOOM[m_zoom] );
+    m_fujin->init();
+    m_fujin->getBody()->SetXForm( position, angle );
+
+	for (int i = 0; i < 10; ++i)
+	{
+		Entity* entity = Engine::em()->factory( Cloud::TYPE );
+		b2Vec2 position( Engine::hge()->Random_Float(-3.0f, 3.0f), Engine::hge()->Random_Float(-3.0f, 3.0f) );
+		float angle( 0.f );
+		entity->setSprite( "cloud" );
+		entity->setScale( 0.03f );
+		entity->init();
+		entity->getBody()->SetXForm( position, angle );
+	}
 
     _initArena();
 }
@@ -62,14 +86,17 @@ Game::init()
 void
 Game::fini()
 {
-    Engine::em()->fini();
+    Engine::cm()->fini();
+	Engine::em()->fini();
 }
 
 //------------------------------------------------------------------------------
 bool
 Game::update( float dt )
 {
+    const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
+    ViewPort * vp( Engine::vp() );
 
     if ( false )
     {
@@ -79,7 +106,53 @@ Game::update( float dt )
         return false;
     }
 
+	Engine::cm()->update( dt );
     Engine::em()->update( dt );
+
+    if ( Engine::instance()->isPaused() )
+    {
+        return false;
+    }
+
+    if ( pad.isConnected() )
+    {
+        if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 0 )
+        {
+            --m_zoom;
+        }
+        else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) && m_zoom < 4 )
+        {
+            ++m_zoom;
+        }
+    }
+    else
+    {
+        if ( ( Engine::hge()->Input_KeyDown( HGEK_Q ) ||
+               hge->Input_GetMouseWheel() > 0 ) && m_zoom > 0 )
+        {
+            --m_zoom;
+        }
+        else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
+                    hge->Input_GetMouseWheel() < 0 ) && m_zoom < 4 )
+        {
+            ++m_zoom;
+        }
+    }
+
+    if ( ZOOM[m_zoom] > m_last_zoom )
+    {
+        m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
+        vp->setScale( m_last_zoom );
+        m_fujin->setScale( 1.0f / m_last_zoom );
+    }
+    else if ( ZOOM[m_zoom] < m_last_zoom )
+    {
+        m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
+        vp->setScale( m_last_zoom );
+        m_fujin->setScale( 1.0f / m_last_zoom );
+    }
+
+    vp->offset() = m_fujin->getBody()->GetPosition();
 
     return false;
 }

@@ -7,6 +7,9 @@
 
 #include <entity.hpp>
 
+class hgeParticleSystem;
+class Clump;
+
 //------------------------------------------------------------------------------
 class Cloud : public Entity
 {
@@ -31,6 +34,12 @@ class Cloud : public Entity
     virtual void doUpdate( float dt );
     virtual void doRender();
     virtual void initFromQuery( Query & query );
+
+  private:
+
+    hgeParticleSystem* m_particles;
+	Clump* m_clump;
+	  
 };
 
 #endif
