@@ -8,12 +8,19 @@
 
 //------------------------------------------------------------------------------
 Clump::Clump()
+: m_clouds()
 {
 }
 
 //------------------------------------------------------------------------------
 Clump::~Clump()
 {
+}
+
+//------------------------------------------------------------------------------
+void Clump::addCloud(Cloud* cloud)
+{
+	m_clouds.push_back(cloud);
 }
 
 //------------------------------------------------------------------------------
@@ -48,6 +55,20 @@ void joinEntities(Entity* entity, Entity* otherEntity, b2Vec2 position)
 }
 
 //------------------------------------------------------------------------------
+void joinClumps(Clump* bigClump, Clump* littleClump)
+{
+	while (littleClump->getClouds()->size() > 0)
+	{
+		Cloud* cloud = littleClump->getClouds()->back();
+
+		cloud->setClump(bigClump);
+		bigClump->addCloud(cloud);
+
+		littleClump->getClouds()->pop_back();
+	}
+}
+
+//------------------------------------------------------------------------------
 void ClumpManager::update(float dt)
 {
 	//deal with any interactions that have occurred since the last update
@@ -55,8 +76,8 @@ void ClumpManager::update(float dt)
 	{
 		InteractionData& i = m_interactions.back();
 		
-		const Clump* entClump = i.m_entity->getClump();
-		const Clump* otherClump = i.m_other->getClump();
+		Clump* entClump = i.m_entity->getClump();
+		Clump* otherClump = i.m_other->getClump();
 
 		if (entClump == NULL && otherClump == NULL)
 		{
@@ -64,6 +85,8 @@ void ClumpManager::update(float dt)
 			Clump* newClump = new Clump();
 			m_clumps.push_back(newClump);
 
+			newClump->addCloud(i.m_entity);
+			newClump->addCloud(i.m_other);
 			i.m_entity->setClump(newClump);
 			i.m_other->setClump(newClump);
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
@@ -71,12 +94,14 @@ void ClumpManager::update(float dt)
 		else if (entClump == NULL)
 		{
 			//first entity is not in a clump, but other entity is, so first needs to join other
+			i.m_other->getClump()->addCloud(i.m_entity);
 			i.m_entity->setClump(i.m_other->getClump());
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
 		}
 		else if (otherClump == NULL)
 		{
 			//first entity is in a clump, but other entity is not, so other entity should join first entity's clump
+			i.m_entity->getClump()->addCloud(i.m_other);
 			i.m_other->setClump(i.m_entity->getClump());
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
 		}
@@ -85,6 +110,26 @@ void ClumpManager::update(float dt)
 			//both entities already in clumps, need to combine clumps as long as the clumps are different
 			if (entClump != otherClump)
 			{
+				if (entClump->getClouds()->size() > otherClump->getClouds()->size())
+				{
+					//all of the clouds in otherClump need to be put in entClump
+					joinClumps(entClump, otherClump);
+					//now destroy the empty clump
+					m_clumps.remove(otherClump);
+					delete otherClump;
+				}
+				else
+				{
+					//all of the clouds in entClump need to be put into otherClump
+					joinClumps(otherClump, entClump);
+					
+					//now destroy the empty clump
+					m_clumps.remove(entClump);
+					delete entClump;
+				}
+
+				//make the actual physics connection between the two clouds that collided
+				joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
 			}
 		}
 
@@ -98,6 +143,12 @@ void ClumpManager::update(float dt)
 void ClumpManager::fini()
 {
 	//TODO: any cleanup
+	m_interactions.clear();
+	while (m_clumps.size() > 0)
+	{
+		delete m_clumps.back();
+		m_clumps.pop_back();
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include <Box2D.h>
 
 class Cloud;
@@ -20,9 +21,15 @@ public:
 	/*void init();
 	void fini();*/
 
+	void addCloud(Cloud* cloud);
+	std::vector< Cloud *>* getClouds() { return &m_clouds; }
+
 private:
 	Clump( const Clump & );
     Clump & operator=( const Clump & );
+
+	std::vector< Cloud *> m_clouds;
+
 };
 
 
@@ -52,7 +59,7 @@ private:
 	};
 
 	std::vector<InteractionData> m_interactions;
-	std::vector< Clump *> m_clumps;
+	std::list< Clump *> m_clumps;
 };
 
 #endif
