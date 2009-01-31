@@ -105,20 +105,24 @@ Cloud::doRender( float scale )
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
     hgeParticleSystemInfo & info( m_particles->info );
-    float alpha( 0.9f );
+    float alpha( 0.5f );
     float ratio( scale / m_scale );
     if ( ratio > 1.0f )
     {
 		ratio = 1.0f / ratio;
 	}
+	ratio = 1.0f - ratio;
+	ratio = 1.0f - ratio * ratio;
 	alpha *= ratio; 
     info.colColorStart.a = alpha;
-	info.colColorStart.r = alpha * 0.77f;
-	info.colColorStart.g = alpha * 0.67f;
-	info.colColorStart.b = alpha * 0.43f;
-	info.colColorEnd.r = alpha * 0.33f;
-	info.colColorEnd.g = alpha * 0.18f;
-	info.colColorEnd.b = alpha * 0.0f;
+	ratio = 1.0f - ratio;
+	ratio = 1.0f - ratio * ratio;
+	info.colColorStart.r = ratio * 0.87f;
+	info.colColorStart.g = ratio * 0.81f;
+	info.colColorStart.b = ratio * 0.55f;
+	info.colColorEnd.r = ratio * 0.5f;
+	info.colColorEnd.g = ratio * 0.37f;
+	info.colColorEnd.b = ratio * 0.0f;
     m_particles->Render();
 }
 
