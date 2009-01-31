@@ -13,10 +13,19 @@
 
 #include <hgeresource.h>
 
+#include <algorithm>
+
 namespace
 {
     const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
-};
+
+    bool
+    compare( const Entity * left, const Entity * right )
+    {
+        return left->getScale() < right->getScale() ||
+               left->getType() < right->getType();
+    }
+}
 
 //==============================================================================
 Game::Game()
@@ -169,14 +178,23 @@ Game::render()
 
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
 
+    std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
           body = body->GetNext() )
     {
         Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
         if ( entity )
         {
-            entity->render();
+            entities.push_back( entity );
         }
+    }
+
+    std::sort( entities.begin(), entities.end(), compare );
+
+    std::vector< Entity * >::iterator i;
+    for ( i = entities.begin(); i != entities.end(); ++i )
+    {
+        ( * i )->render();
     }
 }
 
