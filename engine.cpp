@@ -513,12 +513,14 @@ Engine::_update()
 
     if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
     {
-        if ( m_hge->Input_KeyDown( HGEK_P ) )
+        if ( m_hge->Input_KeyDown( HGEK_P ) ||
+             m_hge->Input_KeyDown( HGEK_ESCAPE ) )
         {
             m_handled_key = true;
             m_paused = ! m_paused;
         }
-        if ( m_controller.buttonDown( XPAD_BUTTON_START ) )
+        if ( m_controller.buttonDown( XPAD_BUTTON_START ) ||
+             m_controller.buttonDown( XPAD_BUTTON_BACK ) )
         {
             m_paused = ! m_paused;
             m_controller.clear();
@@ -747,3 +749,4 @@ Engine::_loadData()
 }
 
 //==============================================================================
+

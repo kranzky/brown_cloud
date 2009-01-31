@@ -31,6 +31,7 @@ Credits::init()
     vp->offset().y = 0.0f;
     vp->bounds().x = 80.0f;
     vp->bounds().y = 60.0f;
+    vp->setAngle( 0.0f );
 
     m_interact = false;
 }
@@ -122,16 +123,16 @@ Credits::render()
     font->printf( 0.0, -250.0f, HGETEXT_CENTER,
                   "+++ B R O W N | C L O U D +++" );
     font->printf( 0.0, -220.0f, HGETEXT_CENTER,
-                  "BY THE KRANZKY BROTHERS" );
+                  "By The Kranzky Bros." );
     font->printf( 0.0, -150.0f, HGETEXT_CENTER,
-                  "JASON HUTCHENS" );
+                  "Jason Hutchens" );
     font->printf( 0.0, -120.0f, HGETEXT_CENTER,
-                  "ROBERT BARNETT" );
+                  "Robert Barnett" );
     font->printf( 0.0, -90.0f, HGETEXT_CENTER,
-                  "NIGEL" );
+                  "Nigel" );
 
     font->printf( 0.0, 0.0f, HGETEXT_CENTER,
-                  "MADE FOR GLOBAL GAME JAM 2009" );
+                  "Made for Global Game Jam 2009" );
 
     font->printf( 0.0, 100.0f, HGETEXT_CENTER,
                   "PERTH SPONSORS" );
@@ -143,3 +144,4 @@ Credits::render()
 }
 
 //==============================================================================
+>>>>>>> fab9aab2c72fec17624ad07d4f46dcd3fe5e91fd:Projects/BrownCloud/credits.cpp

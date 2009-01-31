@@ -68,6 +68,11 @@ Menu::update( float dt )
     HGE * hge( Engine::hge() );
     Engine * engine( Engine::instance() );
 
+    if ( hge->Input_KeyDown( HGEK_ESCAPE ) )
+    {
+        return true;
+    }
+
     switch ( static_cast< Control >( engine->updateGUI( dt, m_gui,
                                      engine->getConfig().menu, 5 ) ) )
     {
