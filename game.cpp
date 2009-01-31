@@ -15,7 +15,9 @@
 //==============================================================================
 Game::Game()
     :
-    Context()
+    Context(),
+    m_last_zoom( 1.0f ),
+    m_zoom( 1.0f )
 {
 }
 
@@ -39,6 +41,8 @@ Game::init()
     Cloud::registerEntity();
     Girder::registerEntity();
 
+    m_zoom = 1.0f;
+
     Engine::em()->init();
 
     vp->offset().x = 0.0f;
@@ -46,12 +50,13 @@ Game::init()
     vp->bounds().x = 800.0f;
     vp->bounds().y = 600.0f;
     vp->setAngle( 0.0f );
+    vp->setScale( m_zoom );
 
     Entity * entity = Engine::em()->factory( Fujin::TYPE );
     b2Vec2 position( 0.0f, 0.0f );
     float angle( 0.0f );
     entity->setSprite( "fujin" );
-    entity->setScale( 1.0f );
+    entity->setScale( 1.0f / m_zoom );
     entity->init();
     entity->getBody()->SetXForm( position, angle );
 
@@ -69,7 +74,9 @@ Game::fini()
 bool
 Game::update( float dt )
 {
+    const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
+    ViewPort * vp( Engine::vp() );
 
     if ( false )
     {
@@ -80,6 +87,35 @@ Game::update( float dt )
     }
 
     Engine::em()->update( dt );
+
+    if ( Engine::instance()->isPaused() )
+    {
+        return false;
+    }
+
+    if ( pad.isConnected() )
+    {
+        if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 1.0f )
+        {
+            m_zoom -= 1.0f;
+        }
+        else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) &&
+                  m_zoom < 5.0f )
+        {
+            m_zoom += 1.0f;
+        }
+    }
+
+    if ( m_zoom > m_last_zoom )
+    {
+        m_last_zoom = m_zoom;
+        vp->setScale( m_last_zoom );
+    }
+    else if ( m_zoom < m_last_zoom )
+    {
+        m_last_zoom = m_zoom;
+        vp->setScale( m_last_zoom );
+    }
 
     return false;
 }

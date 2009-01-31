@@ -26,6 +26,8 @@ class Game : public Context
 
   private:
     void _initArena();
+    float m_last_zoom;
+    float m_zoom;
 };
 
 #endif

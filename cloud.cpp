@@ -79,7 +79,6 @@ Cloud::doInit()
     //m_body = Engine::b2d()->CreateStaticBody( & bodyDef );
     //m_body->CreateShape( & shapeDef );
 
-
 	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
     p->SetScale( m_scale * 0.3f );
 	p->Fire();

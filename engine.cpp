@@ -558,18 +558,6 @@ Engine::_update()
         }
     }
 
-    if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
-    {
-        if ( m_controller.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) )
-        {
-            m_time_ratio *= 0.5f;
-        }
-        else if ( m_controller.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) )
-        {
-            m_time_ratio *= 2.0f;
-        }
-    }
-
     if ( m_dd->GetFlags() != 0 )
     {
         m_hge->Gfx_BeginScene();

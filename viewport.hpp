@@ -20,6 +20,7 @@ class ViewPort
     void screenToWorld( b2Vec2 & point );
     float hscale() const;
     float vscale() const;
+    void setScale( float scale );
     void setAngle( float angle );
     void setTransform( float scale = 1.0f );
     bool restore();
