@@ -121,7 +121,7 @@ Fujin::doUpdate( float dt )
             }
             m_body->SetXForm( m_body->GetPosition(), angle );
         }
-        float force( pad.getTrigger( XPAD_TRIGGER_LEFT ) );
+        float force( pad.getTrigger( XPAD_TRIGGER_LEFT ) * 100000.0f * m_scale );
         b2Vec2 direction( 0.0f, -1.0f );
         direction = b2Mul( m_body->GetXForm().R, direction );
         m_body->ApplyForce( force * direction, m_body->GetPosition() );
