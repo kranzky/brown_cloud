@@ -18,6 +18,10 @@ Texture cloud
 {
     filename=cloud.png
 }
+Texture particles
+{
+    filename=particles.png
+}
 Font menu
 {
     filename=menu.fnt
@@ -48,8 +52,8 @@ Sprite fujin
 }
 Sprite cloud
 {
-    texture=cloud
-    rect=0,0,16,16
+    texture=particles
+    rect=0,128,32,32
     hotspot=8,8
 }
 Particle cloud
