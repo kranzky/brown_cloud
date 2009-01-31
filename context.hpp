@@ -3,6 +3,8 @@
 #ifndef ArseContext
 #define ArseContext
 
+class Entity;
+
 #pragma once
 
 class Context
@@ -10,6 +12,10 @@ class Context
   public:
     Context();
     virtual ~Context();
+
+    void notifyOnCollision( bool handle );
+    bool handlesCollisions();
+    virtual bool shouldCollide( Entity * left, Entity * right );
 
   private:
     Context( const Context & );
@@ -20,6 +26,9 @@ class Context
     virtual void fini() = 0;
     virtual bool update( float dt ) = 0;
     virtual void render() = 0;
+
+  private:
+    bool m_handles_collisions;
 };
 
 #endif

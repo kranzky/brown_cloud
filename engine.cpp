@@ -371,6 +371,21 @@ Engine::Remove( b2ContactPoint * point )
 }
 
 //------------------------------------------------------------------------------
+bool
+Engine::ShouldCollide( b2Shape * shape1, b2Shape * shape2 )
+{
+    if ( ! getContext()->handlesCollisions() )
+    {
+        return b2ContactFilter::ShouldCollide( shape1, shape2 );
+    }
+    Entity * entity1 =
+        static_cast< Entity * >( shape1->GetBody()->GetUserData() );
+    Entity * entity2 =
+        static_cast< Entity * >( shape2->GetBody()->GetUserData() );
+    return getContext()->shouldCollide( entity1, entity2 );
+}
+
+//------------------------------------------------------------------------------
 //static:
 //------------------------------------------------------------------------------
 Engine *
@@ -731,6 +746,7 @@ Engine::_initPhysics()
     m_b2d->SetDebugDraw( m_dd );
     m_b2d->SetListener( static_cast< b2ContactListener *>( this ) );
     m_b2d->SetListener( static_cast< b2BoundaryListener *>( this ) );
+    m_b2d->SetFilter( static_cast< b2ContactFilter *>( this ) );
 }
 
 //------------------------------------------------------------------------------

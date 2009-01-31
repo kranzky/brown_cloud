@@ -195,7 +195,7 @@ Mouse::getRight()const
     return m_right;
 }
 //------------------------------------------------------------------------------
-const b2Vec2
+b2Vec2
 Mouse::getMousePos() const
 {
 	b2Vec2 position;

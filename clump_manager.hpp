@@ -6,9 +6,10 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include <Box2D.h>
 
-class Entity;
+class Cloud;
 
 //------------------------------------------------------------------------------
 class Clump
@@ -17,12 +18,18 @@ public:
 	Clump();
 	virtual ~Clump();
 
-	void init();
-	void fini();
+	/*void init();
+	void fini();*/
+
+	void addCloud(Cloud* cloud);
+	std::vector< Cloud *>* getClouds() { return &m_clouds; }
 
 private:
 	Clump( const Clump & );
     Clump & operator=( const Clump & );
+
+	std::vector< Cloud *> m_clouds;
+
 };
 
 
@@ -37,7 +44,7 @@ public:
     void update( float dt );
     void fini();
 
-	void reportCollision(Entity* ent, Entity* other, b2Vec2 collidePosition);
+	void reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosition);
 
 
 private:
@@ -46,13 +53,13 @@ private:
 
 	struct InteractionData
 	{
-		Entity* m_entity;
-		Entity* m_other;
+		Cloud* m_entity;
+		Cloud* m_other;
 		b2Vec2 m_collidePosition;
 	};
 
 	std::vector<InteractionData> m_interactions;
-	std::vector< Clump *> m_clumps;
+	std::list< Clump *> m_clumps;
 };
 
 #endif

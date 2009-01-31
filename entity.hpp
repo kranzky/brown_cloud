@@ -30,10 +30,11 @@ class Entity
     b2Body * getBody() const;
     b2AABB * getAABB() const;
 
-    unsigned int getType();
+    unsigned int getType() const;
     void setID( sqlite_int64 id );
     sqlite_int64 getID();
 
+    float getScale() const;
     void setScale( float scale );
     void setSprite( const char * name );
 

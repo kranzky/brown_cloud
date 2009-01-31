@@ -13,10 +13,30 @@
 
 #include <hgeresource.h>
 
+#include <algorithm>
+
 namespace
 {
     const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
-};
+
+    bool
+    lessThan( const Entity * left, const Entity * right )
+    {
+        if ( left->getScale() < right->getScale() * 0.99f )
+        {
+            return true;
+        }
+        if ( left->getScale() * 0.99f > right->getScale() )
+        {
+            return false;
+        }
+        if ( left->getType() < right->getType() )
+        {
+            return true;
+        }
+        return false;
+    }
+}
 
 //==============================================================================
 Game::Game()
@@ -44,6 +64,8 @@ Game::init()
     hgeResourceManager * rm( Engine::rm() );
     ViewPort * vp( Engine::vp() );
 
+    notifyOnCollision( true );
+
     Fujin::registerEntity();
     Cloud::registerEntity();
     Girder::registerEntity();
@@ -68,14 +90,14 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
                          Engine::hge()->Random_Float( -300.0f, 300.0f) );
 		float angle( 0.f );
 		entity->setSprite( "cloud" );
-		entity->setScale( 1.0f );
+		entity->setScale( 1.0f / ZOOM[Engine::hge()->Random_Int( 0, 4 )] );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
 	}
@@ -87,6 +109,8 @@ Game::init()
 void
 Game::fini()
 {
+    notifyOnCollision( false );
+
     Engine::cm()->fini();
 	Engine::em()->fini();
 }
@@ -129,12 +153,12 @@ Game::update( float dt )
     else
     {
         if ( ( Engine::hge()->Input_KeyDown( HGEK_Q ) ||
-               hge->Input_GetMouseWheel() > 0 ) && m_zoom > 0 )
+               hge->Input_GetMouseWheel() < 0 ) && m_zoom > 0 )
         {
             --m_zoom;
         }
         else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
-                    hge->Input_GetMouseWheel() < 0 ) && m_zoom < 4 )
+                    hge->Input_GetMouseWheel() > 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
         }
@@ -169,15 +193,43 @@ Game::render()
 
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
 
+    std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
           body = body->GetNext() )
     {
         Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
         if ( entity )
         {
-            entity->render();
+            entities.push_back( entity );
         }
     }
+
+    std::sort( entities.begin(), entities.end(), lessThan );
+
+    std::vector< Entity * >::iterator i;
+    for ( i = entities.begin(); i != entities.end(); ++i )
+    {
+        ( * i )->render();
+    }
+}
+
+//------------------------------------------------------------------------------
+bool
+Game::shouldCollide( Entity * left, Entity * right )
+{
+    if ( left->getType() == Girder::TYPE ||
+         right->getType() == Girder::TYPE )
+    {
+        return true;
+    }
+
+    if ( left->getScale() > right->getScale() * 0.99f &&
+         left->getScale() * 0.99f < right->getScale() )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------

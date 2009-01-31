@@ -30,7 +30,7 @@ void
 Fujin::collide( Entity * entity, b2ContactPoint * point )
 {
     float force( b2Clamp( point->normalForce * 0.01f, 0.0f, 1.0f ) );
-    if ( force > 0.0f )
+    if ( force > 0.0f && Engine::instance()->getConfig().vibrate )
     {
         Engine::instance()->getController().rumble( force, force, 0.2f );
     }
@@ -76,7 +76,6 @@ Fujin::onSetScale()
     }
     b2PolygonDef shapeDef;
     shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
-	shapeDef.groupIndex=-1;
     shapeDef.density = 1.1f;
     shapeDef.friction =0.0f;
     shapeDef.restitution = 0.0f;
@@ -131,7 +130,7 @@ Fujin::doUpdate( float dt )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
      
-       float angle = lookAt(-offset);
+       float angle = -lookAt(-offset);
 
         b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
 		force *=  (100000.0f * m_scale);
