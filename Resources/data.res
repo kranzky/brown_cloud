@@ -104,7 +104,7 @@ Sprite fujin
 Sprite breath
 {
     texture=particles
-    rect=32,64,32,32
+    rect=32,0,32,32
     hotspot=16,16
 }
 Sprite cloud
