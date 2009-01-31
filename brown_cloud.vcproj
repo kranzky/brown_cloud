@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -198,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\clump_manager.hpp"
-				>
-			</File>
-			<File
 				RelativePath=".\config.hpp"
 				>
 			</File>
@@ -243,6 +239,10 @@
 			</File>
 			<File
 				RelativePath=".\game.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\girder.hpp"
 				>
 			</File>
 			<File
@@ -289,10 +289,6 @@
 			</File>
 			<File
 				RelativePath=".\cloud.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\clump_manager.cpp"
 				>
 			</File>
 			<File
@@ -385,6 +381,10 @@
 			</File>
 			<File
 				RelativePath=".\game.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\girder.cpp"
 				>
 			</File>
 			<File

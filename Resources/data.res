@@ -22,6 +22,10 @@ Texture rv
 {
     filename=rv.png
 }
+Texture polluted
+{
+    filename=polluted.png
+}
 Texture cursor
 {
     filename=cursor.png
@@ -77,6 +81,12 @@ Sprite rv
     texture=rv
     rect=0,0,200,119
     hotspot=100,60
+}
+Sprite polluted
+{
+    texture=polluted
+    rect=0,0,400,300
+    hotspot=200,150
 }
 Sprite cursor
 {
