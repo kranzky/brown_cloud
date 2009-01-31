@@ -150,6 +150,7 @@ Fujin::doUpdate( float dt )
 			Blow();
 			m_isBlowing=true;
 			breath->info.fDirection= angle -M_PI;
+			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
 		}
 		else
 		{
@@ -207,6 +208,7 @@ Fujin::doUpdate( float dt )
 			breath->Fire();
 			Blow();
 			m_isBlowing=true;
+			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
 		}
 		
 			else

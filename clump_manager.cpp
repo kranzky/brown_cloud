@@ -4,6 +4,7 @@
 #include <cloud.hpp>
 #include <engine.hpp>
 
+#include <hgeresource.h>
 
 
 //------------------------------------------------------------------------------
@@ -15,6 +16,7 @@ Clump::Clump()
 //------------------------------------------------------------------------------
 Clump::~Clump()
 {
+	m_clouds.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -52,6 +54,7 @@ void joinEntities(Entity* entity, Entity* otherEntity, b2Vec2 position)
 	b2RevoluteJointDef joint;
 	joint.Initialize( entity->getBody(), otherEntity->getBody(), position);
 	Engine::instance()->b2d()->CreateJoint( & joint );
+	Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "thunder" ) );
 }
 
 //------------------------------------------------------------------------------
