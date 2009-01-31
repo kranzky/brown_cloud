@@ -109,13 +109,15 @@ Game::update( float dt )
 
     if ( m_zoom > m_last_zoom )
     {
-        m_last_zoom = m_zoom;
+        m_last_zoom += ( m_zoom - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
+        m_fujin->setScale( 1.0f / m_last_zoom );
     }
     else if ( m_zoom < m_last_zoom )
     {
-        m_last_zoom = m_zoom;
+        m_last_zoom += ( m_zoom - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
+        m_fujin->setScale( 1.0f / m_last_zoom );
     }
 
     vp->offset() = m_fujin->getBody()->GetPosition();
