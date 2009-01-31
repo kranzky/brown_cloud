@@ -12,12 +12,17 @@
 
 #include <hgeresource.h>
 
+namespace
+{
+    const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
+};
+
 //==============================================================================
 Game::Game()
     :
     Context(),
     m_last_zoom( 1.0f ),
-    m_zoom( 1.0f ),
+    m_zoom( 0 ),
     m_fujin( 0 )
 {
 }
@@ -42,7 +47,7 @@ Game::init()
     Cloud::registerEntity();
     Girder::registerEntity();
 
-    m_zoom = 1.0f;
+    m_zoom = 0;
 
     Engine::em()->init();
 
@@ -51,13 +56,13 @@ Game::init()
     vp->bounds().x = 800.0f;
     vp->bounds().y = 600.0f;
     vp->setAngle( 0.0f );
-    vp->setScale( m_zoom );
+    vp->setScale( ZOOM[m_zoom] );
 
     m_fujin = static_cast< Fujin * >( Engine::em()->factory( Fujin::TYPE ) );
     b2Vec2 position( 0.0f, 0.0f );
     float angle( 0.0f );
     m_fujin->setSprite( "fujin" );
-    m_fujin->setScale( 1.0f / m_zoom );
+    m_fujin->setScale( 1.0f / ZOOM[m_zoom] );
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
@@ -96,26 +101,25 @@ Game::update( float dt )
 
     if ( pad.isConnected() )
     {
-        if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 1.0f )
+        if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 0 )
         {
-            m_zoom -= 1.0f;
+            --m_zoom;
         }
-        else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) &&
-                  m_zoom < 5.0f )
+        else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) && m_zoom < 4 )
         {
-            m_zoom += 1.0f;
+            ++m_zoom;
         }
     }
 
-    if ( m_zoom > m_last_zoom )
+    if ( ZOOM[m_zoom] > m_last_zoom )
     {
-        m_last_zoom += ( m_zoom - m_last_zoom ) * dt * 10.0f;
+        m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
         m_fujin->setScale( 1.0f / m_last_zoom );
     }
-    else if ( m_zoom < m_last_zoom )
+    else if ( ZOOM[m_zoom] < m_last_zoom )
     {
-        m_last_zoom += ( m_zoom - m_last_zoom ) * dt * 10.0f;
+        m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
         m_fujin->setScale( 1.0f / m_last_zoom );
     }

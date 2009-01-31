@@ -29,7 +29,7 @@ class Game : public Context
   private:
     void _initArena();
     float m_last_zoom;
-    float m_zoom;
+    int m_zoom;
     Fujin * m_fujin;
 };
 
