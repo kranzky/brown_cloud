@@ -8,7 +8,7 @@
 #include <vector>
 #include <Box2D.h>
 
-class Entity;
+class Cloud;
 
 //------------------------------------------------------------------------------
 class Clump
@@ -17,8 +17,8 @@ public:
 	Clump();
 	virtual ~Clump();
 
-	void init();
-	void fini();
+	/*void init();
+	void fini();*/
 
 private:
 	Clump( const Clump & );
@@ -37,7 +37,7 @@ public:
     void update( float dt );
     void fini();
 
-	void reportCollision(Entity* ent, Entity* other, b2Vec2 collidePosition);
+	void reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosition);
 
 
 private:
@@ -46,8 +46,8 @@ private:
 
 	struct InteractionData
 	{
-		Entity* m_entity;
-		Entity* m_other;
+		Cloud* m_entity;
+		Cloud* m_other;
 		b2Vec2 m_collidePosition;
 	};
 

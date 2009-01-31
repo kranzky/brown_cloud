@@ -33,15 +33,8 @@ Cloud::collide( Entity * entity, b2ContactPoint * point )
 {
 	if (entity->getType() == Cloud::TYPE)
 	{
-		Engine::cm()->reportCollision(this, entity, point->position);
+		Engine::cm()->reportCollision(this, reinterpret_cast<Cloud*>(entity), point->position);
 	}
-
-	//if (entity->getType() == Cloud::TYPE)
-	//{
-	//	b2RevoluteJointDef joint;
-	//	joint.Initialize( this->getBody(), entity->getBody(), point->position );
-	//	Engine::instance()->b2d()->CreateJoint( & joint );
-	//}
 }
 
 //------------------------------------------------------------------------------
