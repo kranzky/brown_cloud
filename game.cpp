@@ -125,6 +125,17 @@ Game::update( float dt )
             ++m_zoom;
         }
     }
+    else
+    {
+        if ( Engine::hge()->Input_KeyDown( HGEK_Q ) && m_zoom > 0 )
+        {
+            --m_zoom;
+        }
+        else if ( Engine::hge()->Input_KeyDown( HGEK_E ) && m_zoom < 4 )
+        {
+            ++m_zoom;
+        }
+    }
 
     if ( ZOOM[m_zoom] > m_last_zoom )
     {
