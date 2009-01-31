@@ -143,7 +143,18 @@ Fujin::doUpdate( float dt )
 			breath->Fire();
 			Blow( power );
 			m_isBlowing=true;
-			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
+            if ( power > 0.0f )
+            {
+            int volume( static_cast< int >( 100.0f * power ) );
+			Engine::instance()->hge()->Effect_PlayEx(
+                Engine::rm()->GetEffect( "wind" ), volume );
+            }
+            else
+            {
+            int volume( static_cast< int >( - 100.0f * power ) );
+			Engine::instance()->hge()->Effect_PlayEx(
+                Engine::rm()->GetEffect( "pant" ), volume );
+            }
 			breath->info.nEmission = static_cast< int >( 20.0f * power );
         }
 		else
