@@ -129,8 +129,9 @@ Fujin::doUpdate( float dt )
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
         b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
-		//offset.y *= -1;
-       float angle = lookAt(-offset);
+        offset.y *= -1.0f;
+     
+       float angle = lookAt(offset);
 
         b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
 		force *=  (100000.0f * m_scale);
@@ -150,7 +151,8 @@ Fujin::doUpdate( float dt )
 			Blow();
 			m_isBlowing=true;
 			breath->info.fDirection= angle -M_PI;
-		}
+			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
+        }
 		else
 		{
 			m_isBlowing=false;
@@ -207,6 +209,7 @@ Fujin::doUpdate( float dt )
 			breath->Fire();
 			Blow();
 			m_isBlowing=true;
+			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
 		}
 		
 			else
@@ -232,7 +235,7 @@ Fujin::doUpdate( float dt )
 
 //------------------------------------------------------------------------------
 void
-Fujin::doRender()
+Fujin::doRender( float scale )
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );

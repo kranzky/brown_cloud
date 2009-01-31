@@ -35,7 +35,7 @@ class Cloud : public Entity
 
     virtual void doInit();
     virtual void doUpdate( float dt );
-    virtual void doRender();
+    virtual void doRender( float scale );
     virtual void initFromQuery( Query & query );
 
   private:

@@ -90,7 +90,7 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
@@ -207,9 +207,10 @@ Game::render()
     std::sort( entities.begin(), entities.end(), lessThan );
 
     std::vector< Entity * >::iterator i;
+    float scale( 1.0f / static_cast< float >( ZOOM[m_zoom] ) );
     for ( i = entities.begin(); i != entities.end(); ++i )
     {
-        ( * i )->render();
+        ( * i )->render( scale );
     }
 }
 
@@ -226,7 +227,7 @@ Game::shouldCollide( Entity * left, Entity * right )
     if ( left->getScale() > right->getScale() * 0.99f &&
          left->getScale() * 0.99f < right->getScale() )
     {
-        return true;
+        return left->getType() == right->getType();
     }
 
     return false;
