@@ -90,7 +90,7 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),

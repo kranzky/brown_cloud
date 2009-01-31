@@ -122,3 +122,15 @@ Particle breath
     filename=breath.psi
     sprite=breath
 }
+Sound thunder
+{
+    filename=thunder.wav
+}
+Sound wind
+{
+    filename=wind.wav
+}
+Sound pant
+{
+    filename=pant.wav
+}
