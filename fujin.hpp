@@ -7,6 +7,7 @@
 
 #include <entity.hpp>
 #include <damageable.hpp>
+#include <Box2D.h>
 
 //------------------------------------------------------------------------------
 class Fujin : public Entity, public Damageable
@@ -23,7 +24,8 @@ class Fujin : public Entity, public Damageable
     virtual void persistToDatabase();
 
     static void registerEntity();
-
+	bool isBlowing();
+	const b2AABB& GetWindAABB();
   protected:
     Fujin( const Fujin & );
     Fujin & operator=( const Fujin & );
@@ -34,6 +36,9 @@ class Fujin : public Entity, public Damageable
     virtual void doRender();
     virtual void initFromQuery( Query & query );
     float lookAt(const b2Vec2& targetPoint);
+	void Blow();
+	b2AABB m_AABB;
+	bool m_isBlowing;
 };
 
 #endif
