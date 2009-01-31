@@ -2,7 +2,7 @@
 
 #include <engine.hpp>
 #include <mouse.hpp>
-
+#include <viewport.hpp>
 //------------------------------------------------------------------------------
 Mouse::MouseButton::MouseButton()
     :
@@ -193,6 +193,15 @@ const Mouse::MouseButton &
 Mouse::getRight()const
 {
     return m_right;
+}
+//------------------------------------------------------------------------------
+const b2Vec2&
+Mouse::getMousePos() const
+{
+	b2Vec2 position;
+	Engine::hge()->Input_GetMousePos(&position.x,&position.y);
+	Engine::vp()->screenToWorld(position);
+	return position;
 }
 
 //==============================================================================
