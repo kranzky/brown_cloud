@@ -31,6 +31,7 @@ Credits::init()
     vp->offset().y = 0.0f;
     vp->bounds().x = 80.0f;
     vp->bounds().y = 60.0f;
+    vp->setAngle( 0.0f );
 
     m_interact = false;
 }
