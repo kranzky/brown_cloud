@@ -3,6 +3,7 @@
 #include <cloud.hpp>
 #include <engine.hpp>
 #include <entity_manager.hpp>
+#include <clump_manager.hpp>
 
 #include <hgesprite.h>
 #include <Box2D.h>
@@ -15,7 +16,9 @@
 //==============================================================================
 Cloud::Cloud( float scale )
     :
-    Entity( scale )
+    Entity( scale ),
+	m_particles(NULL),
+	m_clump(NULL)
 {
 }
 
@@ -28,6 +31,17 @@ Cloud::~Cloud()
 void
 Cloud::collide( Entity * entity, b2ContactPoint * point )
 {
+	if (entity->getType() == Cloud::TYPE)
+	{
+		Engine::cm()->reportCollision(this, entity, point->position);
+	}
+
+	//if (entity->getType() == Cloud::TYPE)
+	//{
+	//	b2RevoluteJointDef joint;
+	//	joint.Initialize( this->getBody(), entity->getBody(), point->position );
+	//	Engine::instance()->b2d()->CreateJoint( & joint );
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -59,14 +73,10 @@ void
 Cloud::doInit()
 {
 	b2CircleDef shapeDef;
-	shapeDef.radius = 0.5f * m_sprite->GetWidth() * m_scale;
-	shapeDef.localPosition.Set(1.0f, 0.0f);
-	shapeDef.density = 1.0f;
+	shapeDef.radius = 0.3f * m_sprite->GetWidth() * m_scale;
+	//shapeDef.localPosition.Set(1.0f, 0.0f);
+	shapeDef.density = 10.0f;
 	shapeDef.friction = 0.3f;
-
-    //b2PolygonDef shapeDef;
-    //shapeDef.SetAsBox( 0.5f * m_sprite->GetWidth() * m_scale,
-    //                   0.5f * m_sprite->GetHeight() * m_scale );
 
 	b2BodyDef bodyDef;
 	bodyDef.userData = static_cast<void*> (this);
@@ -74,15 +84,9 @@ Cloud::doInit()
 	m_body->CreateShape(&shapeDef);
 	m_body->SetMassFromShapes();
 
-    //b2BodyDef bodyDef;
-    //bodyDef.userData = static_cast< void * >( this );
-    //m_body = Engine::b2d()->CreateStaticBody( & bodyDef );
-    //m_body->CreateShape( & shapeDef );
-
-
-	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
-    p->SetScale( m_scale * 0.3f );
-	p->Fire();
+	m_particles = new hgeParticleSystem( * Engine::rm()->GetParticleSystem( "cloud" ) );
+    m_particles->SetScale( m_scale * 0.3f );
+	m_particles->Fire();
 }
 
 //------------------------------------------------------------------------------
@@ -90,9 +94,8 @@ void
 Cloud::doUpdate( float dt )
 {
 	b2Vec2 position( m_body->GetPosition() );
-	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
-	p->MoveTo( position.x / (m_scale * 0.3f), position.y / (m_scale * 0.3f) );
-    p->Update( dt );
+	m_particles->MoveTo( position.x / (m_scale * 0.3f), position.y / (m_scale * 0.3f) );
+    m_particles->Update( dt );
 }
 
 //------------------------------------------------------------------------------
@@ -102,8 +105,7 @@ Cloud::doRender()
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
     //m_sprite->RenderEx( position.x, position.y, angle, m_scale );
-	hgeParticleSystem * p ( Engine::rm()->GetParticleSystem( "cloud" ) );
-    p->Render();
+    m_particles->Render();
 }
 
 //------------------------------------------------------------------------------
