@@ -66,7 +66,7 @@ void
 Cloud::doInit()
 {
 	b2CircleDef shapeDef;
-	shapeDef.radius = 0.3f * m_sprite->GetWidth() * m_scale;
+	shapeDef.radius = m_sprite->GetWidth() * m_scale;
 	shapeDef.density = 10.0f;
 	shapeDef.friction = 0.3f;
 
@@ -77,7 +77,7 @@ Cloud::doInit()
 	m_body->SetMassFromShapes();
 
 	m_particles = new hgeParticleSystem( * Engine::rm()->GetParticleSystem( "cloud" ) );
-    m_particles->SetScale( m_scale * 0.3f );
+    m_particles->SetScale( m_scale );
 	m_particles->Fire();
 }
 
@@ -86,7 +86,7 @@ void
 Cloud::doUpdate( float dt )
 {
 	b2Vec2 position( m_body->GetPosition() );
-	m_particles->MoveTo( position.x / (m_scale * 0.3f), position.y / (m_scale * 0.3f) );
+	m_particles->MoveTo( position.x / m_scale, position.y / m_scale );
     m_particles->Update( dt );
 }
 

@@ -21,6 +21,7 @@ class Config
     bool fullScreen;
     std::string userName;
     int menu;
+    bool vibrate;
 };
 
 #endif

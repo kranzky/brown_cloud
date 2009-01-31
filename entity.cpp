@@ -72,7 +72,7 @@ Entity::getAABB() const
 
 //------------------------------------------------------------------------------
 unsigned int
-Entity::getType()
+Entity::getType() const
 {
     return m_type;
 }
@@ -89,6 +89,13 @@ sqlite3_int64
 Entity::getID()
 {
     return m_id;
+}
+
+//------------------------------------------------------------------------------
+float
+Entity::getScale() const
+{
+    return m_scale;
 }
 
 //------------------------------------------------------------------------------
