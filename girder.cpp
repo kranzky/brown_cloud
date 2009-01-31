@@ -16,6 +16,7 @@ Girder::Girder( float scale )
     Entity( scale ),
     m_dimensions()
 {
+    setType( Girder::TYPE );
 }
 
 //------------------------------------------------------------------------------

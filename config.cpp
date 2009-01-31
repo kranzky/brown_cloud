@@ -16,7 +16,12 @@ Config::Config()
     fullScreen( true ),
 #endif
     userName( "Lloyd" ),
-    menu( 1 )
+    menu( 1 ),
+#ifdef _DEBUG
+    vibrate( false )
+#else
+    vibrate( true )
+#endif
 {
 }
 
@@ -38,6 +43,8 @@ Config::init()
     userName = Engine::hge()->Ini_GetString( "kranzky", "username",
                                              userName.c_str() );
     menu = Engine::hge()->Ini_GetInt( "kranzky", "menu", menu );
+    vibrate = Engine::hge()->Ini_GetInt( "kranzky", "vibrate",
+                                         vibrate ? 1 : 0 ) == 1;
 }
 
 //------------------------------------------------------------------------------
@@ -49,6 +56,7 @@ Config::fini()
     Engine::hge()->Ini_SetInt( "kranzky", "fullscreen", fullScreen ? 1 : 0 );
     Engine::hge()->Ini_SetString( "kranzky", "username", userName.c_str() );
     Engine::hge()->Ini_SetInt( "kranzky", "menu", menu );
+    Engine::hge()->Ini_SetInt( "kranzky", "vibrate", vibrate ? 1 : 0 );
 }
 
 //==============================================================================

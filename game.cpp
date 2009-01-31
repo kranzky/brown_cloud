@@ -20,10 +20,21 @@ namespace
     const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
 
     bool
-    compare( const Entity * left, const Entity * right )
+    lessThan( const Entity * left, const Entity * right )
     {
-        return left->getScale() < right->getScale() ||
-               left->getType() < right->getType();
+        if ( left->getScale() < right->getScale() * 0.99f )
+        {
+            return true;
+        }
+        if ( left->getScale() * 0.99f > right->getScale() )
+        {
+            return false;
+        }
+        if ( left->getType() < right->getType() )
+        {
+            return true;
+        }
+        return false;
     }
 }
 
@@ -84,7 +95,7 @@ Game::init()
                          Engine::hge()->Random_Float( -300.0f, 300.0f) );
 		float angle( 0.f );
 		entity->setSprite( "cloud" );
-		entity->setScale( 1.0f );
+		entity->setScale( 1.0f / ZOOM[Engine::hge()->Random_Int( 0, 4 )] );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
 	}
@@ -189,7 +200,7 @@ Game::render()
         }
     }
 
-    std::sort( entities.begin(), entities.end(), compare );
+    std::sort( entities.begin(), entities.end(), lessThan );
 
     std::vector< Entity * >::iterator i;
     for ( i = entities.begin(); i != entities.end(); ++i )
