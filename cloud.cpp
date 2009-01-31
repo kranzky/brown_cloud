@@ -142,5 +142,23 @@ Cloud::initFromQuery( Query & query )
     m_body->SetXForm( position, angle );
 }
 
+//------------------------------------------------------------------------------
+void Cloud::removeFromClump()
+{
+	if (m_clump != NULL)
+	{
+		Engine::cm()->removeCloudFromClump(this, m_clump);
+		m_clump = NULL;
+
+		//disconnect any physics joints
+		while (getBody()->GetJointList() != NULL)
+		{
+			b2Joint* joint = getBody()->GetJointList()->joint;
+			Engine::instance()->b2d()->DestroyJoint(joint);
+		}
+	}
+}
+
+
 //==============================================================================
 

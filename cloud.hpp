@@ -28,6 +28,7 @@ class Cloud : public Entity
 
 	Clump* getClump() const { return m_clump; }
 	void setClump(Clump* clump) { m_clump = clump; }
+	void removeFromClump();
 
   protected:
     Cloud( const Cloud & );

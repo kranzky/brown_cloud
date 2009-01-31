@@ -18,17 +18,15 @@ public:
 	Clump();
 	virtual ~Clump();
 
-	/*void init();
-	void fini();*/
-
 	void addCloud(Cloud* cloud);
-	std::vector< Cloud *>* getClouds() { return &m_clouds; }
+	void removeCloud(Cloud* cloud);
+	std::list< Cloud *>* getClouds() { return &m_clouds; }
 
 private:
 	Clump( const Clump & );
     Clump & operator=( const Clump & );
 
-	std::vector< Cloud *> m_clouds;
+	std::list< Cloud *> m_clouds;
 
 };
 
@@ -45,11 +43,13 @@ public:
     void fini();
 
 	void reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosition);
-
+	void removeCloudFromClump(Cloud* cloud, Clump* clump);
 
 private:
     ClumpManager( const ClumpManager & );
     ClumpManager & operator=( const ClumpManager & );
+
+	void destroyClump(Clump* emptyClump);
 
 	struct InteractionData
 	{
