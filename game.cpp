@@ -127,11 +127,13 @@ Game::update( float dt )
     }
     else
     {
-        if ( Engine::hge()->Input_KeyDown( HGEK_Q ) && m_zoom > 0 )
+        if ( ( Engine::hge()->Input_KeyDown( HGEK_Q ) ||
+               hge->Input_GetMouseWheel() > 0 ) && m_zoom > 0 )
         {
             --m_zoom;
         }
-        else if ( Engine::hge()->Input_KeyDown( HGEK_E ) && m_zoom < 4 )
+        else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
+                    hge->Input_GetMouseWheel() < 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
         }
