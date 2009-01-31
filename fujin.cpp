@@ -18,7 +18,6 @@ Fujin::Fujin( float max_strength, float scale )
     Entity( scale ),
     Damageable( max_strength )
 {
-    setType( Fujin::TYPE );
 }
 
 //------------------------------------------------------------------------------

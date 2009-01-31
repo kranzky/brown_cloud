@@ -20,7 +20,6 @@ Cloud::Cloud( float scale )
 	m_particles(NULL),
 	m_clump(NULL)
 {
-    setType( Cloud::TYPE );
 }
 
 //------------------------------------------------------------------------------
