@@ -30,6 +30,9 @@ class Cloud : public Entity
 	void setClump(Clump* clump) { m_clump = clump; }
 	void removeFromClump();
 
+    void setZoom( int zoom );
+    int getZoom();
+
   protected:
     Cloud( const Cloud & );
     Cloud & operator=( const Cloud & );
@@ -43,7 +46,7 @@ class Cloud : public Entity
 
     hgeParticleSystem* m_particles;
 	Clump* m_clump;
-	  
+    int m_zoom;
 };
 
 #endif

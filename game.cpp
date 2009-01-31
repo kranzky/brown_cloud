@@ -102,6 +102,7 @@ Game::init()
 		entity->setScale( 1.0f / ZOOM[zoom] );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
+        static_cast< Cloud * >( entity )->setZoom( zoom );
 	}
     }
 
@@ -213,7 +214,8 @@ Game::render()
     float scale( 1.0f / static_cast< float >( ZOOM[m_zoom] ) );
     for ( i = entities.begin(); i != entities.end(); ++i )
     {
-        ( * i )->render( scale );
+        Entity * entity( * i );
+        entity->render( scale );
     }
 }
 
