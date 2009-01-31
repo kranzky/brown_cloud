@@ -3,6 +3,7 @@
 #include <fujin.hpp>
 #include <engine.hpp>
 #include <entity_manager.hpp>
+#include <cloud.hpp>
 
 #include <hgeSprite.h>
 #include <Box2D.h>
@@ -135,25 +136,32 @@ Fujin::doUpdate( float dt )
 		    acceleration *=  ( 1000.0f * m_scale * dt );
             acceleration.y *=  -1.0f;
 
-		if(pad.getTrigger(XPAD_TRIGGER_LEFT)>0)
+        float power( pad.getTrigger(XPAD_TRIGGER_LEFT) -
+                     pad.getTrigger(XPAD_TRIGGER_RIGHT) );
+		if(power>0.01f || power<-0.01f)
 		{
-			// we are blowing, better make sure we are displaying the particles
-			b2Vec2 position( m_body->GetPosition() );
-			b2Vec2 direction( 0.0f, 1.0f );
-			direction = b2Mul( m_body->GetXForm().R, -direction );
-			position = position - 32.0f * m_scale * direction;
-			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
 			breath->Fire();
-			Blow();
+			Blow( power );
 			m_isBlowing=true;
-			breath->info.fDirection= angle -M_PI;
 			Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "wind" ) );
+			breath->info.nEmission = static_cast< int >( 20.0f * power );
         }
 		else
 		{
 			m_isBlowing=false;
 			breath->Stop();
 		}
+
+        if ( breath->GetParticlesAlive() > 0 )
+        {
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, 1.0f );
+			direction = b2Mul( m_body->GetXForm().R, -direction );
+			position = position - 32.0f * m_scale * direction;
+			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+            float angle( m_body->GetAngle() );
+			breath->info.fDirection= angle -M_PI;
+        }
 		
         b2Vec2 velocity( m_body->GetLinearVelocity() );
         velocity += acceleration;
@@ -229,9 +237,6 @@ Fujin::doUpdate( float dt )
 	breath->Update( dt );
 
 	b2Vec2 position = m_body->GetWorldCenter();
-	m_AABB.lowerBound= b2Vec2(position.x-196.0f*m_scale,position.y-196.0f*m_scale);
-	m_AABB.upperBound= b2Vec2(position.x+196.0f*m_scale,position.y+196.0f*m_scale);
-
    // updateDamageable( dt );
 }
 
@@ -293,46 +298,65 @@ float Fujin::lookAt( const b2Vec2& targetPoint )
 //==============================================================================
 
 
-void Fujin::Blow()
+void Fujin::Blow( float power )
 {
+    b2Vec2 position( m_body->GetPosition() );
+
+	m_AABB.lowerBound= b2Vec2(position.x-200.0f*m_scale,
+                              position.y-200.0f*m_scale);
+
+	m_AABB.upperBound= b2Vec2(position.x+200.0f*m_scale,
+                              position.y+200.0f*m_scale);
+
 	const int32 k_bufferSize = 10;
+
 	b2Shape *buffer[k_bufferSize];
-	const Mouse &mouse(Engine::instance()->getMouse());
-	const b2Vec2 mousePosition =  mouse.getMousePos() - m_body->GetWorldCenter();
-//	float xDir = mousePosition.x/mousePosition.Length();
-//	float yDir = mousePosition.y/mousePosition.Length();
-	b2Vec2 direction(mousePosition);
-	//direction *= 128;
+
 	int32 count = Engine::b2d()->Query(m_AABB, buffer, k_bufferSize);
-	for (int32 i = 0; i < count; ++i)
+
+	for ( int32 i = 0; i < count; ++i )
 	{
-		if(((Entity*)buffer[i]->GetBody()->GetUserData())->getType() == 2  )
+        Entity * entity( static_cast< Entity * >(
+            buffer[i]->GetBody()->GetUserData() ) );
+        if ( entity->getType() != Cloud::TYPE )
+        {
+            continue;
+        }
+        if ( m_scale < entity->getScale() * 0.99f ||
+             m_scale * 0.99f > entity->getScale() )
+        {
+            continue;
+        }
+
+        b2Vec2 vertical( 0.0f, 1.0f );
+        b2Mat22 rotation( m_body->GetAngle() );
+        b2Vec2 heading( b2Mul( rotation, vertical ) );
+
+        b2Vec2 offset( entity->getBody()->GetPosition() -
+                       m_body->GetPosition() );
+
+        float length( offset.Normalize() );
+
+        float dot( b2Dot( offset, heading ) );
+
+		if ( dot < 0.0f || length < 1.0f )
+        {
+            continue;
+        }
+
+        float ratio( 1.0f - ( length * length ) /
+			                ( 200.0f * 200.0f * m_scale * m_scale ) );
+
+		if ( ratio <= 0.1f )
 		{
-			// check to see if we can push the cloud
-			if ( m_scale > ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale() * 0.99f &&
-				m_scale * 0.99f < ((Entity*)buffer[i]->GetBody()->GetUserData())->getScale())
-			{
-
-
-				// get the position of the item, dot product it, multiply force by dp
-				float dpAngleValue = -99;
-				b2Vec2 currLocation = buffer[i]->GetBody()->GetPosition()- m_body->GetWorldCenter();
-				direction.Normalize();
-				currLocation.Normalize();
-
-				dpAngleValue = acosf( b2Dot( direction, currLocation) )	 ;
-				int ival = 0;
-				if (dpAngleValue > -1 && dpAngleValue < 1)
-				{
-
-
-					float force = 100000.0f * dpAngleValue;
-					b2Vec2 directionForce(direction.x*force, direction.y*force);
-
-					buffer[i]->GetBody()->ApplyImpulse(directionForce, buffer[i]->GetBody()->GetPosition());
-				}
-			}
+			ratio = 0.1f;
 		}
-	}
 
+        float force( 1000000.0f * m_scale * m_scale * dot * ratio * power );
+
+		offset *= force;
+
+        entity->getBody()->ApplyForce( offset,
+                                       entity->getBody()->GetPosition() );
+	}
 }
