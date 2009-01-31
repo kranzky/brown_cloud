@@ -67,6 +67,7 @@ class Mouse
 
     const MouseButton & getLeft() const;
     const MouseButton & getRight()const;
+	const b2Vec2 &getMousePos() const;
 
   private:
     MouseButton m_left;

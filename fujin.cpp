@@ -87,7 +87,9 @@ Fujin::doInit()
 	const Controller & pad( Engine::instance()->getController() );
 	if(! pad.isConnected())
 	{
+		Engine::instance()->setMouse("cursor");
 		Engine::instance()->showMouse();
+		
 	}
 	else
 	{
@@ -109,22 +111,35 @@ Fujin::doUpdate( float dt )
 
     if ( pad.isConnected() && ! Engine::instance()->isPaused() )
     {
-        b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_LEFT ) );
-        float length( offset.Normalize() );
-        if ( length > 0.9f )
-        {
-            b2Vec2 vertical( 0.0f, 1.0f );
-            float angle( acosf( b2Dot( offset, vertical ) ) );
-            if ( b2Cross( offset, vertical ) < 0.0f )
-            {
-                angle = -angle;
-            }
-            m_body->SetXForm( m_body->GetPosition(), angle );
-        }
-        float force( pad.getTrigger( XPAD_TRIGGER_LEFT ) * 100000.0f * m_scale );
-        b2Vec2 direction( 0.0f, -1.0f );
-        direction = b2Mul( m_body->GetXForm().R, direction );
-        m_body->ApplyForce( force * direction, m_body->GetPosition() );
+        b2Vec2 offset( pad.getStick( XPAD_THUMBSTICK_RIGHT ) );
+     
+       float angle = lookAt(-offset);
+
+        b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
+		force *=  (100000.0f * m_scale);
+        b2Vec2 direction( 1.0f, 1.0f );
+		direction.x *= force.x;
+		direction.y *= -force.y;
+
+		if(pad.getTrigger(XPAD_TRIGGER_LEFT)>0)
+		{
+			// we are blowing, better make sure we are displaying the particles
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, 1.0f );
+			direction = b2Mul( m_body->GetXForm().R, -direction );
+			position = position - 32.0f * m_scale * direction;
+			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+			breath->Fire();
+			
+			breath->info.fDirection= angle -M_PI;
+		}
+		else
+		{
+			breath->Stop();
+		}
+		
+       // direction = b2Mul( m_body->GetXForm().R, direction );
+        m_body->ApplyForce( direction, m_body->GetWorldCenter() );
     }
 	else if(! Engine::instance()->isPaused() )
 	{
@@ -155,28 +170,43 @@ Fujin::doUpdate( float dt )
 				
 				
 			}
+
+		b2Vec2 position (m_body->GetPosition());
+		b2Vec2 mousePosition(mouse.getMousePos());
+		float angle = lookAt(mousePosition -position);
+
+		// move the objects to the origin
+		
+		//mousePosition = mousePosition - position;
+
+		
+		
 		if(leftMouseBtn.dragging())
 		{
 			// we are blowing, better make sure we are displaying the particles
-			breath->Fire();
-
-		}
-		
-		if ( breath->GetParticlesAlive() > 0 )
-		{
 			b2Vec2 position( m_body->GetPosition() );
-			b2Vec2 direction( 0.0f, -1.0f );
-			direction = b2Mul( m_body->GetXForm().R, direction );
+			b2Vec2 direction( 0.0f, 1.0f );
+			direction = b2Mul( m_body->GetXForm().R, -direction );
 			position = position - 32.0f * m_scale * direction;
 			breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+			breath->Fire();
+			breath->info.fDirection= angle -M_PI;
 		}
-		breath->Update( dt );
-
-		direction.x = xForce * direction.x;
-		direction.y = yForce * direction.y;
-		m_body->ApplyForce(direction, m_body->GetWorldCenter());
 		
+		else
+		{
+
+			breath->Stop();
+		}
+		
+		
+		
+
+		direction.x = xForce * direction.x * 100000.0f * m_scale;
+		direction.y = yForce * direction.y* 100000.0f * m_scale;
+		m_body->ApplyForce(direction, m_body->GetWorldCenter());
 	}
+	breath->Update( dt );
 
    // updateDamageable( dt );
 }
@@ -191,6 +221,12 @@ Fujin::doRender()
     m_sprite->RenderEx( position.x, position.y, angle, m_scale );
 	breath->Render();
     renderDamageable( position, m_scale );
+	const Mouse &mouse(Engine::instance()->getMouse());
+	/*
+	b2Vec2 position2 (m_body->GetPosition());
+		b2Vec2 mousePosition(mouse.getMousePos());
+		Engine::hge()->Gfx_RenderLine(position2.x, position2.y,mousePosition.x, mousePosition.y);*/
+	
 }
 
 //------------------------------------------------------------------------------
@@ -213,5 +249,22 @@ Fujin::initFromQuery( Query & query )
     m_body->SetXForm( position, angle );
 }
 
+float Fujin::lookAt( const b2Vec2& targetPoint )
+{
+	b2Vec2 offset(targetPoint );
+	float length( offset.Normalize() );
+	float angle =0;
+	if ( length > 0.9f )
+	{
+		b2Vec2 vertical( 0.0f, 1.0f );
+		angle=( acosf( b2Dot( offset, vertical ) ) );
+		if ( b2Cross( vertical, offset ) < 0.0f )
+		{
+			angle = -angle;
+		}
+		m_body->SetXForm( m_body->GetPosition(), angle );
+	}
+	return angle;
+}
 //==============================================================================
 
