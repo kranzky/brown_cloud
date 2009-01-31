@@ -2,6 +2,7 @@
 
 #include <engine.hpp>
 #include <entity_manager.hpp>
+#include <clump_manager.hpp>
 #include <splash.hpp>
 #include <credits.hpp>
 #include <menu.hpp>
@@ -31,6 +32,7 @@ Engine::Engine()
     m_b2d( 0 ),
     m_vp( 0 ),
     m_em( 0 ),
+	m_cm( 0 ),
     m_colour( 0 ),
     m_dd( 0 ),
     m_overlay( 0 ),
@@ -50,6 +52,7 @@ Engine::Engine()
 {
     m_vp = new ViewPort();
     m_em = new EntityManager();
+	m_cm = new ClumpManager();
 }
 
 //------------------------------------------------------------------------------
@@ -90,6 +93,7 @@ Engine::~Engine()
     delete m_overlay;
     delete m_vp;
     delete m_em;
+	delete m_cm;
 }
 
 //------------------------------------------------------------------------------
@@ -413,6 +417,13 @@ EntityManager *
 Engine::em()
 {
     return instance()->m_em;
+}
+
+//------------------------------------------------------------------------------
+ClumpManager *
+Engine::cm()
+{
+    return instance()->m_cm;
 }
 
 //------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include <engine.hpp>
 #include <entity.hpp>
 #include <entity_manager.hpp>
+#include <clump_manager.hpp>
 #include <viewport.hpp>
 #include <fujin.hpp>
 #include <cloud.hpp>
@@ -50,6 +51,7 @@ Game::init()
     m_zoom = 0;
 
     Engine::em()->init();
+	Engine::cm()->init();
 
     vp->offset().x = 0.0f;
     vp->offset().y = 0.0f;
@@ -66,6 +68,17 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
+	for (int i = 0; i < 10; ++i)
+	{
+		Entity* entity = Engine::em()->factory( Cloud::TYPE );
+		b2Vec2 position( Engine::hge()->Random_Float(-3.0f, 3.0f), Engine::hge()->Random_Float(-3.0f, 3.0f) );
+		float angle( 0.f );
+		entity->setSprite( "cloud" );
+		entity->setScale( 0.03f );
+		entity->init();
+		entity->getBody()->SetXForm( position, angle );
+	}
+
     _initArena();
 }
 
@@ -73,7 +86,8 @@ Game::init()
 void
 Game::fini()
 {
-    Engine::em()->fini();
+    Engine::cm()->fini();
+	Engine::em()->fini();
 }
 
 //------------------------------------------------------------------------------
@@ -92,6 +106,7 @@ Game::update( float dt )
         return false;
     }
 
+	Engine::cm()->update( dt );
     Engine::em()->update( dt );
 
     if ( Engine::instance()->isPaused() )
