@@ -35,13 +35,6 @@ Cloud::collide( Entity * entity, b2ContactPoint * point )
 	{
 		Engine::cm()->reportCollision(this, entity, point->position);
 	}
-
-	//if (entity->getType() == Cloud::TYPE)
-	//{
-	//	b2RevoluteJointDef joint;
-	//	joint.Initialize( this->getBody(), entity->getBody(), point->position );
-	//	Engine::instance()->b2d()->CreateJoint( & joint );
-	//}
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +67,6 @@ Cloud::doInit()
 {
 	b2CircleDef shapeDef;
 	shapeDef.radius = 0.3f * m_sprite->GetWidth() * m_scale;
-	//shapeDef.localPosition.Set(1.0f, 0.0f);
 	shapeDef.density = 10.0f;
 	shapeDef.friction = 0.3f;
 
@@ -104,7 +96,6 @@ Cloud::doRender()
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
-    //m_sprite->RenderEx( position.x, position.y, angle, m_scale );
     m_particles->Render();
 }
 
