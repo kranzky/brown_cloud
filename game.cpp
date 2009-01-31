@@ -207,9 +207,10 @@ Game::render()
     std::sort( entities.begin(), entities.end(), lessThan );
 
     std::vector< Entity * >::iterator i;
+    float scale( 1.0f / static_cast< float >( ZOOM[m_zoom] ) );
     for ( i = entities.begin(); i != entities.end(); ++i )
     {
-        ( * i )->render();
+        ( * i )->render( scale );
     }
 }
 

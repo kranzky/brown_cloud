@@ -78,7 +78,7 @@ Tutorial::render()
         Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
         if ( entity )
         {
-            entity->render();
+            entity->render( 1.0f );
         }
     }
 }

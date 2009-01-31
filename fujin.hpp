@@ -31,7 +31,7 @@ class Fujin : public Entity, public Damageable
     virtual void onSetScale();
     virtual void doInit();
     virtual void doUpdate( float dt );
-    virtual void doRender();
+    virtual void doRender( float scale );
     virtual void initFromQuery( Query & query );
     float lookAt(const b2Vec2& targetPoint);
 };

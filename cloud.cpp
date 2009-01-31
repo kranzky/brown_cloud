@@ -25,6 +25,7 @@ Cloud::Cloud( float scale )
 //------------------------------------------------------------------------------
 Cloud::~Cloud()
 {
+    delete m_particles;
 }
 
 //------------------------------------------------------------------------------
@@ -79,6 +80,13 @@ Cloud::doInit()
 	m_particles = new hgeParticleSystem( * Engine::rm()->GetParticleSystem( "cloud" ) );
     m_particles->SetScale( m_scale );
 	m_particles->Fire();
+    hgeParticleSystemInfo & info( m_particles->info );
+    info.fRadialAccelMin = 0.0f;
+    info.fRadialAccelMax = 0.0f;
+    info.fTangentialAccelMin = 0.0f;
+    info.fTangentialAccelMin = 0.0f;
+    info.fGravityMin = 0.0f;
+    info.fGravityMax = 0.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -92,10 +100,25 @@ Cloud::doUpdate( float dt )
 
 //------------------------------------------------------------------------------
 void
-Cloud::doRender()
+Cloud::doRender( float scale )
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
+    hgeParticleSystemInfo & info( m_particles->info );
+    float alpha( 0.9f );
+    float ratio( scale / m_scale );
+    if ( ratio > 1.0f )
+    {
+		ratio = 1.0f / ratio;
+	}
+	alpha *= ratio; 
+    info.colColorStart.a = alpha;
+	info.colColorStart.r = alpha * 0.77f;
+	info.colColorStart.g = alpha * 0.67f;
+	info.colColorStart.b = alpha * 0.43f;
+	info.colColorEnd.r = alpha * 0.33f;
+	info.colColorEnd.g = alpha * 0.18f;
+	info.colColorEnd.b = alpha * 0.0f;
     m_particles->Render();
 }
 

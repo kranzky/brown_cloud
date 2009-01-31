@@ -80,7 +80,7 @@ Girder::doUpdate( float dt )
 
 //------------------------------------------------------------------------------
 void
-Girder::doRender()
+Girder::doRender( float scale )
 {
 }
 

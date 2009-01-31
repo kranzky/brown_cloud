@@ -213,7 +213,7 @@ Fujin::doUpdate( float dt )
 
 //------------------------------------------------------------------------------
 void
-Fujin::doRender()
+Fujin::doRender( float scale )
 {
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
