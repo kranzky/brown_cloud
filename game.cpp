@@ -227,7 +227,7 @@ Game::shouldCollide( Entity * left, Entity * right )
     if ( left->getScale() > right->getScale() * 0.99f &&
          left->getScale() * 0.99f < right->getScale() )
     {
-        return true;//left->getType() == right->getType();
+        return left->getType() == right->getType();
     }
 
     return false;
