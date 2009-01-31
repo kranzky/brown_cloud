@@ -44,6 +44,14 @@ Game::init()
     vp->bounds().x = 8.0f;
     vp->bounds().y = 6.0f;
     vp->setAngle( 0.0f );
+
+    Entity * entity = Engine::em()->factory( Fujin::TYPE );
+    b2Vec2 position( 0.0f, 0.0f );
+    float angle( 0.0f );
+    entity->setSprite( "fujin" );
+    entity->setScale( 0.01f );
+    entity->init();
+    entity->getBody()->SetXForm( position, angle );
 }
 
 //------------------------------------------------------------------------------

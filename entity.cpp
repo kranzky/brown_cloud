@@ -93,6 +93,20 @@ Entity::getID()
 
 //------------------------------------------------------------------------------
 void
+Entity::setScale( float scale )
+{
+    m_scale = scale;
+}
+
+//------------------------------------------------------------------------------
+void
+Entity::setSprite( const char * name )
+{
+    setSpriteID( Engine::em()->registerSprite( name ) );
+}
+
+//------------------------------------------------------------------------------
+void
 Entity::deleteFromDatabase()
 {
     Engine::em()->deleteFromDatabase( this );

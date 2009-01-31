@@ -22,7 +22,6 @@ FileUtils.rm_f( filename )
 
 Zip::ZipFile.open( filename, Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add( "readme.txt", "readme.txt" )
-    zipfile.add( "world.db3", File.join( "Release", "world.db3" ) )
     zipfile.add( "resources.dat", File.join( "Release", "resources.dat" ) )
     zipfile.add( "BrownCloud.exe",
                  File.join( "Release", "BrownCloud.exe" ) )

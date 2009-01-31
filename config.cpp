@@ -10,7 +10,11 @@ Config::Config()
     :
     screenWidth( 800 ),
     screenHeight( 600 ),
+#ifdef _DEBUG
     fullScreen( false ),
+#else
+    fullScreen( true ),
+#endif
     userName( "Lloyd" ),
     menu( 1 )
 {
