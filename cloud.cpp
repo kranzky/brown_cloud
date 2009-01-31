@@ -68,14 +68,16 @@ Cloud::doInit()
 {
 	b2CircleDef shapeDef;
 	shapeDef.radius = m_sprite->GetWidth() * m_scale;
-	shapeDef.density = 10.0f;
-	shapeDef.friction = 0.3f;
+	shapeDef.density = 1.0f;
+	shapeDef.friction = 0.0f;
+	shapeDef.restitution = 0.7f;
 
 	b2BodyDef bodyDef;
 	bodyDef.userData = static_cast<void*> (this);
 	m_body = Engine::b2d()->CreateDynamicBody(&bodyDef);
 	m_body->CreateShape(&shapeDef);
 	m_body->SetMassFromShapes();
+    m_body->m_linearDamping = 0.2f;
 
 	m_particles = new hgeParticleSystem( * Engine::rm()->GetParticleSystem( "cloud" ) );
     m_particles->SetScale( m_scale );
@@ -113,7 +115,7 @@ Cloud::doRender( float scale )
 	}
 	ratio = 1.0f - ratio;
 	ratio = 1.0f - ratio * ratio;
-	alpha *= ratio; 
+	alpha *= ratio;
     info.colColorStart.a = alpha;
 	ratio = 1.0f - ratio;
 	ratio = 1.0f - ratio * ratio;

@@ -76,17 +76,14 @@ Fujin::onSetScale()
     }
     b2PolygonDef shapeDef;
     shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
-    shapeDef.density = 1.1f;
+    shapeDef.density = 1.0f;
     shapeDef.friction =0.0f;
-    shapeDef.restitution = 0.0f;
+    shapeDef.restitution = 0.3f;
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
 
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 	breath->SetScale(m_scale);
-
-	
-	
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +93,7 @@ Fujin::doInit()
     b2BodyDef bodyDef;
     bodyDef.userData = static_cast< void * >( this );
     m_body = Engine::b2d()->CreateDynamicBody( & bodyDef );
-	m_body->m_linearDamping = 0.5f;
+	m_body->m_linearDamping = 0.8f;
 	m_AABB.lowerBound= b2Vec2(-2.0f,-2.0f);
 	m_AABB.upperBound= b2Vec2(2.0f,2.0f);
     onSetScale();
@@ -133,11 +130,10 @@ Fujin::doUpdate( float dt )
      
        float angle = lookAt(offset);
 
-        b2Vec2 force( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
-		force *=  (100000.0f * m_scale);
-        b2Vec2 direction( 1.0f, 1.0f );
-		direction.x *= force.x;
-		direction.y *= -force.y;
+        b2Vec2 acceleration( pad.getStick( XPAD_THUMBSTICK_LEFT )  );
+		bool dead( acceleration.LengthSquared() < 0.2f );
+		    acceleration *=  ( 1000.0f * m_scale * dt );
+            acceleration.y *=  -1.0f;
 
 		if(pad.getTrigger(XPAD_TRIGGER_LEFT)>0)
 		{
@@ -159,8 +155,14 @@ Fujin::doUpdate( float dt )
 			breath->Stop();
 		}
 		
-       // direction = b2Mul( m_body->GetXForm().R, direction );
-        m_body->ApplyForce( direction, m_body->GetWorldCenter() );
+        b2Vec2 velocity( m_body->GetLinearVelocity() );
+        velocity += acceleration;
+		if ( dead )
+		{
+			velocity *= 0.9f;
+		}
+			m_body->SetAngularVelocity( 0.0f );
+        m_body->SetLinearVelocity( velocity );
     }
 	else if(! Engine::instance()->isPaused() )
 	{
