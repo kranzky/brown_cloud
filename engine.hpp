@@ -45,7 +45,8 @@ enum EngineControl
 };
 
 //------------------------------------------------------------------------------
-class Engine : public b2BoundaryListener, public b2ContactListener
+class Engine : public b2BoundaryListener, public b2ContactListener,
+               public b2ContactFilter
 {
   public:
     static Engine * instance();
@@ -95,6 +96,7 @@ class Engine : public b2BoundaryListener, public b2ContactListener
     virtual void Add( b2ContactPoint * point );
     virtual void Persist( b2ContactPoint * point );
     virtual void Remove( b2ContactPoint * point );
+    virtual bool ShouldCollide( b2Shape * shape1, b2Shape * shape2 );
 
   private:
     bool _loseFocus();

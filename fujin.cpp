@@ -76,12 +76,9 @@ Fujin::onSetScale()
     }
     b2PolygonDef shapeDef;
     shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
-	shapeDef.groupIndex=-1;
     shapeDef.density = 1.1f;
     shapeDef.friction =0.0f;
     shapeDef.restitution = 0.0f;
-    shapeDef.categoryBits = 0;
-    shapeDef.maskBits = 0;
     m_body->CreateShape( & shapeDef );
     m_body->SetMassFromShapes();
 

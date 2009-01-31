@@ -64,6 +64,8 @@ Game::init()
     hgeResourceManager * rm( Engine::rm() );
     ViewPort * vp( Engine::vp() );
 
+    notifyOnCollision( true );
+
     Fujin::registerEntity();
     Cloud::registerEntity();
     Girder::registerEntity();
@@ -107,6 +109,8 @@ Game::init()
 void
 Game::fini()
 {
+    notifyOnCollision( false );
+
     Engine::cm()->fini();
 	Engine::em()->fini();
 }
@@ -207,6 +211,25 @@ Game::render()
     {
         ( * i )->render();
     }
+}
+
+//------------------------------------------------------------------------------
+bool
+Game::shouldCollide( Entity * left, Entity * right )
+{
+    if ( left->getType() == Girder::TYPE ||
+         right->getType() == Girder::TYPE )
+    {
+        return true;
+    }
+
+    if ( left->getScale() > right->getScale() * 0.99f &&
+         left->getScale() * 0.99f < right->getScale() )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
