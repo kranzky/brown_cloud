@@ -592,6 +592,7 @@ Engine::_update()
             {
                 m_gui->SetFocus( 1 );
                 switchContext( STATE_MENU );
+                return false;
                 break;
             }
         }

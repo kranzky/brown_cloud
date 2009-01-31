@@ -69,6 +69,7 @@ EntityManager::fini()
     }
     m_registry.clear();
     m_sprites.clear();
+    m_names.clear();
 }
 
 //------------------------------------------------------------------------------
