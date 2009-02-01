@@ -488,7 +488,7 @@ void Fujin::suckUpClouds()
 				cloud->removeFromClump();
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
-                Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "eat" ), 100 );
+                Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "eat" ), 20 );
 			}
 		}
 	}

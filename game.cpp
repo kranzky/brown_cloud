@@ -140,23 +140,6 @@ Game::update( float dt )
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
 
-    if ( pad.buttonDown( XPAD_BUTTON_B ) )
-    {
-        m_fujin->setSick( true );
-    }
-    else if ( pad.buttonUp( XPAD_BUTTON_B ) )
-    {
-        m_fujin->setSick( false );
-    }
-    if ( pad.buttonDown( XPAD_BUTTON_X ) )
-    {
-        m_fujin->setAsleep( true );
-    }
-    else if ( pad.buttonUp( XPAD_BUTTON_X ) )
-    {
-        m_fujin->setAsleep( false );
-    }
-	
     if ( m_gameOutTimer <= 0 && m_timeRemaining <=0)
     {
         Engine::instance()->switchContext( STATE_SCORE );
