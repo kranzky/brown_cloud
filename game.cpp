@@ -81,6 +81,8 @@ Game::init()
 
     m_zoom = 0;
 
+	m_timeRemaining = 300;
+	m_score = 0;
     Engine::em()->init();
 	Engine::cm()->init();
 
@@ -111,6 +113,7 @@ Game::init()
 		entity->setScale( 1.0f / ZOOM[zoom] );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
+        static_cast< Cloud * >( entity )->setZoom( zoom );
 	}
     }
 
@@ -131,11 +134,12 @@ Game::fini()
 bool
 Game::update( float dt )
 {
+	m_timeRemaining -= dt;
     const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
 
-    if ( false )
+    if ( pad.buttonDown( XPAD_BUTTON_BUTTON_Y ) )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
@@ -200,13 +204,30 @@ Game::update( float dt )
 void
 Game::render()
 {
-    hgeResourceManager * rm( Engine::rm() );
+	hgeResourceManager * rm( Engine::rm() );
+	hgeFont* font = Engine::rm()->GetFont("menu");
+	b2Vec2 timeTextLocation (700,10);
+	b2Vec2 scoreTextLocation(0,10);
+	char timeRemainingText[10];
+	sprintf_s(timeRemainingText,"%d:%d",(int)m_timeRemaining/60,(int)(m_timeRemaining)%60);
+
+	char scoreText[15];
+	sprintf_s(scoreText,"Score: %5d",m_score);
+
+
     ViewPort * vp( Engine::vp() );
+	
 
     vp->setTransform();
 
+	// render time remaining
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
-
+	
+	
+//	scoreTextLocation.x =m_zoom-1 * vp->offset().x; 
+	//scoreTextLocation.y=m_zoom-1 * vp->offset().y;
+	
+	
     std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
           body = body->GetNext() )
@@ -224,9 +245,9 @@ Game::render()
     float scale( 1.0f / static_cast< float >( ZOOM[m_zoom] ) );
     for ( i = entities.begin(); i != entities.end(); ++i )
     {
-        ( * i )->render( scale );
+        Entity * entity( * i );
+        entity->render( scale );
     }
-
 
 	Engine::hge()->Gfx_SetTransform();
 
@@ -236,14 +257,15 @@ Game::render()
 	{
 		for (int i = (*iter); i > 0; --i)
 		{
-			progressText.append("&");
+			progressText.append("@");
 		}
 		progressText.append("  ");
 	}
 
-	hgeFont * font( rm->GetFont( "menu" ) );
 	font->SetColor( 0xFFFFFFFF );
 	font->printf( 20.0, vp->screen().y - 50.0f, HGETEXT_LEFT, progressText.c_str() );
+	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
+	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
 }
 
 //------------------------------------------------------------------------------

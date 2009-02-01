@@ -35,7 +35,7 @@ Menu::init()
     m_gui = new hgeGUI();
     float cx( 0.5f * vp->screen().x );
     float cy( 0.5f * vp->screen().y );
-    m_gui->AddCtrl( new MenuItem( CTRL_TUTORIAL, cx, cy, "Tutorial", m_font ) );
+    m_gui->AddCtrl( new MenuItem( CTRL_TUTORIAL, cx, cy, "Help", m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_START, cx, cy + 30, "Start", m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_SCORE, cx, cy + 60, "High Score",
                                   m_font ) );

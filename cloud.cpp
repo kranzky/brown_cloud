@@ -13,12 +13,20 @@
 #include <hgeparticle.h>
 #include <hgeresource.h>
 
+namespace
+{
+    const float RD[5] = { 0.69f, 0.0f, 0.0f, 1.0f, 1.0f };
+    const float GN[5] = { 0.44f, 1.0f, 0.0f, 0.0f, 1.0f };
+    const float BL[5] = { 0.10f, 0.0f, 1.0f, 0.0f, 1.0f };
+}
+
 //==============================================================================
 Cloud::Cloud( float scale )
     :
     Entity( scale ),
 	m_particles(NULL),
-	m_clump(NULL)
+	m_clump(NULL),
+    m_zoom( 0 )
 {
 }
 
@@ -72,6 +80,8 @@ Cloud::doInit()
 	shapeDef.friction = 0.0f;
 	shapeDef.restitution = 0.7f;
 
+    m_zoom = 0;
+
 	b2BodyDef bodyDef;
 	bodyDef.userData = static_cast<void*> (this);
 	m_body = Engine::b2d()->CreateDynamicBody(&bodyDef);
@@ -113,18 +123,15 @@ Cloud::doRender( float scale )
     {
 		ratio = 1.0f / ratio;
 	}
-	ratio = 1.0f - ratio;
-	ratio = 1.0f - ratio * ratio;
+    ratio = 1.0f - ratio;
+    ratio = 1.0f - ratio * ratio;
 	alpha *= ratio;
     info.colColorStart.a = alpha;
-	ratio = 1.0f - ratio;
-	ratio = 1.0f - ratio * ratio;
-	info.colColorStart.r = ratio * 0.87f;
-	info.colColorStart.g = ratio * 0.81f;
-	info.colColorStart.b = ratio * 0.55f;
-	info.colColorEnd.r = ratio * 0.5f;
-	info.colColorEnd.g = ratio * 0.37f;
-	info.colColorEnd.b = ratio * 0.0f;
+    ratio = 1.0f - ratio;
+    ratio = 1.0f - ratio * ratio;
+	info.colColorStart.r = RD[m_zoom] * ratio;
+	info.colColorStart.g = GN[m_zoom] * ratio;
+	info.colColorStart.b = BL[m_zoom] * ratio;
     m_particles->Render();
 }
 
@@ -165,6 +172,19 @@ void Cloud::removeFromClump()
 	}
 }
 
+//------------------------------------------------------------------------------
+void
+Cloud::setZoom( int zoom )
+{
+    m_zoom = zoom;
+}
+
+//------------------------------------------------------------------------------
+int
+Cloud::getZoom()
+{
+    return m_zoom;
+}
 
 //==============================================================================
 

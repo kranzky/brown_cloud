@@ -56,6 +56,8 @@ class Score : public Context
     hgeSprite * m_cursor;
     ScoreState m_state;
     float m_timer;
+    float m_time_to_show;
+    float m_time_to_post;
     std::vector< ScoreData > m_high_score;
     std::string m_name;
     int m_value;

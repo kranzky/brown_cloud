@@ -511,7 +511,7 @@ bool
 Engine::_loseFocus()
 {
 #ifndef _DEBUG
-    m_paused = ( m_state == STATE_GAME || m_state == STATE_TUTORIAL );
+    m_paused = ( m_state == STATE_GAME );
 #endif
     return false;
 }
@@ -537,7 +537,7 @@ Engine::_update()
 {
     float dt( m_hge->Timer_GetDelta() );
 
-    if ( m_state == STATE_GAME || m_state == STATE_TUTORIAL )
+    if ( m_state == STATE_GAME )
     {
         if ( m_hge->Input_KeyDown( HGEK_P ) ||
              m_hge->Input_KeyDown( HGEK_ESCAPE ) )
