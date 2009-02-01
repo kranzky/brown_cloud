@@ -28,6 +28,10 @@ class Cloud : public Entity
 
 	Clump* getClump() const { return m_clump; }
 	void setClump(Clump* clump) { m_clump = clump; }
+	void removeFromClump();
+
+    void setZoom( int zoom );
+    int getZoom();
 
   protected:
     Cloud( const Cloud & );
@@ -42,7 +46,7 @@ class Cloud : public Entity
 
     hgeParticleSystem* m_particles;
 	Clump* m_clump;
-	  
+    int m_zoom;
 };
 
 #endif

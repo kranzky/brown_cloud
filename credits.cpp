@@ -130,17 +130,21 @@ Credits::render()
                   "Robert Barnett" );
     font->printf( 0.0, -90.0f, HGETEXT_CENTER,
                   "Nigel Budden" );
+    font->printf( 0.0, -60.0f, HGETEXT_CENTER,
+                  "Simon Boxer" );
+    font->printf( 0.0, -30.0f, HGETEXT_CENTER,
+                  "Simon Wittber" );
 
-    font->printf( 0.0, 0.0f, HGETEXT_CENTER,
+    font->printf( 0.0, 40.0f, HGETEXT_CENTER,
                   "Made for Global Game Jam 2009" );
 
-    font->printf( 0.0, 100.0f, HGETEXT_CENTER,
+    font->printf( 0.0, 120.0f, HGETEXT_CENTER,
                   "PERTH SPONSORS" );
 
-    rm->GetSprite( "murdoch" )->RenderEx( -300.0f, 200.0f, 0.0f, 0.5f );
-    rm->GetSprite( "subversive" )->RenderEx( -100.0f, 200.0f, 0.0f, 0.5f );
-    rm->GetSprite( "transmin" )->RenderEx( 100.0f, 200.0f, 0.0f, 0.5f );
-    rm->GetSprite( "rv" )->RenderEx( 300.0f, 200.0f, 0.0f, 0.5f );
+    rm->GetSprite( "murdoch" )->RenderEx( -300.0f, 220.0f, 0.0f, 0.5f );
+    rm->GetSprite( "subversive" )->RenderEx( -100.0f, 220.0f, 0.0f, 0.5f );
+    rm->GetSprite( "transmin" )->RenderEx( 100.0f, 220.0f, 0.0f, 0.5f );
+    rm->GetSprite( "rv" )->RenderEx( 300.0f, 220.0f, 0.0f, 0.5f );
 }
 
 //==============================================================================

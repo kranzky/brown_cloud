@@ -17,7 +17,7 @@
 
 namespace
 {
-    const float ZOOM[5] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
+    const float ZOOM[5] = { 1.0f, 1.8f, 3.2f, 5.8f, 10.5f };
 
     bool
     lessThan( const Entity * left, const Entity * right )
@@ -92,17 +92,21 @@ Game::init()
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
 
-	for (int i = 0; i < 20; ++i)
+    for ( int zoom = 0; zoom < 5; ++ zoom )
+    {
+	for (int i = 0; i < 8; ++i)
 	{
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
                          Engine::hge()->Random_Float( -300.0f, 300.0f) );
 		float angle( 0.f );
 		entity->setSprite( "cloud" );
-		entity->setScale( 1.0f / ZOOM[Engine::hge()->Random_Int( 0, 4 )] );
+		entity->setScale( 1.0f / ZOOM[zoom] );
 		entity->init();
 		entity->getBody()->SetXForm( position, angle );
+        static_cast< Cloud * >( entity )->setZoom( zoom );
 	}
+    }
 
     _initArena();
 }
@@ -126,7 +130,7 @@ Game::update( float dt )
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
 
-    if ( false )
+    if ( pad.buttonDown( XPAD_BUTTON_BUTTON_Y ) )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
@@ -227,7 +231,8 @@ Game::render()
     float scale( 1.0f / static_cast< float >( ZOOM[m_zoom] ) );
     for ( i = entities.begin(); i != entities.end(); ++i )
     {
-        ( * i )->render( scale );
+        Entity * entity( * i );
+        entity->render( scale );
     }
 	font->SetColor(0xFFFFFFFF);
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );

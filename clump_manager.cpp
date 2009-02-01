@@ -26,6 +26,13 @@ void Clump::addCloud(Cloud* cloud)
 }
 
 //------------------------------------------------------------------------------
+void Clump::removeCloud(Cloud* cloud)
+{
+	m_clouds.remove(cloud);
+}
+
+
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -118,8 +125,7 @@ void ClumpManager::update(float dt)
 					//all of the clouds in otherClump need to be put in entClump
 					joinClumps(entClump, otherClump);
 					//now destroy the empty clump
-					m_clumps.remove(otherClump);
-					delete otherClump;
+					destroyClump(otherClump);
 				}
 				else
 				{
@@ -127,8 +133,7 @@ void ClumpManager::update(float dt)
 					joinClumps(otherClump, entClump);
 					
 					//now destroy the empty clump
-					m_clumps.remove(entClump);
-					delete entClump;
+					destroyClump(entClump);
 				}
 
 				//make the actual physics connection between the two clouds that collided
@@ -164,6 +169,37 @@ void ClumpManager::reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosit
 	data.m_collidePosition = collidePosition;
 	m_interactions.push_back(data);
 }
+
+//------------------------------------------------------------------------------
+void ClumpManager::removeCloudFromClump(Cloud* cloud, Clump* clump)
+{
+	clump->removeCloud(cloud);
+	if (clump->getClouds()->size() == 1)
+	{
+		//one cloud does not a clump make. So tell it that it's no longer in a clump, and destroy the clump
+		Cloud* cloud = clump->getClouds()->back();
+		cloud->setClump(NULL);
+
+		clump->getClouds()->pop_back();
+	}
+
+	if (clump->getClouds()->size() == 0)
+	{
+		destroyClump(clump);
+	}
+}
+
+//------------------------------------------------------------------------------
+void ClumpManager::destroyClump(Clump* emptyClump)
+{
+	//destroy an empty clump
+	if (emptyClump->getClouds()->size() == 0)
+	{
+		m_clumps.remove(emptyClump);
+		delete emptyClump;
+	}
+}
+
 
 
 //==============================================================================

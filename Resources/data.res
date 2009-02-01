@@ -42,6 +42,10 @@ Texture cloud
 {
     filename=cloud.png
 }
+Texture help
+{
+    filename=help.png
+}
 Font menu
 {
     filename=menu.fnt
@@ -99,18 +103,25 @@ Sprite fujin
     texture=fujin
     rect=0,0,64,64
     hotspot=32,32
+    color=AAFFFFFF
 }
 Sprite breath
 {
     texture=particles
-    rect=0,64,32,32
+    rect=32,0,32,32
     hotspot=16,16
 }
 Sprite cloud
 {
     texture=particles
     rect=0,128,32,32
-    hotspot=8,8
+    hotspot=16,16
+}
+Sprite help
+{
+    texture=help
+    rect=0,0,800,600
+    hotspot=400,300
 }
 Particle cloud
 {
@@ -133,4 +144,8 @@ Sound wind
 Sound pant
 {
     filename=pant.wav
+}
+Sound music
+{
+    filename=Kranzky.mp3
 }

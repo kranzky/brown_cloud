@@ -46,6 +46,8 @@ Score::Score()
     m_cursor( 0 ),
     m_state( SCORE_SHOW ),
     m_timer( 0.0f ),
+    m_time_to_show( 0.0f ),
+    m_time_to_post( 0.0f ),
     m_high_score(),
     m_name( "" ),
     m_value( 0 ),
@@ -70,7 +72,7 @@ void
 Score::init()
 {
     hgeResourceManager * rm( Engine::rm() );
-    m_state = SCORE_SHOW;
+    m_state = SCORE_CALCULATE;
     m_timer = 0.0f;
     m_name = Engine::instance()->getConfig().userName;
     m_value = 0;
@@ -80,7 +82,8 @@ Score::init()
     {
         m_name.erase( m_name.end() - 1 );
     }
-    _updateScore();
+    m_time_to_show = 1.0f;
+    m_time_to_post = 0.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -105,7 +108,16 @@ Score::update( float dt )
     {
         case SCORE_CALCULATE:
         {
-            m_state = SCORE_INPUT;
+            if ( m_value > 0 )
+            {
+                m_state = SCORE_INPUT;
+                m_time_to_show = 1.0f;
+            }
+            else
+            {
+                m_state = SCORE_SHOW;
+                m_high_score.clear();
+            }
             break;
         }
         case SCORE_INPUT:
@@ -139,16 +151,34 @@ Score::update( float dt )
                 {
                     m_name = "Anonymous";
                 }
-                _insertScore( m_name.c_str(), m_value );
-                _updateScore();
                 Engine::instance()->getConfig().userName = m_name;
-                m_state = SCORE_SHOW;
+                m_time_to_post = 1.0f;
+            }
+            if ( m_time_to_post > 0.0f )
+            {
+                m_time_to_post -= dt;
+                if ( m_time_to_post <= 0.0f )
+                {
+                    _insertScore( m_name.c_str(), m_value );
+                    m_time_to_show = 1.0f;
+                    m_state = SCORE_SHOW;
+                    m_high_score.clear();
+                }
             }
             break;
         }
         case SCORE_SHOW:
         {
             const Controller & pad( Engine::instance()->getController() );
+
+            if ( m_time_to_show > 0.0f )
+            {
+                m_time_to_show -= dt;
+                if ( m_time_to_show <= 0.0f )
+                {
+                    _updateScore();
+                }
+            }
 
             if ( hge->Input_GetKey() != 0 &&
                  ! Engine::instance()->handledKey() )
@@ -193,6 +223,8 @@ Score::render()
 
     hgeFont * font( rm->GetFont( "menu" ) );
 
+    font->SetColor( 0xFFFFFFFF );
+
     float cx( 0.5f * Engine::vp()->screen().x );
     float cy( 0.5f * Engine::vp()->screen().y );
 
@@ -208,19 +240,33 @@ Score::render()
                 m_cursor->RenderStretch( cx + width * 0.5f, cy + 125.0f,
                                          cx + width * 0.5f + 16.0f, cy+127.0f );
             }
+            if ( m_time_to_post > 0.0f )
+            {
+                font->printf( cx, cy, HGETEXT_CENTER,
+                              "Sending details to server..." );
+            }
         }
         case SCORE_CALCULATE:
         {
-            font->printf( cx, 80.0f, HGETEXT_CENTER, "G A M E   O V E R" );
+            font->printf( cx, 80.0f, HGETEXT_CENTER, "F R O W N   T O W N" );
             break;
         }
         case SCORE_SHOW:
         {
-            font->SetColor( 0xFFFFFFFF );
             font->printf( cx, 60.0f, HGETEXT_CENTER,
                           "B L O W   H A R D S" );
             font->printf( cx, 2.0f * cy - 90.0f, HGETEXT_CENTER,
                           "Y O U   S U C K   T H E   M O S T" );
+            if ( m_time_to_show > 0.0f )
+            {
+                font->printf( cx, cy, HGETEXT_CENTER,
+                              "Requesting scores from server..." );
+            }
+            else if ( m_high_score.size() == 0 )
+            {
+                font->printf( cx, cy, HGETEXT_CENTER,
+                              "Unable to retrieve high scores :(" );
+            }
             font->SetColor( 0xCCFFFFFF );
             Engine::hge()->Gfx_SetClipping( 10, 120,
                 static_cast< int >( Engine::vp()->screen().x ) - 20,
