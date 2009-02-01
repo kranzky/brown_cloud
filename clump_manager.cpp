@@ -235,30 +235,31 @@ int ClumpManager::getClumpPoints()
 
 void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
 {
+    float base( 1 + static_cast<float>(zoomLevel) / 2.0f );
 	if(sizeOfClump <=5)
 	{
-		m_clumpPoints+= 1;
+		m_clumpPoints+= base;
 		m_clumpPointsMultiplier +=0.1f;
 
 	}
 	else if(sizeOfClump >5 && sizeOfClump <= 12)
 	{
-		m_clumpPoints+= 5;
+		m_clumpPoints+= 5 * base;
 		m_clumpPointsMultiplier +=0.2f;
 	}
 	else if (sizeOfClump >12 && sizeOfClump <= 22)
 	{
-		m_clumpPoints+= 10;
+		m_clumpPoints+= 10 * base;
 		m_clumpPointsMultiplier +=0.03f;
 	}
 	else if (sizeOfClump >22 && sizeOfClump <= 32)
 	{
-		m_clumpPoints+= 15;	
+		m_clumpPoints+= 15 * base;	
 		m_clumpPointsMultiplier +=0.5f;
 	}
 	else if (sizeOfClump >32 && sizeOfClump <=39)
 	{
-		m_clumpPoints+= 25;
+		m_clumpPoints+= 25 * base;
 		m_clumpPointsMultiplier +=0.8f;
 	}
 	else
@@ -267,7 +268,7 @@ void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
 		if(zoomLevel == 0)
 		{
 			// we have finished, time to trigger the explosions and end the game
-			m_clumpPoints+= 50;
+			m_clumpPoints+= 50 * base;
 			m_clumpPointsMultiplier +=3.0f;
 			m_isTopClusterFull= true;
 
@@ -276,7 +277,7 @@ void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
 		{
 
 			// otherwise we need to give a bonus for a 40 clump
-			m_clumpPoints+= 50;
+			m_clumpPoints+= 50 * base;
 			m_clumpPointsMultiplier +=1.5f;
 		}
 	}
