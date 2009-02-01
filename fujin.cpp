@@ -415,7 +415,7 @@ void Fujin::Blow( float power )
 	m_AABB.upperBound= b2Vec2(position.x+200.0f*m_scale,
                               position.y+200.0f*m_scale);
 
-	const int32 k_bufferSize = 10;
+	const int32 k_bufferSize = 100;
 
 	b2Shape *buffer[k_bufferSize];
 
