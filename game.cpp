@@ -161,7 +161,7 @@ Game::update( float dt )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
-		static_cast< Score * >( context )->setValue( m_score * (int)Engine::cm()->getClumpMultiplier() );
+		static_cast< Score * >( context )->setValue( static_cast<int>(m_score * Engine::cm()->getClumpMultiplier()) );
         return false;
     }
 	else if(m_timeRemaining <=0 &&  !m_fujin->isAsleep()  && m_gameOutTimer <=0)
@@ -177,7 +177,6 @@ Game::update( float dt )
 		m_gameOutTimer = 0;
 
 	}
-
 
 	Engine::cm()->update( dt );
     Engine::em()->update( dt );
@@ -394,7 +393,9 @@ void Game::updateProgressData()
         Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
         if ( entity && entity->getType() == Cloud::TYPE && equal(entity, m_fujin))
         {
-            entities.push_back( static_cast<Cloud*>(entity) );
+			Cloud* cloud =  static_cast<Cloud*>(entity);
+			if (cloud->isInWorld())
+				entities.push_back(cloud);
         }
 	}
 

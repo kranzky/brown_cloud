@@ -32,7 +32,8 @@ class Cloud : public Entity
 	void removeFromClump();
 
 	void removeFromWorld();
-	void addToWorld(b2Vec2 position, float scale);
+	void addToWorld(b2Vec2 position, float angle, float scale);
+	bool isInWorld() { return m_inWorld; }
 
     void setZoom( int zoom );
     int getZoom();
@@ -51,6 +52,7 @@ class Cloud : public Entity
     hgeParticleSystem* m_particles;
 	Clump* m_clump;
     int m_zoom;
+	bool m_inWorld;
 };
 
 #endif

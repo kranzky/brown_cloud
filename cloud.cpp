@@ -26,7 +26,8 @@ Cloud::Cloud( float scale )
     Entity( scale ),
 	m_particles(NULL),
 	m_clump(NULL),
-    m_zoom( 0 )
+    m_zoom( 0 ),
+	m_inWorld( false )
 {
 }
 
@@ -90,7 +91,7 @@ Cloud::doInit()
     info.fGravityMin = 0.0f;
     info.fGravityMax = 0.0f;
 
-	addToWorld(m_body->GetPosition(), m_scale);
+	addToWorld(m_body->GetPosition(), m_body->GetAngle(), m_scale);
 }
 
 //------------------------------------------------------------------------------
@@ -176,10 +177,12 @@ void Cloud::removeFromWorld()
 			m_body->DestroyShape( shape );
 		}
 	}
+
+	m_inWorld = false;
 }
 
 //------------------------------------------------------------------------------
-void Cloud::addToWorld(b2Vec2 position, float scale)
+void Cloud::addToWorld(b2Vec2 position, float angle, float scale)
 {	
 	Context* context = Engine::instance()->getContext();
 	Game* game = static_cast<Game*>(context);
@@ -195,10 +198,12 @@ void Cloud::addToWorld(b2Vec2 position, float scale)
 	m_body->CreateShape(&shapeDef);
 	m_body->SetMassFromShapes();
     m_body->m_linearDamping = 0.2f;
-	m_body->SetXForm(position, m_body->GetAngle());
+	m_body->SetXForm(position, angle);
 
 	m_particles->SetScale( m_scale );
 	m_particles->Fire();
+
+	m_inWorld = true;
 }
 
 //------------------------------------------------------------------------------
