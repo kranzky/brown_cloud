@@ -41,6 +41,7 @@ class Game : public Context
     Fujin * m_fujin;
 	float m_timeRemaining;
 	int m_score;
+	float m_gameOutTimer;
 };
 
 #endif

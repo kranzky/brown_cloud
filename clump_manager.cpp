@@ -38,7 +38,7 @@ void Clump::removeCloud(Cloud* cloud)
 //------------------------------------------------------------------------------
 ClumpManager::ClumpManager()
 : m_interactions(),
-  m_clumps(), m_clumpPoints(0), m_clumpPointsMultiplier(1)
+  m_clumps(), m_clumpPoints(0), m_clumpPointsMultiplier(1), m_isTopClusterFull(0)
 {
 }
 
@@ -264,11 +264,12 @@ void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
 	else
 	{
 		// we have a 40 clump, are we on the top most zoom?
-		if(zoomLevel == 1)
+		if(zoomLevel == 0)
 		{
 			// we have finished, time to trigger the explosions and end the game
 			m_clumpPoints+= 50;
 			m_clumpPointsMultiplier +=3.0f;
+			m_isTopClusterFull= true;
 
 		}
 		else
@@ -279,6 +280,11 @@ void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
 			m_clumpPointsMultiplier +=1.5f;
 		}
 	}
+}
+
+bool ClumpManager::isTopClusterFull()
+{
+		return m_isTopClusterFull;
 }
 //==============================================================================
 

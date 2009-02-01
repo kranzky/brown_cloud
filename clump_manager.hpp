@@ -46,7 +46,8 @@ public:
 	void removeCloudFromClump(Cloud* cloud, Clump* clump);
 	float getClumpMultiplier();
 	int getClumpPoints();
-	void calcPoints(int sizeOfClump, int zoomLevel);
+	
+	bool isTopClusterFull();
 
 
 private:
@@ -54,9 +55,10 @@ private:
     ClumpManager & operator=( const ClumpManager & );
 	float m_clumpPointsMultiplier;
 	float m_clumpPoints;
+	bool m_isTopClusterFull;
 
 	void destroyClump(Clump* emptyClump);
-
+	void calcPoints(int sizeOfClump, int zoomLevel);
 	struct InteractionData
 	{
 		Cloud* m_entity;

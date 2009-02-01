@@ -493,6 +493,9 @@ void Fujin::suckUpClouds()
 		}
 	}
 
+	if (m_suckedClouds.size() > 0)
+		setSick(true);
+
 }
 
 //------------------------------------------------------------------------------
@@ -503,11 +506,20 @@ void Fujin::blowOutClouds()
 		if (m_suckedClouds.size() > 0)
 		{
 			Cloud* cloud = m_suckedClouds.back();
-			cloud->addToWorld(getBody()->GetPosition(), m_scale);
+
+			b2Vec2 position( m_body->GetPosition() );
+			b2Vec2 direction( 0.0f, 1.0f );
+			direction = b2Mul( m_body->GetXForm().R, -direction );
+			position = position - 32.0f * m_scale * direction;
+
+			cloud->addToWorld(position, getBody()->GetAngle(), m_scale);
 			m_suckedClouds.pop_back();
             Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );
 		}
 
-		m_timeToNextCloudBlowOut = 2.0f;
+		m_timeToNextCloudBlowOut = 0.3f;
 	}
+
+	if (m_suckedClouds.size() == 0)
+		setSick(false);
 }
