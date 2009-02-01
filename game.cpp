@@ -53,7 +53,8 @@ Game::Game()
     Context(),
     m_last_zoom( 1.0f ),
     m_zoom( 0 ),
-    m_fujin( 0 )
+    m_fujin( 0 ),
+	m_gameOutTimer(0)
 {
 }
 
@@ -155,13 +156,28 @@ Game::update( float dt )
     {
         m_fujin->setAsleep( false );
     }
-    if ( m_timeRemaining <= 0)
+	
+    if ( m_gameOutTimer <= 0 && m_timeRemaining <=0)
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
-		static_cast< Score * >( context )->setValue( m_score * Engine::cm()->getClumpMultiplier() );
+		static_cast< Score * >( context )->setValue( m_score * (int)Engine::cm()->getClumpMultiplier() );
         return false;
     }
+	else if(m_timeRemaining <=0 &&  !m_fujin->isAsleep()  && m_gameOutTimer <=0)
+	{
+		m_fujin->setAsleep(true);
+	}
+	if(Engine::cm()->isTopClusterFull())
+	{
+		m_score += (int)(m_timeRemaining *10);
+		if( m_timeRemaining > 20)
+			m_timeRemaining = 20;
+		m_fujin->setAsleep(true);
+		m_gameOutTimer = 0;
+
+	}
+
 
 	Engine::cm()->update( dt );
     Engine::em()->update( dt );
