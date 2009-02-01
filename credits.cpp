@@ -29,6 +29,8 @@ Credits::init()
 
     vp->offset().x = 0.0f;
     vp->offset().y = 0.0f;
+    vp->centre().x = 0.0f;
+    vp->centre().y = 0.0f;
     vp->bounds().x = 80.0f;
     vp->bounds().y = 60.0f;
     vp->setAngle( 0.0f );
@@ -90,8 +92,8 @@ Credits::update( float dt )
             }
             vp->setAngle( angle );
         }
-        vp->offset().x += pad.getStick( XPAD_THUMBSTICK_LEFT ).x * dt * 50.0f;
-        vp->offset().y += pad.getStick( XPAD_THUMBSTICK_LEFT ).y * dt * 50.0f;
+        vp->centre().x += pad.getStick( XPAD_THUMBSTICK_LEFT ).x * dt * 50.0f;
+        vp->centre().y += pad.getStick( XPAD_THUMBSTICK_LEFT ).y * dt * 50.0f;
         if ( vp->bounds().x > 80.0f )
         {
             vp->bounds() *= ( 1.0f - pad.getTrigger( XPAD_TRIGGER_LEFT ) * dt * 10.0f );
@@ -127,7 +129,7 @@ Credits::render()
     font->printf( 0.0, -150.0f, HGETEXT_CENTER,
                   "Jason Hutchens" );
     font->printf( 0.0, -120.0f, HGETEXT_CENTER,
-                  "Robert Barnett" );
+                  "Robert \"Dodgy\" Barnett" );
     font->printf( 0.0, -90.0f, HGETEXT_CENTER,
                   "Nigel Budden" );
     font->printf( 0.0, -60.0f, HGETEXT_CENTER,
