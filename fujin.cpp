@@ -353,7 +353,6 @@ Fujin::doRender( float scale )
 	breath->Render();
 	sleep->Render();
     renderDamageable( position, m_scale );
-	const Mouse &mouse(Engine::instance()->getMouse());
 }
 
 //------------------------------------------------------------------------------

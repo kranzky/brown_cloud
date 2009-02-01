@@ -65,13 +65,34 @@ ViewPort::screenToWorld( b2Vec2 & point )
 	float tempOffsetY = 0;
 	
 
-	    point.x = point.x - ( 0.5f * m_screen.x);
-	    point.y = point.y - ( 0.5f * m_screen.y );
-			
-	///	point.x /= (m_hscale );
-	//	point.y /= (m_vscale);
-		
 
+    float dx( 0.5f * m_screen.x - m_centre.x * m_hscale );
+    float dy( 0.5f * m_screen.y - m_centre.y * m_vscale );
+    float maxx( 0.5f * m_screen.x * m_hscale );
+    float minx( m_screen.x - 0.5f * m_screen.x * m_hscale );
+    float maxy( 0.5f * m_screen.y * m_vscale );
+    float miny( m_screen.y - 0.5f * m_screen.y * m_vscale );
+    if ( dx > maxx )
+    {
+        dx = maxx;
+    }
+    if ( dx < minx )
+    {
+        dx = minx;
+    }
+    if ( dy > maxy )
+    {
+        dy = maxy;
+    }
+    if ( dy < miny )
+    {
+        dy = miny;
+    }
+
+    point.x -= dx;
+    point.y -= dy;
+    point.x /= m_hscale;
+    point.y /= m_vscale;
 }
 
 //------------------------------------------------------------------------------
