@@ -454,7 +454,7 @@ void Fujin::suckUpClouds()
 
 			if (!alreadySucked)
 			{
-				cloud->removeFromClump();
+				cloud->removeFromClump(true);
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
 			}

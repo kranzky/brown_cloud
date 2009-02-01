@@ -29,7 +29,7 @@ class Cloud : public Entity
 
 	Clump* getClump() const { return m_clump; }
 	void setClump(Clump* clump) { m_clump = clump; }
-	void removeFromClump();
+	void removeFromClump(bool notifyClumpManager);
 
 	void removeFromWorld();
 	void addToWorld(b2Vec2 position, float angle, float scale);

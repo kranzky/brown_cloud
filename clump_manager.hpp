@@ -44,6 +44,7 @@ public:
 
 	void reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosition);
 	void removeCloudFromClump(Cloud* cloud, Clump* clump);
+	void startClearingClump(float time);
 	float getClumpMultiplier();
 	int getClumpPoints();
 	
@@ -68,6 +69,9 @@ private:
 
 	std::vector<InteractionData> m_interactions;
 	std::list< Clump *> m_clumps;
+	Clump* m_clearingClump;
+	float m_clearClumpInterval;
+	float m_timeToNextClear;
 };
 
 #endif

@@ -38,7 +38,13 @@ void Clump::removeCloud(Cloud* cloud)
 //------------------------------------------------------------------------------
 ClumpManager::ClumpManager()
 : m_interactions(),
-  m_clumps(), m_clumpPoints(0), m_clumpPointsMultiplier(1), m_isTopClusterFull(0)
+  m_clumps(), 
+  m_clumpPoints(0), 
+  m_clumpPointsMultiplier(1), 
+  m_isTopClusterFull(0),
+  m_clearingClump(NULL),
+  m_clearClumpInterval(0.0f),
+  m_timeToNextClear(0.0f)
 {
 }
 
@@ -53,6 +59,12 @@ ClumpManager::~ClumpManager()
 void 
 ClumpManager::init()
 {
+	m_isTopClusterFull = false;
+	m_clumpPoints = 0;
+	m_clumpPointsMultiplier = 1; 
+    m_clearingClump = NULL;
+	m_clearClumpInterval = 0.0f;
+	m_timeToNextClear = 0.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -168,6 +180,30 @@ void ClumpManager::update(float dt)
 		m_interactions.pop_back();
 	}
 
+
+	//do any clump clearing - for removing all the clouds at game end
+	m_timeToNextClear -= dt;
+	if (m_clearingClump != NULL)
+	{
+		if (m_timeToNextClear < 0.0f)
+		{
+			if (m_clearingClump->getClouds()->size() > 0)
+			{
+				Cloud* cloud = m_clearingClump->getClouds()->back();
+				//removeCloudFromClump(cloud, m_clearingClump);
+				m_clearingClump->removeCloud(cloud);
+				cloud->removeFromClump(false);
+				cloud->removeFromWorld();
+			}
+			else
+			{
+				m_clearingClump = NULL;
+			}
+
+			m_timeToNextClear = m_clearClumpInterval;
+		}
+	}
+
 }
 
 //------------------------------------------------------------------------------
@@ -210,6 +246,16 @@ void ClumpManager::removeCloudFromClump(Cloud* cloud, Clump* clump)
 	{
 		destroyClump(clump);
 	}
+}
+
+//------------------------------------------------------------------------------
+void ClumpManager::startClearingClump(float time)
+{
+	//assumption: this is at game completion time, so there is only one clump 
+	//left, with all clouds in it
+	m_clearingClump = m_clumps.front();
+	m_clearClumpInterval = (time / m_clearingClump->getClouds()->size());
+	m_timeToNextClear = 0.001f;
 }
 
 //------------------------------------------------------------------------------

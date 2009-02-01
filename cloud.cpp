@@ -149,11 +149,12 @@ Cloud::initFromQuery( Query & query )
 }
 
 //------------------------------------------------------------------------------
-void Cloud::removeFromClump()
+void Cloud::removeFromClump(bool notifyClumpManager)
 {
 	if (m_clump != NULL)
 	{
-		Engine::cm()->removeCloudFromClump(this, m_clump);
+		if (notifyClumpManager)
+			Engine::cm()->removeCloudFromClump(this, m_clump);
 		m_clump = NULL;
 
 		//disconnect any physics joints
