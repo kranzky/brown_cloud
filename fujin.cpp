@@ -32,11 +32,13 @@ Fujin::Fujin( float max_strength, float scale )
 //------------------------------------------------------------------------------
 Fujin::~Fujin()
 {
-        if ( m_channel != 0 )
-        {
-            Engine::instance()->hge()->Channel_Stop( m_channel );
-            m_channel = 0;
-        }
+    if ( m_channel != 0 )
+    {
+        Engine::instance()->hge()->Channel_Stop( m_channel );
+        m_channel = 0;
+    }
+	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
+	sleep->Stop();
 }
 
 //------------------------------------------------------------------------------
@@ -493,7 +495,7 @@ void Fujin::suckUpClouds()
 
 			if (!alreadySucked)
 			{
-				cloud->removeFromClump();
+				cloud->removeFromClump(true);
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
                 Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "eat" ), 20 );

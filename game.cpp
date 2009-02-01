@@ -153,14 +153,14 @@ Game::update( float dt )
 	{
 		m_fujin->setAsleep(true);
 	}
-	if(Engine::cm()->isTopClusterFull())
+	if(Engine::cm()->isTopClusterFull() && !m_fujin->isAsleep())
 	{
 		m_score += (int)(m_timeRemaining *10);
 		if( m_timeRemaining > 20)
 			m_timeRemaining = 20;
 		m_fujin->setAsleep(true);
 		m_gameOutTimer = 0;
-
+		Engine::cm()->startClearingClump(m_timeRemaining - 1);
 	}
 
 	Engine::cm()->update( dt );
