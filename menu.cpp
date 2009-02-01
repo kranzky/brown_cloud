@@ -114,8 +114,7 @@ Menu::render()
 
     m_gui->Render();
     float cx( 0.5f * vp->screen().x );
-    m_font->SetColor( 0xFFFFAA88 );
-    m_font->printf( cx, 80.0f, HGETEXT_CENTER, "B R O W N   C L O U D" );
+    rm->GetSprite( "title" )->Render( cx, 150.0f );
 }
 
 //==============================================================================

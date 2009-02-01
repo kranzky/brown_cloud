@@ -13,18 +13,15 @@ http://www.microsoft.com/hardware/download/download.aspx?category=Gaming
 CONCEPT
 =======
 
-Fix scrolling (Jas)
-
-Get suck / blow implemented (Rob)
-
-Get damage implemented (Rob/Jas)
-
-Get scoring implemented (Nigel)
+Different faces, sleeping (Jas)
 
 Hook up new gfx (Jas)
+    + Help
+    + Normal, suck, blow, sick, sleep
+    + Title
 
-Sounds for as many actions as possible (Rob)
+Fix scrolling (Jas)
 
-Replace tutorial with controls, show controller, keyboard, mouse and blurb (Jas)
+Sounds for as many actions as possible (Jas)
 
 Write docs (Jas)
