@@ -232,7 +232,7 @@ Score::render()
     {
         case SCORE_INPUT:
         {
-			font->printf( cx, cy + 80.0f, HGETEXT_CENTER,"%d",m_value);
+			font->printf( cx, cy + 60.0f, HGETEXT_CENTER,"%d",m_value);
             font->printf( cx, cy + 100.0f, HGETEXT_CENTER, m_name.c_str() );
             if ( static_cast<int>( m_timer * 2.0f ) % 2 != 0 )
             {
