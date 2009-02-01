@@ -36,6 +36,7 @@ class EntityManager
     void deleteFromDatabase( Entity * entity );
 
     hgeSprite * getSprite( sqlite_int64 sprite_id );
+	std::vector<Entity*> getEntities(unsigned int type);
 
   protected:
     EntityManager( const EntityManager & );
