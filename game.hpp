@@ -33,6 +33,8 @@ class Game : public Context
     float m_last_zoom;
     int m_zoom;
     Fujin * m_fujin;
+	float m_timeRemaining;
+	int m_score;
 };
 
 #endif
