@@ -7,6 +7,7 @@
 ViewPort::ViewPort()
     :
     m_offset(),
+    m_centre(),
     m_bounds(),
     m_screen(),
     m_hscale( 0.0f ),
@@ -32,6 +33,13 @@ b2Vec2 &
 ViewPort::offset()
 {
     return m_offset;
+}
+
+//------------------------------------------------------------------------------
+b2Vec2 &
+ViewPort::centre()
+{
+    return m_centre;
 }
 
 //------------------------------------------------------------------------------
@@ -102,8 +110,29 @@ void
 ViewPort::setTransform( float scale )
 {
     _updateRatios();
-    Engine::hge()->Gfx_SetTransform( m_offset.x, m_offset.y,
-                                     0.5f * m_screen.x, 0.5f * m_screen.y,
+    float dx( 0.5f * m_screen.x - m_centre.x * m_hscale );
+    float dy( 0.5f * m_screen.y - m_centre.y * m_vscale );
+    float maxx( 0.5f * m_screen.x * m_hscale );
+    float minx( m_screen.x - 0.5f * m_screen.x * m_hscale );
+    float maxy( 0.5f * m_screen.y * m_vscale );
+    float miny( m_screen.y - 0.5f * m_screen.y * m_vscale );
+    if ( dx > maxx )
+    {
+        dx = maxx;
+    }
+    if ( dx < minx )
+    {
+        dx = minx;
+    }
+    if ( dy > maxy )
+    {
+        dy = maxy;
+    }
+    if ( dy < miny )
+    {
+        dy = miny;
+    }
+    Engine::hge()->Gfx_SetTransform( m_offset.x, m_offset.y, dx, dy,
                                      m_angle,
                                      scale * m_hscale, scale * m_vscale );
 }

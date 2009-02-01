@@ -15,6 +15,7 @@ class ViewPort
     ~ViewPort();
     float angle();
     b2Vec2 & offset();
+    b2Vec2 & centre();
     b2Vec2 & bounds();
     b2Vec2 & screen();
     void screenToWorld( b2Vec2 & point );
@@ -29,6 +30,7 @@ class ViewPort
     void _updateRatios() const;
 
     b2Vec2 m_offset;
+    b2Vec2 m_centre;
     b2Vec2 m_bounds;
     b2Vec2 m_screen;
     mutable float m_hscale;
