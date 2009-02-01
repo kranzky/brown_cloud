@@ -89,6 +89,8 @@ Game::init()
 
     vp->offset().x = 0.0f;
     vp->offset().y = 0.0f;
+    vp->centre().x = 0.0f;
+    vp->centre().y = 0.0f;
     vp->bounds().x = 800.0f;
     vp->bounds().y = 600.0f;
     vp->setAngle( 0.0f );
@@ -214,7 +216,7 @@ Game::update( float dt )
         m_fujin->setScale( 1.0f / m_last_zoom );
     }
 
-    vp->offset() = m_fujin->getBody()->GetPosition();
+    vp->centre() = m_fujin->getBody()->GetPosition();
 
     return false;
 }
@@ -243,7 +245,7 @@ Game::render()
     vp->setTransform();
 
 
-    rm->GetSprite( "polluted" )->Render( 0.0f, 0.0f );
+    rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 0.8f );
 	
 	
 

@@ -510,10 +510,11 @@ void Fujin::blowOutClouds()
 			b2Vec2 position( m_body->GetPosition() );
 			b2Vec2 direction( 0.0f, 1.0f );
 			direction = b2Mul( m_body->GetXForm().R, -direction );
-			position = position - 32.0f * m_scale * direction;
+			position = position - 60.0f * m_scale * direction;
 
 			cloud->addToWorld(position, getBody()->GetAngle(), m_scale);
 			m_suckedClouds.pop_back();
+
             Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );
 		}
 

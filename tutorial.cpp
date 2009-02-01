@@ -31,6 +31,8 @@ Tutorial::init()
 
     vp->offset().x = 0.0f;
     vp->offset().y = 0.0f;
+    vp->centre().x = 0.0f;
+    vp->centre().y = 0.0f;
     vp->bounds().x = 800.0f;
     vp->bounds().y = 600.0f;
     vp->setAngle( 0.0f );
