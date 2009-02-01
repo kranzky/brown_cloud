@@ -8,6 +8,9 @@
 #include <entity.hpp>
 #include <damageable.hpp>
 #include <Box2D.h>
+#include <vector>
+
+class Cloud;
 
 //------------------------------------------------------------------------------
 class Fujin : public Entity, public Damageable
@@ -43,7 +46,12 @@ class Fujin : public Entity, public Damageable
     virtual void initFromQuery( Query & query );
     float lookAt(const b2Vec2& targetPoint);
 	void Blow( float power = 1.0f );
+	void suckUpClouds();
+	void blowOutClouds();
+
+	std::vector<Cloud*> m_suckedClouds;
 	b2AABB m_AABB;
+	float m_timeToNextCloudBlowOut;
 	bool m_isBlowing;
     bool m_isSick;
     bool m_isAsleep;

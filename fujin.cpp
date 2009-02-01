@@ -19,6 +19,8 @@ Fujin::Fujin( float max_strength, float scale )
     Entity( scale ),
     Damageable( max_strength ),
     m_AABB(),
+	m_suckedClouds(),
+	m_timeToNextCloudBlowOut(0.1f),
     m_isBlowing(false),
     m_isSick( false ),
     m_isAsleep( false )
@@ -145,6 +147,9 @@ Fujin::doInit()
 void
 Fujin::doUpdate( float dt )
 {
+	if (m_timeToNextCloudBlowOut > 0.0f)
+		m_timeToNextCloudBlowOut -= dt;
+
     const Controller & pad( Engine::instance()->getController() );
 	const Mouse &mouse(Engine::instance()->getMouse());
 	
@@ -235,12 +240,16 @@ Fujin::doUpdate( float dt )
             int volume( static_cast< int >( 100.0f * power ) );
 			Engine::instance()->hge()->Effect_PlayEx(
                 Engine::rm()->GetEffect( "wind" ), volume );
+
+			blowOutClouds();
         }
         else
         {
             int volume( static_cast< int >( - 100.0f * power ) );
 			Engine::instance()->hge()->Effect_PlayEx(
                 Engine::rm()->GetEffect( "pant" ), volume );
+
+			suckUpClouds();
         }
 		breath->info.nEmission = static_cast< int >( 20.0f * power );
     }
@@ -309,6 +318,7 @@ Fujin::initFromQuery( Query & query )
     m_body->SetXForm( position, angle );
 }
 
+//------------------------------------------------------------------------------
 float Fujin::lookAt( const b2Vec2& targetPoint )
 {
 	b2Vec2 offset(targetPoint );
@@ -398,5 +408,55 @@ void Fujin::Blow( float power )
 
         entity->getBody()->ApplyForce( offset,
                                        entity->getBody()->GetPosition() );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Fujin::suckUpClouds()
+{
+	EntityManager* em = Engine::em();
+	std::vector<Entity*> clouds = em->getEntities(Cloud::TYPE);
+	std::vector<Entity*>::iterator i;
+
+	for (i = clouds.begin(); i != clouds.end(); ++i)
+	{
+		Cloud* cloud = static_cast<Cloud*>(*i);
+		b2Vec2 meToCloud = cloud->getBody()->GetPosition() - getBody()->GetPosition();
+		if (cloud->getScale() > getScale() * 0.99f
+			&& cloud->getScale() < getScale() * 1.01f 
+			&& meToCloud.Length() < 10.0f)
+		{
+			bool alreadySucked = false;
+			std::vector<Cloud*>::iterator suckedIter;
+			for (suckedIter = m_suckedClouds.begin(); suckedIter != m_suckedClouds.end(); ++suckedIter)
+			{
+				if ((*suckedIter) == cloud)
+					alreadySucked = true;
+			}
+
+			if (!alreadySucked)
+			{
+				cloud->removeFromClump();
+				cloud->removeFromWorld();
+				m_suckedClouds.push_back(cloud);
+			}
+		}
+	}
+
+}
+
+//------------------------------------------------------------------------------
+void Fujin::blowOutClouds()
+{
+	if (m_timeToNextCloudBlowOut < 0.0f)
+	{
+		if (m_suckedClouds.size() > 0)
+		{
+			Cloud* cloud = m_suckedClouds.back();
+			cloud->addToWorld(getBody()->GetPosition(), m_scale);
+			m_suckedClouds.pop_back();
+		}
+
+		m_timeToNextCloudBlowOut = 2.0f;
 	}
 }
