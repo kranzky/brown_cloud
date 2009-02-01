@@ -79,9 +79,18 @@ Fujin::isAsleep()
 
 //------------------------------------------------------------------------------
 void
-Fujin::setAsleep( bool sleep )
+Fujin::setAsleep( bool bsleep )
 {
-    m_isAsleep = sleep;
+    m_isAsleep = bsleep;
+	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
+    if ( m_isAsleep )
+    {
+        sleep->Fire();
+    }
+    else
+    {
+        sleep->Stop();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -119,6 +128,8 @@ Fujin::onSetScale()
 
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 	breath->SetScale(m_scale);
+	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
+	sleep->SetScale(m_scale);
 }
 
 //------------------------------------------------------------------------------
@@ -138,6 +149,7 @@ Fujin::doInit()
     m_isAsleep = false;
 
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
+	Engine::rm()->GetParticleSystem( "sleep" )->SetScale( m_scale );
 
 	const Controller & pad( Engine::instance()->getController() );
 	Engine::instance()->setMouse("cursor");
@@ -156,6 +168,7 @@ Fujin::doUpdate( float dt )
 	const Mouse::MouseButton & leftMouseBtn(mouse.getLeft());
 
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
+	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
 
     b2Vec2 acceleration( 0.0f, 0.0f );
     float power( 0.0f );
@@ -271,18 +284,20 @@ Fujin::doUpdate( float dt )
         }
 	}
 
-    if ( breath->GetParticlesAlive() > 0 )
-    {
-		b2Vec2 position( m_body->GetPosition() );
-		b2Vec2 direction( 0.0f, 1.0f );
-		direction = b2Mul( m_body->GetXForm().R, -direction );
-		position = position - 32.0f * m_scale * direction;
-		breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
-        float angle( m_body->GetAngle() );
-		breath->info.fDirection= angle -M_PI;
-    }
+	sleep->info.nEmission = 3;
+
+	b2Vec2 position( m_body->GetPosition() );
+	b2Vec2 direction( 0.0f, 1.0f );
+	direction = b2Mul( m_body->GetXForm().R, -direction );
+	position = position + 50.0f * m_scale * direction;
+	sleep->MoveTo( position.x / m_scale, position.y / m_scale, false );
+	position = m_body->GetPosition() - 50.0f * m_scale * direction;
+	breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
+    float angle( m_body->GetAngle() );
+	breath->info.fDirection= angle -M_PI;
 		
 	breath->Update( dt );
+	sleep->Update( dt );
 }
 
 //------------------------------------------------------------------------------
@@ -292,8 +307,10 @@ Fujin::doRender( float scale )
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
+	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
     m_sprite->RenderEx( position.x, position.y, angle, m_scale * 1.5f );
 	breath->Render();
+	sleep->Render();
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
 }
@@ -406,6 +423,7 @@ void Fujin::Blow( float power )
 
 		offset *= force;
 
+        entity->getBody()->WakeUp();
         entity->getBody()->ApplyForce( offset,
                                        entity->getBody()->GetPosition() );
 	}

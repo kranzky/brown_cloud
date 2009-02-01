@@ -171,6 +171,12 @@ Sprite cloud
     rect=0,128,32,32
     hotspot=16,16
 }
+Sprite sleep
+{
+    texture=particles
+    rect=96,96,32,32
+    hotspot=16,16
+}
 Sprite help
 {
     texture=help
@@ -186,6 +192,11 @@ Particle breath
 {
     filename=breath.psi
     sprite=breath
+}
+Particle sleep
+{
+    filename=sleep.psi
+    sprite=sleep
 }
 Sound thunder
 {

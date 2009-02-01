@@ -53,7 +53,7 @@ private:
     ClumpManager( const ClumpManager & );
     ClumpManager & operator=( const ClumpManager & );
 	float m_clumpPointsMultiplier;
-	int m_clumpPoints;
+	float m_clumpPoints;
 
 	void destroyClump(Clump* emptyClump);
 
