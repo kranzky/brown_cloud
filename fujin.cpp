@@ -423,6 +423,7 @@ void Fujin::Blow( float power )
 
 		offset *= force;
 
+        entity->getBody()->WakeUp();
         entity->getBody()->ApplyForce( offset,
                                        entity->getBody()->GetPosition() );
 	}
