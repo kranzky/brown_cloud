@@ -159,7 +159,7 @@ Game::update( float dt )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
-		static_cast< Score * >( context )->setValue( m_score * Engine::cm()->getClumpMultiplier() );
+		static_cast< Score * >( context )->setValue( static_cast<int>(m_score * Engine::cm()->getClumpMultiplier()) );
         return false;
     }
 
