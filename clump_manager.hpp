@@ -44,10 +44,16 @@ public:
 
 	void reportCollision(Cloud* ent, Cloud* other, b2Vec2 collidePosition);
 	void removeCloudFromClump(Cloud* cloud, Clump* clump);
+	float getClumpMultiplier();
+	int getClumpPoints();
+	void calcPoints(int sizeOfClump, int zoomLevel);
+
 
 private:
     ClumpManager( const ClumpManager & );
     ClumpManager & operator=( const ClumpManager & );
+	float m_clumpPointsMultiplier;
+	float m_clumpPoints;
 
 	void destroyClump(Clump* emptyClump);
 

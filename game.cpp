@@ -159,7 +159,7 @@ Game::update( float dt )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
-        static_cast< Score * >( context )->setValue( 13 );
+		static_cast< Score * >( context )->setValue( m_score * Engine::cm()->getClumpMultiplier() );
         return false;
     }
 
@@ -167,6 +167,7 @@ Game::update( float dt )
     Engine::em()->update( dt );
 
 	updateProgressData();
+	m_score += Engine::cm()->getClumpPoints();
 
     if ( Engine::instance()->isPaused() )
     {
@@ -225,10 +226,13 @@ Game::render()
 	b2Vec2 timeTextLocation (700,10);
 	b2Vec2 scoreTextLocation(0,10);
 	char timeRemainingText[10];
-	sprintf_s(timeRemainingText,"%d:%d",(int)m_timeRemaining/60,(int)(m_timeRemaining)%60);
+	sprintf_s(timeRemainingText,"%d:%02d",(int)m_timeRemaining/60,(int)(m_timeRemaining)%60);
 
-	char scoreText[15];
+	char scoreText[25];
 	sprintf_s(scoreText,"Score: %5d",m_score);
+
+	char multiplierText[25];
+	sprintf_s(multiplierText,"Multiplier: x%2.02f",Engine::cm()->getClumpMultiplier());
 
 
     ViewPort * vp( Engine::vp() );
@@ -279,6 +283,7 @@ Game::render()
 	font->SetColor( 0xFFFFFFFF );
 	font->printf( 20.0, vp->screen().y - 50.0f, HGETEXT_LEFT, progressText.c_str() );
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
+	font->Render(400, 10,HGETEXT_LEFT, multiplierText);
 	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
 
     vp->setTransform();

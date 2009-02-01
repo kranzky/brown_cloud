@@ -4,9 +4,9 @@
 #include <engine.hpp>
 #include <entity_manager.hpp>
 #include <clump_manager.hpp>
+#include <game.hpp>
 
 #include <hgesprite.h>
-#include <Box2D.h>
 #include <sqlite3.h>
 #include <Database.h>
 #include <Query.h>
@@ -74,24 +74,14 @@ Cloud::registerEntity()
 void
 Cloud::doInit()
 {
-	b2CircleDef shapeDef;
-	shapeDef.radius = m_sprite->GetWidth() * m_scale;
-	shapeDef.density = 1.0f;
-	shapeDef.friction = 0.0f;
-	shapeDef.restitution = 0.7f;
-
     m_zoom = 0;
 
 	b2BodyDef bodyDef;
 	bodyDef.userData = static_cast<void*> (this);
 	m_body = Engine::b2d()->CreateDynamicBody(&bodyDef);
-	m_body->CreateShape(&shapeDef);
-	m_body->SetMassFromShapes();
-    m_body->m_linearDamping = 0.2f;
 
 	m_particles = new hgeParticleSystem( * Engine::rm()->GetParticleSystem( "cloud" ) );
-    m_particles->SetScale( m_scale );
-	m_particles->Fire();
+    
     hgeParticleSystemInfo & info( m_particles->info );
     info.fRadialAccelMin = 0.0f;
     info.fRadialAccelMax = 0.0f;
@@ -99,6 +89,8 @@ Cloud::doInit()
     info.fTangentialAccelMin = 0.0f;
     info.fGravityMin = 0.0f;
     info.fGravityMax = 0.0f;
+
+	addToWorld(m_body->GetPosition(), m_scale);
 }
 
 //------------------------------------------------------------------------------
@@ -170,6 +162,43 @@ void Cloud::removeFromClump()
 			Engine::instance()->b2d()->DestroyJoint(joint);
 		}
 	}
+}
+//------------------------------------------------------------------------------
+void Cloud::removeFromWorld()
+{
+	m_particles->Stop();
+
+	if ( m_body != 0 )
+	{
+		b2Shape * shape;
+		while ( shape = m_body->GetShapeList() )
+		{
+			m_body->DestroyShape( shape );
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void Cloud::addToWorld(b2Vec2 position, float scale)
+{	
+	Context* context = Engine::instance()->getContext();
+	Game* game = static_cast<Game*>(context);
+	m_zoom = game->getZoom();
+	
+	m_scale = scale;
+	b2CircleDef shapeDef;
+	shapeDef.radius = m_sprite->GetWidth() * m_scale;
+	shapeDef.density = 1.0f;
+	shapeDef.friction = 0.0f;
+	shapeDef.restitution = 0.7f;
+
+	m_body->CreateShape(&shapeDef);
+	m_body->SetMassFromShapes();
+    m_body->m_linearDamping = 0.2f;
+	m_body->SetXForm(position, m_body->GetAngle());
+
+	m_particles->SetScale( m_scale );
+	m_particles->Fire();
 }
 
 //------------------------------------------------------------------------------

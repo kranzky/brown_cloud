@@ -38,13 +38,13 @@ void Clump::removeCloud(Cloud* cloud)
 //------------------------------------------------------------------------------
 ClumpManager::ClumpManager()
 : m_interactions(),
-  m_clumps()
+  m_clumps(), m_clumpPoints(0), m_clumpPointsMultiplier(1)
 {
 }
 
 
 //------------------------------------------------------------------------------
-ClumpManager::~ClumpManager()
+ClumpManager::~ClumpManager() 
 {
 	fini();
 }
@@ -82,6 +82,7 @@ void joinClumps(Clump* bigClump, Clump* littleClump)
 void ClumpManager::update(float dt)
 {
 	//deal with any interactions that have occurred since the last update
+	m_clumpPoints =0;
 	while (m_interactions.size() > 0)
 	{
 		InteractionData& i = m_interactions.back();
@@ -100,13 +101,26 @@ void ClumpManager::update(float dt)
 			i.m_entity->setClump(newClump);
 			i.m_other->setClump(newClump);
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
+
+			// give clump starter multiplier
+			m_clumpPointsMultiplier +=0.1f;
+			// give some base points as well
+			m_clumpPoints+= 1;
 		}
 		else if (entClump == NULL)
 		{
 			//first entity is not in a clump, but other entity is, so first needs to join other
 			i.m_other->getClump()->addCloud(i.m_entity);
 			i.m_entity->setClump(i.m_other->getClump());
+			// determine how many items are in the clump already 
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
+			
+			int clumpSize = otherClump->getClouds()->size();
+			calcPoints(clumpSize, i.m_entity->getZoom());;
+
+
+
+			
 		}
 		else if (otherClump == NULL)
 		{
@@ -114,6 +128,9 @@ void ClumpManager::update(float dt)
 			i.m_entity->getClump()->addCloud(i.m_other);
 			i.m_other->setClump(i.m_entity->getClump());
 			joinEntities(i.m_entity, i.m_other, i.m_collidePosition);
+			
+			int clumpSize = entClump->getClouds()->size();
+			calcPoints(clumpSize, i.m_entity->getZoom());
 		}
 		else
 		{
@@ -124,6 +141,9 @@ void ClumpManager::update(float dt)
 				{
 					//all of the clouds in otherClump need to be put in entClump
 					joinClumps(entClump, otherClump);
+					int clumpSize = entClump->getClouds()->size();
+					calcPoints(clumpSize, i.m_entity->getZoom());
+
 					//now destroy the empty clump
 					destroyClump(otherClump);
 				}
@@ -131,8 +151,11 @@ void ClumpManager::update(float dt)
 				{
 					//all of the clouds in entClump need to be put into otherClump
 					joinClumps(otherClump, entClump);
-					
+				
+					int clumpSize = otherClump->getClouds()->size();
+					calcPoints(clumpSize, i.m_entity->getZoom());
 					//now destroy the empty clump
+
 					destroyClump(entClump);
 				}
 
@@ -200,8 +223,63 @@ void ClumpManager::destroyClump(Clump* emptyClump)
 	}
 }
 
+float ClumpManager::getClumpMultiplier()
+{
+	return m_clumpPointsMultiplier;
+}
 
+int ClumpManager::getClumpPoints()
+{
+	return (int)(m_clumpPoints * m_clumpPointsMultiplier);
+}
 
+void ClumpManager::calcPoints( int sizeOfClump, int zoomLevel )
+{
+	if(sizeOfClump <=5)
+	{
+		m_clumpPoints+= 1;
+		m_clumpPointsMultiplier +=0.1f;
+
+	}
+	else if(sizeOfClump >5 && sizeOfClump <= 12)
+	{
+		m_clumpPoints+= 5;
+		m_clumpPointsMultiplier +=0.2f;
+	}
+	else if (sizeOfClump >12 && sizeOfClump <= 22)
+	{
+		m_clumpPoints+= 10;
+		m_clumpPointsMultiplier +=0.03f;
+	}
+	else if (sizeOfClump >22 && sizeOfClump <= 32)
+	{
+		m_clumpPoints+= 15;	
+		m_clumpPointsMultiplier +=0.5f;
+	}
+	else if (sizeOfClump >32 && sizeOfClump <=39)
+	{
+		m_clumpPoints+= 25;
+		m_clumpPointsMultiplier +=0.8f;
+	}
+	else
+	{
+		// we have a 40 clump, are we on the top most zoom?
+		if(zoomLevel == 1)
+		{
+			// we have finished, time to trigger the explosions and end the game
+			m_clumpPoints+= 50;
+			m_clumpPointsMultiplier +=3.0f;
+
+		}
+		else
+		{
+
+			// otherwise we need to give a bonus for a 40 clump
+			m_clumpPoints+= 50;
+			m_clumpPointsMultiplier +=1.5f;
+		}
+	}
+}
 //==============================================================================
 
 

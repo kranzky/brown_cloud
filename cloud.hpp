@@ -6,6 +6,7 @@
 #pragma once
 
 #include <entity.hpp>
+#include <Box2D.h>
 
 class hgeParticleSystem;
 class Clump;
@@ -29,6 +30,9 @@ class Cloud : public Entity
 	Clump* getClump() const { return m_clump; }
 	void setClump(Clump* clump) { m_clump = clump; }
 	void removeFromClump();
+
+	void removeFromWorld();
+	void addToWorld(b2Vec2 position, float scale);
 
     void setZoom( int zoom );
     int getZoom();

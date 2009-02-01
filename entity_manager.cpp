@@ -283,4 +283,23 @@ EntityManager::getSprite( sqlite_int64 sprite_id )
     return m_sprites[sprite_id];
 }
 
+//------------------------------------------------------------------------------
+std::vector<Entity*> 
+EntityManager::getEntities(unsigned int type)
+{
+    std::vector< Entity * > entities;
+
+	std::vector< Entity * >::iterator i;
+    for ( i = m_entities.begin(); i != m_entities.end(); ++i )
+    {
+		Entity* ent = (*i);
+		if (ent->getType() == type)
+		{
+			entities.push_back(ent);
+		}
+	}
+	return entities;
+}
+
+
 //==============================================================================

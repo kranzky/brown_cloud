@@ -46,7 +46,8 @@ Entity::update( float dt )
 {
     doUpdate( dt );
     b2Shape * shape( getBody()->GetShapeList() );
-    shape->ComputeAABB( m_aabb, getBody()->GetXForm() );
+	if (shape != NULL)
+		shape->ComputeAABB( m_aabb, getBody()->GetXForm() );
 }
 
 //------------------------------------------------------------------------------
