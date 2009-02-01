@@ -280,6 +280,8 @@ Game::render()
 	font->printf( 20.0, vp->screen().y - 50.0f, HGETEXT_LEFT, progressText.c_str() );
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
 	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
+
+    vp->setTransform();
 }
 
 //------------------------------------------------------------------------------
