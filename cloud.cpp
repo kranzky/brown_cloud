@@ -42,7 +42,7 @@ Cloud::collide( Entity * entity, b2ContactPoint * point )
 {
 	if (entity->getType() == Cloud::TYPE)
 	{
-		Engine::cm()->reportCollision(this, reinterpret_cast<Cloud*>(entity), point->position);
+		Engine::cm()->reportCollision(this, static_cast<Cloud*>(entity), point->position);
 	}
 }
 

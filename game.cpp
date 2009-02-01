@@ -14,6 +14,7 @@
 #include <hgeresource.h>
 
 #include <algorithm>
+#include <set>
 
 namespace
 {
@@ -36,6 +37,14 @@ namespace
         }
         return false;
     }
+
+	bool equal( const Entity * left, const Entity * right )
+	{
+		if (left->getScale() > right->getScale() * 0.99f
+			&& left->getScale() < right->getScale() * 1.01f)
+			return true;
+		return false;
+	}
 }
 
 //==============================================================================
@@ -141,6 +150,8 @@ Game::update( float dt )
 	Engine::cm()->update( dt );
     Engine::em()->update( dt );
 
+	updateProgressData();
+
     if ( Engine::instance()->isPaused() )
     {
         return false;
@@ -237,13 +248,22 @@ Game::render()
     }
 	// render time remaining
 	Engine::hge()->Gfx_SetTransform();
-	font->SetColor(0xFFFFFFFF);
+
+	std::string progressText;
+	std::list<int>::iterator iter;
+    for ( iter = m_progress.begin(); iter != m_progress.end(); ++iter )
+	{
+		for (int i = (*iter); i > 0; --i)
+		{
+			progressText.append("@");
+		}
+		progressText.append("  ");
+	}
+
+	font->SetColor( 0xFFFFFFFF );
+	font->printf( 20.0, vp->screen().y - 50.0f, HGETEXT_LEFT, progressText.c_str() );
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
 	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
-
-	
-	
-	
 }
 
 //------------------------------------------------------------------------------
@@ -319,4 +339,62 @@ Game::_initArena()
         girder->init();
         girder->getBody()->SetXForm( position, 0.0f );
     }
+}
+
+//------------------------------------------------------------------------------
+void Game::updateProgressData()
+{
+	//This whole function is fairly horrible. Why not gloss over this and have
+	//a look at something a bit nicer? :o)
+
+	//get all the entities that are at the same level as the player
+	std::vector< Cloud * > entities;
+    for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
+          body = body->GetNext() )
+    {
+        Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
+        if ( entity && entity->getType() == Cloud::TYPE && equal(entity, m_fujin))
+        {
+            entities.push_back( static_cast<Cloud*>(entity) );
+        }
+	}
+
+	int numClouds = entities.size();
+
+	int looseEntities = 0;
+	std::vector< Cloud * >::iterator i;
+	std::set< Clump* > uniqueClumps;
+
+	//find out all the entities that are not in a clump, and get a reference to
+	//each clump that has some of these level entities in it
+	for ( i = entities.begin(); i != entities.end(); ++i )
+	{
+		Clump* clump = (*i)->getClump();
+		if (clump == NULL)
+			++looseEntities;
+		else
+		{
+			uniqueClumps.insert(clump);
+		}
+	}
+
+	m_progress.clear();
+
+	std::set< Clump * >::iterator iter;
+	for (iter = uniqueClumps.begin(); iter != uniqueClumps.end(); ++iter)
+	{
+		Clump* clump = (*iter);
+		m_progress.push_back(clump->getClouds()->size());
+	}
+
+	for (int i = 0; i < looseEntities; ++i)
+	{
+		m_progress.push_back(1);
+	}
+
+	//m_progress now will have a bunch of numbers in it, with each number being either 
+	//the size of a clump, or a 1 for cloud not in a clump
+
+	using namespace std;
+	m_progress.sort( greater<int>( ) );		//sort by clump size
 }

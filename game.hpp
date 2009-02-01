@@ -6,6 +6,7 @@
 #pragma once
 
 #include <context.hpp>
+#include <list>
 
 class Fujin;
 class Entity;
@@ -30,6 +31,9 @@ class Game : public Context
 
   private:
     void _initArena();
+	void updateProgressData();
+
+	std::list<int> m_progress;
     float m_last_zoom;
     int m_zoom;
     Fujin * m_fujin;
