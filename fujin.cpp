@@ -17,7 +17,11 @@
 Fujin::Fujin( float max_strength, float scale )
     :
     Entity( scale ),
-    Damageable( max_strength ), m_isBlowing(false)
+    Damageable( max_strength ),
+    m_AABB(),
+    m_isBlowing(false),
+    m_isSick( false ),
+    m_isAsleep( false )
 {
 }
 
@@ -48,6 +52,34 @@ Fujin::persistToDatabase()
                                                         m_body->GetPosition().y,
                                                         m_body->GetAngle(),
                                                         m_scale, m_sprite_id );
+}
+
+//------------------------------------------------------------------------------
+bool
+Fujin::isSick()
+{
+    return m_isSick;
+}
+
+//------------------------------------------------------------------------------
+void
+Fujin::setSick( bool sick )
+{
+    m_isSick = sick;
+}
+
+//------------------------------------------------------------------------------
+bool
+Fujin::isAsleep()
+{
+    return m_isAsleep;
+}
+
+//------------------------------------------------------------------------------
+void
+Fujin::setAsleep( bool sleep )
+{
+    m_isAsleep = sleep;
 }
 
 //------------------------------------------------------------------------------
@@ -100,6 +132,9 @@ Fujin::doInit()
 	m_AABB.upperBound= b2Vec2(2.0f,2.0f);
     onSetScale();
 
+    m_isSick = false;
+    m_isAsleep = false;
+
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
 
 	const Controller & pad( Engine::instance()->getController() );
@@ -120,7 +155,11 @@ Fujin::doUpdate( float dt )
     b2Vec2 acceleration( 0.0f, 0.0f );
     float power( 0.0f );
 
-    if ( Engine::instance()->isPaused() )
+    if ( m_isAsleep )
+    {
+        m_sprite = Engine::rm()->GetSprite( "fujin_sleep" );
+    }
+    if ( Engine::instance()->isPaused() || m_isAsleep )
     {
 		Engine::instance()->hideMouse();
     }
@@ -209,7 +248,18 @@ Fujin::doUpdate( float dt )
 	{
 		m_isBlowing=false;
 		breath->Stop();
-        m_sprite = Engine::rm()->GetSprite( "fujin" );
+		if ( m_isAsleep )
+		{
+			m_sprite = Engine::rm()->GetSprite( "fujin_sleep" );
+		}
+        else if ( m_isSick )
+        {
+            m_sprite = Engine::rm()->GetSprite( "fujin_sick" );
+        }
+        else
+        {
+            m_sprite = Engine::rm()->GetSprite( "fujin" );
+        }
 	}
 
     if ( breath->GetParticlesAlive() > 0 )

@@ -26,6 +26,12 @@ class Fujin : public Entity, public Damageable
     static void registerEntity();
 	bool isBlowing();
 	const b2AABB& GetWindAABB();
+
+    bool isSick();
+    void setSick( bool sick );
+    bool isAsleep();
+    void setAsleep( bool sleep );
+
   protected:
     Fujin( const Fujin & );
     Fujin & operator=( const Fujin & );
@@ -39,6 +45,8 @@ class Fujin : public Entity, public Damageable
 	void Blow( float power = 1.0f );
 	b2AABB m_AABB;
 	bool m_isBlowing;
+    bool m_isSick;
+    bool m_isAsleep;
 };
 
 #endif
