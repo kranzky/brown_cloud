@@ -72,6 +72,8 @@ Game::init()
 
     m_zoom = 0;
 
+	m_timeRemaining = 300;
+	m_score = 0;
     Engine::em()->init();
 	Engine::cm()->init();
 
@@ -123,6 +125,7 @@ Game::fini()
 bool
 Game::update( float dt )
 {
+	m_timeRemaining -= dt;
     const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
@@ -190,13 +193,30 @@ Game::update( float dt )
 void
 Game::render()
 {
-    hgeResourceManager * rm( Engine::rm() );
+	hgeResourceManager * rm( Engine::rm() );
+	hgeFont* font = Engine::rm()->GetFont("menu");
+	b2Vec2 timeTextLocation (700,10);
+	b2Vec2 scoreTextLocation(0,10);
+	char timeRemainingText[10];
+	sprintf_s(timeRemainingText,"%d:%d",(int)m_timeRemaining/60,(int)(m_timeRemaining)%60);
+
+	char scoreText[15];
+	sprintf_s(scoreText,"Score: %5d",m_score);
+
+
     ViewPort * vp( Engine::vp() );
+	
 
     vp->setTransform();
 
+	// render time remaining
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
-
+	
+	
+//	scoreTextLocation.x =m_zoom-1 * vp->offset().x; 
+	//scoreTextLocation.y=m_zoom-1 * vp->offset().y;
+	
+	
     std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
           body = body->GetNext() )
@@ -217,6 +237,15 @@ Game::render()
         Entity * entity( * i );
         entity->render( scale );
     }
+
+	Engine::hge()->Gfx_SetTransform();
+	font->SetColor(0xFFFFFFFF);
+	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
+	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
+
+	
+	
+	
 }
 
 //------------------------------------------------------------------------------
