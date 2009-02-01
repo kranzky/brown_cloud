@@ -13,18 +13,18 @@ http://www.microsoft.com/hardware/download/download.aspx?category=Gaming
 CONCEPT
 =======
 
-Fix scrolling
+Fix scrolling (Jas)
 
-Get suck / blow implemented
+Get suck / blow implemented (Rob)
 
-Get damage implemented
+Get damage implemented (Rob/Jas)
 
-Get scoring implemented
+Get scoring implemented (Nigel)
 
-Hook up new gfx
+Hook up new gfx (Jas)
 
-Sounds for as many actions as possible
+Sounds for as many actions as possible (Rob)
 
-Replace tutorial with controls, show controller, keyboard, mouse and blurb
+Replace tutorial with controls, show controller, keyboard, mouse and blurb (Jas)
 
-Write docs
+Write docs (Jas)
