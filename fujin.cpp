@@ -23,13 +23,20 @@ Fujin::Fujin( float max_strength, float scale )
 	m_timeToNextCloudBlowOut(0.1f),
     m_isBlowing(false),
     m_isSick( false ),
-    m_isAsleep( false )
+    m_isAsleep( false ),
+    m_channel( 0 ),
+    m_suck( false )
 {
 }
 
 //------------------------------------------------------------------------------
 Fujin::~Fujin()
 {
+        if ( m_channel != 0 )
+        {
+            Engine::instance()->hge()->Channel_Stop( m_channel );
+            m_channel = 0;
+        }
 }
 
 //------------------------------------------------------------------------------
@@ -147,6 +154,7 @@ Fujin::doInit()
 
     m_isSick = false;
     m_isAsleep = false;
+    m_channel = 0;
 
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
 	Engine::rm()->GetParticleSystem( "sleep" )->SetScale( m_scale );
@@ -250,18 +258,36 @@ Fujin::doUpdate( float dt )
 		m_isBlowing=true;
         if ( power > 0.0f )
         {
-            int volume( static_cast< int >( 100.0f * power ) );
-			Engine::instance()->hge()->Effect_PlayEx(
-                Engine::rm()->GetEffect( "wind" ), volume );
-
+            if ( m_suck && m_channel != 0 )
+            {
+            Engine::instance()->hge()->Channel_Stop( m_channel );
+            m_channel = 0;
+            }
+            m_suck = false;
+            int volume( static_cast< int >( 10.0f * power ) );
+            if ( m_channel == 0 )
+            {
+		    m_channel = Engine::instance()->hge()->Effect_PlayEx(
+                    Engine::rm()->GetEffect( "wind" ), volume, 0, 1, true );
+            }
+            Engine::instance()->hge()->Channel_SetVolume( m_channel, volume );
 			blowOutClouds();
         }
         else
         {
-            int volume( static_cast< int >( - 100.0f * power ) );
-			Engine::instance()->hge()->Effect_PlayEx(
-                Engine::rm()->GetEffect( "pant" ), volume );
-
+            if ( ! m_suck && m_channel != 0  )
+            {
+            Engine::instance()->hge()->Channel_Stop( m_channel );
+            m_channel = 0;
+            }
+            m_suck = true;
+            int volume( static_cast< int >( - 10.0f * power ) );
+            if ( m_channel == 0 )
+            {
+		    m_channel = Engine::instance()->hge()->Effect_PlayEx(
+                    Engine::rm()->GetEffect( "pant" ), volume, 0, 1, true );
+            }
+            Engine::instance()->hge()->Channel_SetVolume( m_channel, volume );
 			suckUpClouds();
         }
 		breath->info.nEmission = static_cast< int >( 20.0f * power );
@@ -270,6 +296,11 @@ Fujin::doUpdate( float dt )
 	{
 		m_isBlowing=false;
 		breath->Stop();
+        if ( m_channel != 0 )
+        {
+            Engine::instance()->hge()->Channel_Stop( m_channel );
+            m_channel = 0;
+        }
 		if ( m_isAsleep )
 		{
 			m_sprite = Engine::rm()->GetSprite( "fujin_sleep" );
@@ -457,6 +488,7 @@ void Fujin::suckUpClouds()
 				cloud->removeFromClump();
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
+                Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "eat" ), 20 );
 			}
 		}
 	}
@@ -482,6 +514,7 @@ void Fujin::blowOutClouds()
 
 			cloud->addToWorld(position, getBody()->GetAngle(), m_scale);
 			m_suckedClouds.pop_back();
+            Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );
 		}
 
 		m_timeToNextCloudBlowOut = 0.3f;

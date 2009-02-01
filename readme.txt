@@ -19,8 +19,18 @@ Apart from the Kranzky Engine, we used Ruby, Cygwin, Git, Vim and Visual C++
 2008 Express Edition. Everything was written in C++, apart from our build
 script. No Python or Unity here, folks.
 
+All gameplay code, graphics, audio and such was done in a 48hr period (in fact,
+probably around 30hrs, given that we got some sleep). The only exceptions to
+this are the basic engine code, and the splash screen graphics, which Aladar
+Apponyi drew as part of Lloyd Kranzky's previous gamejam entries.
+
 CONTROLS
 ========
+
+The overall aim of the game is to build a single brown cloud by collecting and
+spitting clouds of different colours from different levels of the atmosphere.
+Move the King of Winds around with mouse and keyboard, or an XBOX360 controller,
+which you can plug in at any time. See the in-game help screen for more info.
 
 CRITERIA
 ========
@@ -43,10 +53,23 @@ Sleepless: Kind of. Fujin sleeps when he's solved the pollution problem.
 
 Destined: Not really.
 
+CREDITS
+=======
+
+Jason Hutchens         - Programming
+Robert "Dodgy" Barnett - Programming
+Nigel Budden           - Programming
+Simon Boxer            - Art
+Simon Wittber          - Music
+
 THANKS
 ======
 
-We'd 
+* Our wonderful wives, girlfriends, partners, kids and so forth for giving us a
+  weekend to ourselves.
+* Simon Wittber for organising the Perth location for the Global Game Jam.
+* All the other participants for their help and support.
+* Lloyd Kranzky for letting us use his engine. Hope you feel better soon!
 
 NOTES
 =====

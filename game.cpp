@@ -140,23 +140,6 @@ Game::update( float dt )
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
 
-    if ( pad.buttonDown( XPAD_BUTTON_B ) )
-    {
-        m_fujin->setSick( true );
-    }
-    else if ( pad.buttonUp( XPAD_BUTTON_B ) )
-    {
-        m_fujin->setSick( false );
-    }
-    if ( pad.buttonDown( XPAD_BUTTON_X ) )
-    {
-        m_fujin->setAsleep( true );
-    }
-    else if ( pad.buttonUp( XPAD_BUTTON_X ) )
-    {
-        m_fujin->setAsleep( false );
-    }
-	
     if ( m_gameOutTimer <= 0 && m_timeRemaining <=0)
     {
         Engine::instance()->switchContext( STATE_SCORE );
@@ -194,10 +177,12 @@ Game::update( float dt )
         if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 0 )
         {
             --m_zoom;
+            hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) && m_zoom < 4 )
         {
             ++m_zoom;
+            hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
     else
@@ -206,11 +191,13 @@ Game::update( float dt )
                hge->Input_GetMouseWheel() < 0 ) && m_zoom > 0 )
         {
             --m_zoom;
+            hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
                     hge->Input_GetMouseWheel() > 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
+            hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
 
@@ -256,7 +243,7 @@ Game::render()
     vp->setTransform();
 
 
-    rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
+    rm->GetSprite( "polluted" )->Render( 0.0f, 0.0f );
 	
 	
 
