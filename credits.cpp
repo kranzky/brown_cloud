@@ -127,7 +127,7 @@ Credits::render()
     font->printf( 0.0, -150.0f, HGETEXT_CENTER,
                   "Jason Hutchens" );
     font->printf( 0.0, -120.0f, HGETEXT_CENTER,
-                  "Robert Barnett" );
+                  "Robert \"Dodgy\" Barnett" );
     font->printf( 0.0, -90.0f, HGETEXT_CENTER,
                   "Nigel Budden" );
     font->printf( 0.0, -60.0f, HGETEXT_CENTER,

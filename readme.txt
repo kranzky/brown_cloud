@@ -53,10 +53,23 @@ Sleepless: Kind of. Fujin sleeps when he's solved the pollution problem.
 
 Destined: Not really.
 
+CREDITS
+=======
+
+Jason Hutchens         - Programming
+Robert "Dodgy" Barnett - Programming
+Nigel Budden           - Programming
+Simon Boxer            - Art
+Simon Wittber          - Music
+
 THANKS
 ======
 
-We'd 
+* Our wonderful wives, girlfriends, partners, kids and so forth for giving us a
+  weekend to ourselves.
+* Simon Wittber for organising the Perth location for the Global Game Jam.
+* All the other participants for their help and support.
+* Lloyd Kranzky for letting us use his engine. Hope you feel better soon!
 
 NOTES
 =====
