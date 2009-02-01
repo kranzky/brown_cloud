@@ -115,8 +115,8 @@ Sprite rv
 Sprite polluted
 {
     texture=polluted
-    rect=0,0,400,300
-    hotspot=200,150
+    rect=0,0,1000,750
+    hotspot=500,375
 }
 Sprite cursor
 {
