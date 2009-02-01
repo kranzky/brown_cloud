@@ -129,8 +129,8 @@ Game::update( float dt )
     const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
-
-    if ( pad.buttonDown( XPAD_BUTTON_BUTTON_Y ) )
+	
+    if ( m_timeRemaining <= 0)
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );
@@ -209,13 +209,11 @@ Game::render()
 
     vp->setTransform();
 
-	// render time remaining
+
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f );
 	
 	
-//	scoreTextLocation.x =m_zoom-1 * vp->offset().x; 
-	//scoreTextLocation.y=m_zoom-1 * vp->offset().y;
-	
+
 	
     std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
@@ -237,7 +235,7 @@ Game::render()
         Entity * entity( * i );
         entity->render( scale );
     }
-
+	// render time remaining
 	Engine::hge()->Gfx_SetTransform();
 	font->SetColor(0xFFFFFFFF);
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
