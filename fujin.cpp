@@ -209,6 +209,7 @@ Fujin::doUpdate( float dt )
 	{
 		m_isBlowing=false;
 		breath->Stop();
+        m_sprite = Engine::rm()->GetSprite( "fujin" );
 	}
 
     if ( breath->GetParticlesAlive() > 0 )
@@ -280,6 +281,15 @@ float Fujin::lookAt( const b2Vec2& targetPoint )
 
 void Fujin::Blow( float power )
 {
+    if ( power > 0.0f )
+    {
+        m_sprite = Engine::rm()->GetSprite( "fujin_blow" );
+    }
+    else
+    {
+        m_sprite = Engine::rm()->GetSprite( "fujin_suck" );
+    }
+
     b2Vec2 position( m_body->GetPosition() );
 
 	m_AABB.lowerBound= b2Vec2(position.x-200.0f*m_scale,
