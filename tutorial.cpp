@@ -77,7 +77,7 @@ Tutorial::render()
     
     vp->setTransform();
 
-    rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 2.0f ); 
+    rm->GetSprite( "help" )->Render( 0.0f, 0.0f ); 
 }
 
 //==============================================================================

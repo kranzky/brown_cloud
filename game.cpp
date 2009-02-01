@@ -127,7 +127,7 @@ Game::update( float dt )
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
 
-    if ( false )
+    if ( pad.buttonDown( XPAD_BUTTON_BUTTON_Y ) )
     {
         Engine::instance()->switchContext( STATE_SCORE );
         Context * context( Engine::instance()->getContext() );

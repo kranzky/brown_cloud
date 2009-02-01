@@ -42,6 +42,10 @@ Texture cloud
 {
     filename=cloud.png
 }
+Texture help
+{
+    filename=help.png
+}
 Font menu
 {
     filename=menu.fnt
@@ -112,6 +116,12 @@ Sprite cloud
     texture=particles
     rect=0,128,32,32
     hotspot=16,16
+}
+Sprite help
+{
+    texture=help
+    rect=0,0,800,600
+    hotspot=400,300
 }
 Particle cloud
 {
