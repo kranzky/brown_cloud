@@ -214,3 +214,19 @@ Sound music
 {
     filename=Kranzky.mp3
 }
+Sound up
+{
+    filename=up.wav
+}
+Sound down
+{
+    filename=down.wav
+}
+Sound eat
+{
+    filename=eat.wav
+}
+Sound spit
+{
+    filename=spit.wav
+}

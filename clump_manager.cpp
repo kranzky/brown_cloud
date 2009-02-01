@@ -61,7 +61,7 @@ void joinEntities(Entity* entity, Entity* otherEntity, b2Vec2 position)
 	b2RevoluteJointDef joint;
 	joint.Initialize( entity->getBody(), otherEntity->getBody(), position);
 	Engine::instance()->b2d()->CreateJoint( & joint );
-	Engine::instance()->hge()->Effect_Play( Engine::rm()->GetEffect( "thunder" ) );
+	Engine::instance()->hge()->Effect_PlayEx( Engine::rm()->GetEffect( "thunder"), 30 );
 }
 
 //------------------------------------------------------------------------------

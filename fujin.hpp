@@ -8,6 +8,8 @@
 #include <entity.hpp>
 #include <damageable.hpp>
 #include <Box2D.h>
+#include <hge.h>
+
 #include <vector>
 
 class Cloud;
@@ -55,6 +57,8 @@ class Fujin : public Entity, public Damageable
 	bool m_isBlowing;
     bool m_isSick;
     bool m_isAsleep;
+    HCHANNEL m_channel;
+    bool m_suck;
 };
 
 #endif
