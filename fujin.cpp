@@ -43,12 +43,6 @@ Fujin::~Fujin()
 void
 Fujin::collide( Entity * entity, b2ContactPoint * point )
 {
-    float force( b2Clamp( point->normalForce * 0.01f, 0.0f, 1.0f ) );
-    if ( force > 0.0f && Engine::instance()->getConfig().vibrate )
-    {
-        Engine::instance()->getController().rumble( force, force, 0.2f );
-    }
-    takeDamage( b2Clamp( point->normalForce * 0.01f, 0.0f, 10.0f ) );
 }
 
 //------------------------------------------------------------------------------
@@ -238,6 +232,20 @@ Fujin::doUpdate( float dt )
 		b2Vec2 newPos = mousePosition - position;
 		float angle = lookAt(newPos);
 	}
+
+    if ( Engine::instance()->getConfig().vibrate )
+    {
+        float force( static_cast< float >( m_suckedClouds.size() ) / 8.0f );
+        if ( force > 1.0f )
+        {
+            force = 1.0f;
+        }
+        Engine::instance()->getController().rumble( force, force, 0.1f );
+    }
+	if (m_suckedClouds.size() == 0)
+    {
+        m_isSick = false;
+    }
 
 	bool dead( acceleration.LengthSquared() < 0.2f );
 	acceleration *= ( 1000.0f * m_scale * dt );

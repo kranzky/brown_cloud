@@ -285,10 +285,11 @@ Game::render()
 	}
 
 	font->SetColor( 0xFFFFFFFF );
-	font->printf( 20.0, vp->screen().y - 50.0f, HGETEXT_LEFT, progressText.c_str() );
-	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
-	font->Render(400, 10,HGETEXT_LEFT, multiplierText);
-	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
+	font->printf( vp->screen().x * 0.5f , vp->screen().y - 30.0f, HGETEXT_CENTER, progressText.c_str() );
+	font->printf( vp->screen().x * 0.5f, 10.0f, HGETEXT_CENTER, timeRemainingText );
+	font->printf(vp->screen().x - 10.0f, 10.0f,HGETEXT_RIGHT, "x%04d",
+    static_cast<int>(Engine::cm()->getClumpMultiplier() ));
+	font->printf( 10.0f, 10.0f, HGETEXT_LEFT, "%07dpts", m_score );
 
     vp->setTransform();
 }
