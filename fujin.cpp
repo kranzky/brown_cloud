@@ -283,7 +283,7 @@ Fujin::doRender( float scale )
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
-    m_sprite->RenderEx( position.x, position.y, angle, m_scale );
+    m_sprite->RenderEx( position.x, position.y, angle, m_scale * 1.5f );
 	breath->Render();
     renderDamageable( position, m_scale );
 	const Mouse &mouse(Engine::instance()->getMouse());
