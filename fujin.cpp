@@ -267,7 +267,7 @@ Fujin::doUpdate( float dt )
 		b2Vec2 position( m_body->GetPosition() );
 		b2Vec2 direction( 0.0f, 1.0f );
 		direction = b2Mul( m_body->GetXForm().R, -direction );
-		position = position - 32.0f * m_scale * direction;
+		position = position - 50.0f * m_scale * direction;
 		breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
         float angle( m_body->GetAngle() );
 		breath->info.fDirection= angle -M_PI;
