@@ -378,7 +378,9 @@ void Game::updateProgressData()
         Entity * entity( static_cast< Entity * >( body->GetUserData() ) );
         if ( entity && entity->getType() == Cloud::TYPE && equal(entity, m_fujin))
         {
-            entities.push_back( static_cast<Cloud*>(entity) );
+			Cloud* cloud =  static_cast<Cloud*>(entity);
+			if (cloud->isInWorld())
+				entities.push_back(cloud);
         }
 	}
 
