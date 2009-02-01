@@ -461,6 +461,9 @@ void Fujin::suckUpClouds()
 		}
 	}
 
+	if (m_suckedClouds.size() > 0)
+		setSick(true);
+
 }
 
 //------------------------------------------------------------------------------
@@ -483,4 +486,7 @@ void Fujin::blowOutClouds()
 
 		m_timeToNextCloudBlowOut = 0.3f;
 	}
+
+	if (m_suckedClouds.size() == 0)
+		setSick(false);
 }
