@@ -138,7 +138,23 @@ Game::update( float dt )
     const Controller & pad( Engine::instance()->getController() );
     HGE * hge( Engine::hge() );
     ViewPort * vp( Engine::vp() );
-	
+
+    if ( pad.buttonDown( XPAD_BUTTON_B ) )
+    {
+        m_fujin->setSick( true );
+    }
+    else if ( pad.buttonUp( XPAD_BUTTON_B ) )
+    {
+        m_fujin->setSick( false );
+    }
+    if ( pad.buttonDown( XPAD_BUTTON_X ) )
+    {
+        m_fujin->setAsleep( true );
+    }
+    else if ( pad.buttonUp( XPAD_BUTTON_X ) )
+    {
+        m_fujin->setAsleep( false );
+    }
     if ( m_timeRemaining <= 0)
     {
         Engine::instance()->switchContext( STATE_SCORE );
@@ -269,6 +285,8 @@ Game::render()
 	font->Render( timeTextLocation.x, timeTextLocation.y, HGETEXT_LEFT, timeRemainingText );
 	font->Render(400, 10,HGETEXT_LEFT, multiplierText);
 	font->Render( scoreTextLocation.x, scoreTextLocation.y, HGETEXT_LEFT, scoreText );
+
+    vp->setTransform();
 }
 
 //------------------------------------------------------------------------------

@@ -1,3 +1,7 @@
+Texture title
+{
+    filename=title.png
+}
 Texture publisher
 {
     filename=APP_logo.png
@@ -34,6 +38,22 @@ Texture fujin
 {
     filename=fujin.png
 }
+Texture fujin_suck
+{
+    filename=fujin_suck.png
+}
+Texture fujin_blow
+{
+    filename=fujin_blow.png
+}
+Texture fujin_sick
+{
+    filename=fujin_sick.png
+}
+Texture fujin_sleep
+{
+    filename=fujin_sleep.png
+}
 Texture particles
 {
     filename=particles.png
@@ -49,6 +69,12 @@ Texture help
 Font menu
 {
     filename=menu.fnt
+}
+Sprite title
+{
+    texture=title
+    rect=0,0,400,100
+    hotspot=200,50
 }
 Sprite publisher
 {
@@ -101,6 +127,34 @@ Sprite cursor
 Sprite fujin
 {
     texture=fujin
+    rect=0,0,64,64
+    hotspot=32,32
+    color=AAFFFFFF
+}
+Sprite fujin_suck
+{
+    texture=fujin_suck
+    rect=0,0,64,64
+    hotspot=32,32
+    color=AAFFFFFF
+}
+Sprite fujin_blow
+{
+    texture=fujin_blow
+    rect=0,0,64,64
+    hotspot=32,32
+    color=AAFFFFFF
+}
+Sprite fujin_sick
+{
+    texture=fujin_sick
+    rect=0,0,64,64
+    hotspot=32,32
+    color=AAFFFFFF
+}
+Sprite fujin_sleep
+{
+    texture=fujin_sleep
     rect=0,0,64,64
     hotspot=32,32
     color=AAFFFFFF
