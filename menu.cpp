@@ -4,6 +4,7 @@
 #include <menu_item.hpp>
 #include <engine.hpp>
 #include <viewport.hpp>
+#include <config.hpp>
 
 #include <hgeresource.h>
 #include <hgefont.h>
@@ -30,6 +31,9 @@ Menu::init()
 {
     hgeResourceManager * rm( Engine::rm() );
     ViewPort * vp( Engine::vp() );
+    Config & config( Engine::instance()->getConfig() );
+
+    char * label = config.leaderboard ? "Leaderboard" : "High Scores";
 
     m_font = rm->GetFont( "menu" );
     m_gui = new hgeGUI();
@@ -37,8 +41,7 @@ Menu::init()
     float cy( 0.5f * vp->screen().y );
     m_gui->AddCtrl( new MenuItem( CTRL_TUTORIAL, cx, cy, "Help", m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_START, cx, cy + 30, "Start", m_font ) );
-    m_gui->AddCtrl( new MenuItem( CTRL_SCORE, cx, cy + 60, "Leaderboard",
-                                  m_font ) );
+    m_gui->AddCtrl( new MenuItem( CTRL_SCORE, cx, cy + 60, label, m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_CREDITS, cx, cy + 90, "Credits",
                                   m_font ) );
     m_gui->AddCtrl( new MenuItem( CTRL_EXIT, cx, cy + 150, "Exit", m_font ) );

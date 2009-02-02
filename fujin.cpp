@@ -237,7 +237,7 @@ Fujin::doUpdate( float dt )
 
     if ( Engine::instance()->getConfig().vibrate )
     {
-        float force( static_cast< float >( m_suckedClouds.size() ) / 8.0f );
+        float force( static_cast< float >( m_suckedClouds.size() ) / 40.0f );
         if ( force > 1.0f )
         {
             force = 1.0f;

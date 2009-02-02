@@ -13,12 +13,14 @@ def buildResources( target )
             zipfile.add( filename, File.join( "Resources", filename ) )
         end
     end
+    FileUtils.cp( File.join( "Resources", "scores.db3" ), target );
     third_party = File.join( "..", "..", "ThirdParty" )
     FileUtils.cp( File.join( third_party, "hge", "hge.dll" ), target )
     FileUtils.cp( File.join( third_party, "hge", "bass.dll" ), target )
     FileUtils.cp( File.join( third_party, "sqlite", "sqlite3.dll" ), target )
     FileUtils.cp( File.join( third_party, "libcurl", "libcurl.dll" ), target )
     FileUtils.cp( File.join( third_party, "libcurl", "zlib1.dll" ), target )
+    FileUtils.cp( File.join( third_party, "XenonPad", "xinput1_3.dll" ), target )
 end
 
 if __FILE__ == $0

@@ -123,7 +123,7 @@ Credits::render()
     font->SetColor( 0xFF000000 );
 
     font->printf( 0.0, -250.0f, HGETEXT_CENTER,
-                  "+++ B R O W N | C L O U D +++" );
+                  "+++ B R O W N | C L O U D v1.1 +++" );
     font->printf( 0.0, -220.0f, HGETEXT_CENTER,
                   "By The Kranzky Bros." );
     font->printf( 0.0, -150.0f, HGETEXT_CENTER,

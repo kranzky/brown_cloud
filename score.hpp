@@ -43,6 +43,8 @@ class Score : public Context
   private:
     void _updateScore();
     void _insertScore( const char * name, int value );
+    void _updateScoreDB();
+    void _insertScoreDB( const char * name, int value );
 
   private:
     struct ScoreData
@@ -63,6 +65,7 @@ class Score : public Context
     int m_value;
     int m_highlight;
     float m_dy;
+    bool m_error;
 };
 
 #endif

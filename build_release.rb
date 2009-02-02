@@ -23,6 +23,7 @@ FileUtils.rm_f( filename )
 Zip::ZipFile.open( filename, Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add( "readme.txt", "readme.txt" )
     zipfile.add( "resources.dat", File.join( "Release", "resources.dat" ) )
+    zipfile.add( "scores.db3", File.join( "Release", "scores.db3" ) )
     zipfile.add( "BrownCloud.exe",
                  File.join( "Release", "BrownCloud.exe" ) )
     zipfile.add( "hge.dll", File.join( "Release", "hge.dll" ) )
@@ -30,4 +31,5 @@ Zip::ZipFile.open( filename, Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add( "sqlite3.dll", File.join( "Release", "sqlite3.dll" ) )
     zipfile.add( "libcurl.dll", File.join( "Release", "libcurl.dll" ) )
     zipfile.add( "zlib1.dll", File.join( "Release", "zlib1.dll" ) )
+    zipfile.add( "xinput1_3.dll", File.join( "Release", "xinput1_3.dll" ) )
 end

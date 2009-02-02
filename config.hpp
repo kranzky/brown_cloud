@@ -22,6 +22,7 @@ class Config
     std::string userName;
     int menu;
     bool vibrate;
+    bool leaderboard;
 };
 
 #endif

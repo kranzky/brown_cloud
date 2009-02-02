@@ -18,10 +18,11 @@ Config::Config()
     userName( "Lloyd" ),
     menu( 1 ),
 #ifdef _DEBUG
-    vibrate( false )
+    vibrate( false ),
 #else
-    vibrate( true )
+    vibrate( true ),
 #endif
+    leaderboard( true )
 {
 }
 
@@ -45,6 +46,8 @@ Config::init()
     menu = Engine::hge()->Ini_GetInt( "kranzky", "menu", menu );
     vibrate = Engine::hge()->Ini_GetInt( "kranzky", "vibrate",
                                          vibrate ? 1 : 0 ) == 1;
+    leaderboard = Engine::hge()->Ini_GetInt( "kranzky", "leaderboard",
+                                             leaderboard ? 1 : 0 ) == 1;
 }
 
 //------------------------------------------------------------------------------
@@ -57,6 +60,7 @@ Config::fini()
     Engine::hge()->Ini_SetString( "kranzky", "username", userName.c_str() );
     Engine::hge()->Ini_SetInt( "kranzky", "menu", menu );
     Engine::hge()->Ini_SetInt( "kranzky", "vibrate", vibrate ? 1 : 0 );
+    Engine::hge()->Ini_SetInt( "kranzky", "leaderboard", leaderboard ? 1 : 0 );
 }
 
 //==============================================================================

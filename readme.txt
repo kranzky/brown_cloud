@@ -4,6 +4,12 @@
                          |  by The Kranzky Brothers  |
                          +---------------------------+
 
+CHANGELOG
+=========
+
+01/02/09: v1.0 - Initial Release
+02/02/09: v1.1 - Added xinput1_3.dll and made online leaderboard optional
+
 ABOUT
 =====
 
@@ -70,11 +76,3 @@ THANKS
 * Simon Wittber for organising the Perth location for the Global Game Jam.
 * All the other participants for their help and support.
 * Lloyd Kranzky for letting us use his engine. Hope you feel better soon!
-
-NOTES
-=====
-
-For XBOX controller support, plug in a wired controller and get going. If things
-don't work, you may need to download an updated driver:
-
-   http://www.microsoft.com/hardware/download/download.aspx?category=Gaming
