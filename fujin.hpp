@@ -36,6 +36,7 @@ class Fujin : public Entity, public Damageable
     void setSick( bool sick );
     bool isAsleep();
     void setAsleep( bool sleep );
+    void setTargetScale( float scale );
 
   protected:
     Fujin( const Fujin & );
@@ -59,6 +60,7 @@ class Fujin : public Entity, public Damageable
     bool m_isAsleep;
     HCHANNEL m_channel;
     bool m_suck;
+    float m_target_scale;
 };
 
 #endif

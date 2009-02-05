@@ -25,7 +25,8 @@ Fujin::Fujin( float max_strength, float scale )
     m_isSick( false ),
     m_isAsleep( false ),
     m_channel( 0 ),
-    m_suck( false )
+    m_suck( false ),
+    m_target_scale( 0.0f )
 {
 }
 
@@ -97,6 +98,13 @@ Fujin::setAsleep( bool bsleep )
 }
 
 //------------------------------------------------------------------------------
+void
+Fujin::setTargetScale( float scale )
+{
+    m_target_scale = scale;
+}
+
+//------------------------------------------------------------------------------
 // static:
 //------------------------------------------------------------------------------
 void
@@ -151,6 +159,7 @@ Fujin::doInit()
     m_isSick = false;
     m_isAsleep = false;
     m_channel = 0;
+    m_target_scale = 0.0f;
 
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
 	Engine::rm()->GetParticleSystem( "sleep" )->SetScale( m_scale );
@@ -521,7 +530,7 @@ void Fujin::blowOutClouds()
 			direction = b2Mul( m_body->GetXForm().R, -direction );
 			position = position - 60.0f * m_scale * direction;
 
-			cloud->addToWorld(position, getBody()->GetAngle(), m_scale);
+			cloud->addToWorld(position, getBody()->GetAngle(), m_target_scale);
 			m_suckedClouds.pop_back();
 
             Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );

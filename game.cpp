@@ -103,6 +103,7 @@ Game::init()
     m_fujin->setScale( 1.0f / ZOOM[m_zoom] );
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
+    m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
 
     for ( int zoom = 0; zoom < 5; ++ zoom )
     {
@@ -179,11 +180,13 @@ Game::update( float dt )
         if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 0 )
         {
             --m_zoom;
+            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) && m_zoom < 4 )
         {
             ++m_zoom;
+            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
@@ -193,12 +196,14 @@ Game::update( float dt )
                hge->Input_GetMouseWheel() < 0 ) && m_zoom > 0 )
         {
             --m_zoom;
+            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
                     hge->Input_GetMouseWheel() > 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
+            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
