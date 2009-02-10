@@ -107,6 +107,10 @@ Cloud::doUpdate( float dt )
 void
 Cloud::doRender( float scale )
 {
+    if ( ! m_inWorld )
+    {
+        return;
+    }
     b2Vec2 position( m_body->GetPosition() );
     float angle( m_body->GetAngle() );
     hgeParticleSystemInfo & info( m_particles->info );
@@ -126,6 +130,15 @@ Cloud::doRender( float scale )
 	info.colColorStart.g = GN[m_zoom] * ratio;
 	info.colColorStart.b = BL[m_zoom] * ratio;
     m_particles->Render();
+    alpha *= 2.0f;
+    if ( alpha > 1.0f )
+    {
+        alpha = 1.0f;
+    }
+    hgeColor color( info.colColorStart );
+    color.a = alpha;
+    m_sprite->SetColor( color.GetHWColor() );
+    m_sprite->RenderEx( position.x, position.y, angle, m_scale );
 }
 
 //------------------------------------------------------------------------------
@@ -191,7 +204,7 @@ void Cloud::addToWorld(b2Vec2 position, float angle, float scale)
 	
 	m_scale = scale;
 	b2CircleDef shapeDef;
-	shapeDef.radius = m_sprite->GetWidth() * m_scale;
+	shapeDef.radius = 0.5f * 0.8f * m_sprite->GetWidth() * m_scale;
 	shapeDef.density = 1.0f;
 	shapeDef.friction = 0.0f;
 	shapeDef.restitution = 0.7f;
