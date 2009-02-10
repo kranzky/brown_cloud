@@ -19,15 +19,16 @@
 namespace
 {
     const float ZOOM[5] = { 1.0f, 1.8f, 3.2f, 5.8f, 10.5f };
+    const float FUJIN( 0.8f );
 
     bool
     lessThan( const Entity * left, const Entity * right )
     {
-        if ( left->getScale() < right->getScale() * 0.99f )
+        if ( left->getZoom() > right->getZoom() )
         {
             return true;
         }
-        if ( left->getScale() * 0.99f > right->getScale() )
+        if ( left->getZoom() < right->getZoom() )
         {
             return false;
         }
@@ -38,11 +39,13 @@ namespace
         return false;
     }
 
-	bool equal( const Entity * left, const Entity * right )
+	bool
+    equal( const Entity * left, const Entity * right )
 	{
-		if (left->getScale() > right->getScale() * 0.99f
-			&& left->getScale() < right->getScale() * 1.01f)
+		if ( left->getZoom() == right->getZoom() )
+        {
 			return true;
+        }
 		return false;
 	}
 }
@@ -80,6 +83,8 @@ Game::init()
     Cloud::registerEntity();
     Girder::registerEntity();
 
+    m_last_zoom = 1.0f;
+    m_gameOutTimer = 0;
     m_zoom = 0;
 
 	m_timeRemaining = 300;
@@ -100,10 +105,11 @@ Game::init()
     b2Vec2 position( 0.0f, 0.0f );
     float angle( 0.0f );
     m_fujin->setSprite( "fujin" );
-    m_fujin->setScale( 1.0f / ZOOM[m_zoom] );
+    m_fujin->setScale( FUJIN / ZOOM[m_zoom] );
     m_fujin->init();
     m_fujin->getBody()->SetXForm( position, angle );
-    m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
+    m_fujin->setTargetScale( FUJIN / ZOOM[m_zoom] );
+    m_fujin->setZoom( m_zoom );
 
     for ( int zoom = 0; zoom < 5; ++ zoom )
     {
@@ -180,13 +186,15 @@ Game::update( float dt )
         if ( pad.buttonDown( XPAD_BUTTON_LEFT_SHOULDER ) && m_zoom > 0 )
         {
             --m_zoom;
-            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
+            m_fujin->setTargetScale( FUJIN / ZOOM[m_zoom] );
+            m_fujin->setZoom( m_zoom );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( pad.buttonDown( XPAD_BUTTON_RIGHT_SHOULDER ) && m_zoom < 4 )
         {
             ++m_zoom;
-            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
+            m_fujin->setTargetScale( FUJIN / ZOOM[m_zoom] );
+            m_fujin->setZoom( m_zoom );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
@@ -196,14 +204,16 @@ Game::update( float dt )
                hge->Input_GetMouseWheel() < 0 ) && m_zoom > 0 )
         {
             --m_zoom;
-            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
+            m_fujin->setTargetScale( FUJIN / ZOOM[m_zoom] );
+            m_fujin->setZoom( m_zoom );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "up" ), 100 );
         }
         else if ( ( Engine::hge()->Input_KeyDown( HGEK_E ) ||
                     hge->Input_GetMouseWheel() > 0 ) && m_zoom < 4 )
         {
             ++m_zoom;
-            m_fujin->setTargetScale( 1.0f / ZOOM[m_zoom] );
+            m_fujin->setTargetScale( FUJIN / ZOOM[m_zoom] );
+            m_fujin->setZoom( m_zoom );
             hge->Effect_PlayEx( Engine::rm()->GetEffect( "down" ), 100 );
         }
     }
@@ -212,13 +222,13 @@ Game::update( float dt )
     {
         m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
-        m_fujin->setScale( 1.0f / m_last_zoom );
+        m_fujin->setScale( FUJIN / m_last_zoom );
     }
     else if ( ZOOM[m_zoom] < m_last_zoom )
     {
         m_last_zoom += ( ZOOM[m_zoom] - m_last_zoom ) * dt * 10.0f;
         vp->setScale( m_last_zoom );
-        m_fujin->setScale( 1.0f / m_last_zoom );
+        m_fujin->setScale( FUJIN / m_last_zoom );
     }
 
     vp->centre() = m_fujin->getBody()->GetPosition();
@@ -243,17 +253,11 @@ Game::render()
 	char multiplierText[25];
 	sprintf_s(multiplierText,"Multiplier: x%2.02f",Engine::cm()->getClumpMultiplier());
 
-
     ViewPort * vp( Engine::vp() );
 	
-
     vp->setTransform();
 
-
     rm->GetSprite( "polluted" )->RenderEx( 0.0f, 0.0f, 0.0f, 0.8f );
-	
-	
-
 	
     std::vector< Entity * > entities;
     for ( b2Body * body( Engine::b2d()->GetBodyList() ); body != NULL;
@@ -303,14 +307,12 @@ Game::render()
 bool
 Game::shouldCollide( Entity * left, Entity * right )
 {
-    if ( left->getType() == Girder::TYPE ||
-         right->getType() == Girder::TYPE )
+    if ( left->getType() == Girder::TYPE || right->getType() == Girder::TYPE )
     {
         return true;
     }
 
-    if ( left->getScale() > right->getScale() * 0.99f &&
-         left->getScale() * 0.99f < right->getScale() )
+    if ( equal( left, right ) )
     {
         return left->getType() == right->getType();
     }

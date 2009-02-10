@@ -41,6 +41,9 @@ class Entity
     virtual void persistToDatabase() = 0;
     void deleteFromDatabase();
 
+    void setZoom( int zoom );
+    int getZoom() const;
+
   protected:
     Entity( const Entity & );
     Entity & operator=( const Entity & );
@@ -57,6 +60,7 @@ class Entity
     virtual void initFromQuery( Query & query ) = 0;
 
   protected:
+    int m_zoom;
     float m_scale;
     unsigned int m_type;
     sqlite_int64 m_id;

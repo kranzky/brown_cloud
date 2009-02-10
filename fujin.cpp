@@ -165,6 +165,7 @@ Fujin::doInit()
     m_isAsleep = false;
     m_channel = 0;
     m_target_scale = 0.0f;
+    m_zoom = 0;
 
 	Engine::rm()->GetParticleSystem( "breath" )->SetScale( m_scale );
 	Engine::rm()->GetParticleSystem( "sleep" )->SetScale( m_scale );
@@ -443,8 +444,7 @@ void Fujin::Blow( float power )
         {
             continue;
         }
-        if ( m_scale < entity->getScale() * 0.99f ||
-             m_scale * 0.99f > entity->getScale() )
+        if ( m_zoom != entity->getZoom() )
         {
             continue;
         }
@@ -494,9 +494,8 @@ void Fujin::suckUpClouds()
 	{
 		Cloud* cloud = static_cast<Cloud*>(*i);
 		b2Vec2 meToCloud = cloud->getBody()->GetPosition() - getBody()->GetPosition();
-		if (cloud->getScale() > getScale() * 0.99f
-			&& cloud->getScale() < getScale() * 1.01f 
-			&& meToCloud.Length() < 40.0f * m_scale )
+		if ( cloud->getZoom() == m_zoom &&
+             meToCloud.Length() < 40.0f * m_scale )
 		{
 			bool alreadySucked = false;
 			std::vector<Cloud*>::iterator suckedIter;

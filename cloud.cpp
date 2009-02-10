@@ -26,7 +26,6 @@ Cloud::Cloud( float scale )
     Entity( scale ),
 	m_particles(NULL),
 	m_clump(NULL),
-    m_zoom( 0 ),
 	m_inWorld( false )
 {
 }
@@ -222,20 +221,6 @@ void Cloud::addToWorld(b2Vec2 position, float angle, float scale)
 	m_particles->Fire();
 
 	m_inWorld = true;
-}
-
-//------------------------------------------------------------------------------
-void
-Cloud::setZoom( int zoom )
-{
-    m_zoom = zoom;
-}
-
-//------------------------------------------------------------------------------
-int
-Cloud::getZoom()
-{
-    return m_zoom;
 }
 
 //==============================================================================

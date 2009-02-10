@@ -9,7 +9,15 @@ CHANGELOG
 
 01/02/09: v1.0 - Initial Release
 02/02/09: v1.1 - Added xinput1_3.dll and made online leaderboard optional
-10/02/09: v1.2 - Fixed cloud bug, updated graphics, better end-game
+10/02/09: v1.2 - Fixed cloud bug, updated graphics, lotsa polish
+
++ Read on Post
++ Focus on Player's Score
++ Link to Web for Voting
++ Zoom Out on End
++ Sleep on End
++ Update Score on Cloud Remove on End
++ Update Score on Time Bonus on End
 
 ABOUT
 =====

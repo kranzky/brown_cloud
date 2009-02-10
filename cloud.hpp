@@ -35,9 +35,6 @@ class Cloud : public Entity
 	void addToWorld(b2Vec2 position, float angle, float scale);
 	bool isInWorld() { return m_inWorld; }
 
-    void setZoom( int zoom );
-    int getZoom();
-
   protected:
     Cloud( const Cloud & );
     Cloud & operator=( const Cloud & );
@@ -51,7 +48,6 @@ class Cloud : public Entity
 
     hgeParticleSystem* m_particles;
 	Clump* m_clump;
-    int m_zoom;
 	bool m_inWorld;
 };
 
