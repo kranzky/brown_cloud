@@ -112,7 +112,7 @@ Game::init()
 		Entity* entity = Engine::em()->factory( Cloud::TYPE );
 		b2Vec2 position( Engine::hge()->Random_Float( -400.0f, 400.0f),
                          Engine::hge()->Random_Float( -300.0f, 300.0f) );
-		float angle( 0.f );
+		float angle( Engine::hge()->Random_Float( -7.0f, 7.0f) );
 		entity->setSprite( "silver" );
 		entity->setScale( 1.0f / ZOOM[zoom] );
 		entity->init();

@@ -212,6 +212,7 @@ void Cloud::addToWorld(b2Vec2 position, float angle, float scale)
 	m_body->CreateShape(&shapeDef);
 	m_body->SetMassFromShapes();
     m_body->m_linearDamping = 0.2f;
+    m_body->m_angularDamping = 0.5f;
 	m_body->SetXForm(position, angle);
     m_body->SetAngularVelocity( 0.0f );
     b2Vec2 velocity( 0.0f, 0.0f );

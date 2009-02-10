@@ -13,6 +13,11 @@
 #include <hgeparticle.h>
 #include <hgeresource.h>
 
+namespace
+{
+    const float BLOW[5] = { 0.6f, 0.5f, 0.4f, 0.3f, 0.2f };
+}
+
 //==============================================================================
 Fujin::Fujin( float max_strength, float scale )
     :
@@ -485,8 +490,6 @@ void Fujin::suckUpClouds()
 	std::vector<Entity*> clouds = em->getEntities(Cloud::TYPE);
 	std::vector<Entity*>::iterator i;
 
-	if (m_timeToNextCloudBlowOut <= 0.0f)
-    {
 	for (i = clouds.begin(); i != clouds.end(); ++i)
 	{
 		Cloud* cloud = static_cast<Cloud*>(*i);
@@ -508,7 +511,7 @@ void Fujin::suckUpClouds()
 
 			if (!alreadySucked)
 			{
-	            m_timeToNextCloudBlowOut = 0.2f;
+	            m_timeToNextCloudBlowOut = 1.0f;
 				cloud->removeFromClump(true);
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
@@ -516,7 +519,6 @@ void Fujin::suckUpClouds()
 			}
 		}
 	}
-    }
 
 	if (m_suckedClouds.size() > 0)
 		setSick(true);
@@ -533,15 +535,17 @@ void Fujin::blowOutClouds()
 			Cloud* cloud = m_suckedClouds.back();
 
 			b2Vec2 position( m_body->GetPosition() );
-			b2Vec2 direction( 0.3f, 1.0f );
+			b2Vec2 direction( 0.3f + Engine::hge()->Random_Float( -0.1f, 0.1f ), 1.0f );
 			direction = b2Mul( m_body->GetXForm().R, -direction );
 			position = position - 64.0f * m_scale * direction;
 
 			cloud->addToWorld(position, getBody()->GetAngle(), m_target_scale);
+	        cloud->getBody()->SetAngularVelocity( Engine::hge()->Random_Float( -10.0f, 10.0f ) );
+            cloud->getBody()->SetLinearVelocity( 0.5f * m_body->GetLinearVelocity() );
 			m_suckedClouds.pop_back();
 
             Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );
-		    m_timeToNextCloudBlowOut = 0.4f;
+		    m_timeToNextCloudBlowOut = BLOW[cloud->getZoom()];
 		}
 	}
 
