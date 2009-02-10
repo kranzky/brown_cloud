@@ -127,36 +127,36 @@ Sprite cursor
 Sprite fujin
 {
     texture=fujin
-    rect=0,0,64,64
-    hotspot=32,32
+    rect=0,0,256,256
+    hotspot=128,128
     color=AAFFFFFF
 }
 Sprite fujin_suck
 {
     texture=fujin_suck
-    rect=0,0,64,64
-    hotspot=32,32
+    rect=0,0,256,256
+    hotspot=128,128
     color=AAFFFFFF
 }
 Sprite fujin_blow
 {
     texture=fujin_blow
-    rect=0,0,64,64
-    hotspot=32,32
+    rect=0,0,256,256
+    hotspot=128,128
     color=AAFFFFFF
 }
 Sprite fujin_sick
 {
     texture=fujin_sick
-    rect=0,0,64,64
-    hotspot=32,32
+    rect=0,0,256,256
+    hotspot=128,128
     color=AAFFFFFF
 }
 Sprite fujin_sleep
 {
     texture=fujin_sleep
-    rect=0,0,64,64
-    hotspot=32,32
+    rect=0,0,256,256
+    hotspot=128,128
     color=AAFFFFFF
 }
 Sprite breath

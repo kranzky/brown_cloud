@@ -1,6 +1,6 @@
                          -----------------------------
                          +++ B R O W N | C L O U D +++
-                         |                 +         |
+                         |             +             |
                          |  by The Kranzky Brothers  |
                          +---------------------------+
 
@@ -9,6 +9,7 @@ CHANGELOG
 
 01/02/09: v1.0 - Initial Release
 02/02/09: v1.1 - Added xinput1_3.dll and made online leaderboard optional
+10/02/09: v1.2 - Fixed cloud bug, updated graphics, better end-game
 
 ABOUT
 =====

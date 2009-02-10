@@ -129,8 +129,8 @@ Fujin::onSetScale()
     {
         m_body->DestroyShape( shape );
     }
-    b2PolygonDef shapeDef;
-    shapeDef.SetAsBox( 32.0f * m_scale, 32.0f * m_scale );
+    b2CircleDef shapeDef;
+    shapeDef.radius = 0.5f * 0.7f * m_sprite->GetWidth() * m_scale;
     shapeDef.density = 1.0f;
     shapeDef.friction =0.0f;
     shapeDef.restitution = 0.3f;
@@ -337,14 +337,14 @@ Fujin::doUpdate( float dt )
 	sleep->info.nEmission = 3;
 
 	b2Vec2 position( m_body->GetPosition() );
-	b2Vec2 direction( 0.0f, 1.0f );
+	b2Vec2 direction( 0.3f, 1.0f );
 	direction = b2Mul( m_body->GetXForm().R, -direction );
-	position = position + 50.0f * m_scale * direction;
+	position = position + 64.0f * m_scale * direction;
 	sleep->MoveTo( position.x / m_scale, position.y / m_scale, false );
-	position = m_body->GetPosition() - 50.0f * m_scale * direction;
+	position = m_body->GetPosition() - 64.0f * m_scale * direction;
 	breath->MoveTo( position.x / m_scale, position.y / m_scale, true );
     float angle( m_body->GetAngle() );
-	breath->info.fDirection= angle -M_PI;
+	breath->info.fDirection= angle -M_PI - 0.3f;
 		
 	breath->Update( dt );
 	sleep->Update( dt );
@@ -358,7 +358,7 @@ Fujin::doRender( float scale )
     float angle( m_body->GetAngle() );
 	hgeParticleSystem * breath( Engine::rm()->GetParticleSystem( "breath" ) );
 	hgeParticleSystem * sleep( Engine::rm()->GetParticleSystem( "sleep" ) );
-    m_sprite->RenderEx( position.x, position.y, angle, m_scale * 1.5f );
+    m_sprite->RenderEx( position.x, position.y, angle, m_scale );
 	breath->Render();
 	sleep->Render();
     renderDamageable( position, m_scale );
@@ -485,24 +485,30 @@ void Fujin::suckUpClouds()
 	std::vector<Entity*> clouds = em->getEntities(Cloud::TYPE);
 	std::vector<Entity*>::iterator i;
 
+	if (m_timeToNextCloudBlowOut <= 0.0f)
+    {
 	for (i = clouds.begin(); i != clouds.end(); ++i)
 	{
 		Cloud* cloud = static_cast<Cloud*>(*i);
 		b2Vec2 meToCloud = cloud->getBody()->GetPosition() - getBody()->GetPosition();
 		if (cloud->getScale() > getScale() * 0.99f
 			&& cloud->getScale() < getScale() * 1.01f 
-			&& meToCloud.Length() < 10.0f)
+			&& meToCloud.Length() < 40.0f * m_scale )
 		{
 			bool alreadySucked = false;
 			std::vector<Cloud*>::iterator suckedIter;
 			for (suckedIter = m_suckedClouds.begin(); suckedIter != m_suckedClouds.end(); ++suckedIter)
 			{
 				if ((*suckedIter) == cloud)
+                {
 					alreadySucked = true;
+                    break;
+                }
 			}
 
 			if (!alreadySucked)
 			{
+	            m_timeToNextCloudBlowOut = 0.2f;
 				cloud->removeFromClump(true);
 				cloud->removeFromWorld();
 				m_suckedClouds.push_back(cloud);
@@ -510,6 +516,7 @@ void Fujin::suckUpClouds()
 			}
 		}
 	}
+    }
 
 	if (m_suckedClouds.size() > 0)
 		setSick(true);
@@ -519,24 +526,23 @@ void Fujin::suckUpClouds()
 //------------------------------------------------------------------------------
 void Fujin::blowOutClouds()
 {
-	if (m_timeToNextCloudBlowOut < 0.0f)
+	if (m_timeToNextCloudBlowOut <= 0.0f)
 	{
 		if (m_suckedClouds.size() > 0)
 		{
 			Cloud* cloud = m_suckedClouds.back();
 
 			b2Vec2 position( m_body->GetPosition() );
-			b2Vec2 direction( 0.0f, 1.0f );
+			b2Vec2 direction( 0.3f, 1.0f );
 			direction = b2Mul( m_body->GetXForm().R, -direction );
-			position = position - 60.0f * m_scale * direction;
+			position = position - 64.0f * m_scale * direction;
 
 			cloud->addToWorld(position, getBody()->GetAngle(), m_target_scale);
 			m_suckedClouds.pop_back();
 
             Engine::hge()->Effect_PlayEx( Engine::rm()->GetEffect( "spit" ), 20 );
+		    m_timeToNextCloudBlowOut = 0.4f;
 		}
-
-		m_timeToNextCloudBlowOut = 0.3f;
 	}
 
 	if (m_suckedClouds.size() == 0)

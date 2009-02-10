@@ -337,14 +337,14 @@ Game::_initArena()
                 dimensions.x = 800.0f;
                 dimensions.y = 1.0f;
                 position.x = 0.0f;
-                position.y = -300.0f;
+                position.y = -301.0f;
                 break;
             }
             case 1:
             {
                 dimensions.x = 1.0f;
                 dimensions.y = 600.0f;
-                position.x = 400.0f;
+                position.x = 401.0f;
                 position.y = 0.0f;
                 break;
             }
@@ -353,14 +353,14 @@ Game::_initArena()
                 dimensions.x = 800.0f;
                 dimensions.y = 1.0f;
                 position.x = 0.0f;
-                position.y = 300.0f;
+                position.y = 301.0f;
                 break;
             }
             case 3:
             {
                 dimensions.x = 1.0f;
                 dimensions.y = 600.0f;
-                position.x = -400.0f;
+                position.x = -401.0f;
                 position.y = 0.0f;
                 break;
             }
