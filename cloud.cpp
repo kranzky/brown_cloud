@@ -134,7 +134,10 @@ Cloud::doRender( float scale )
     {
         alpha = 1.0f;
     }
-    hgeColor color( info.colColorStart );
+    hgeColor color;
+    color.r = RD[m_zoom];
+    color.g = GN[m_zoom];
+    color.b = BL[m_zoom];
     color.a = alpha;
     m_sprite->SetColor( color.GetHWColor() );
     m_sprite->RenderEx( position.x, position.y, angle, m_scale );
