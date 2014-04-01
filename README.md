@@ -1,26 +1,15 @@
-                         -----------------------------
-                         +++ B R O W N | C L O U D +++
-                         |             +             |
-                         |  by The Kranzky Brothers  |
-                         +---------------------------+
+BROWN CLOUD
+===========
 
 CHANGELOG
-=========
+---------
 
-01/02/09: v1.0 - Initial Release
-02/02/09: v1.1 - Added xinput1_3.dll and made online leaderboard optional
-10/02/09: v1.2 - Fixed cloud bug, updated graphics, lotsa polish
-
-+ Read on Post
-+ Focus on Player's Score
-+ Link to Web for Voting
-+ Zoom Out on End
-+ Sleep on End
-+ Update Score on Cloud Remove on End
-+ Update Score on Time Bonus on End
+* 01/02/09: v1.0 - Initial Release
+* 02/02/09: v1.1 - Added xinput1\_3.dll and made online leaderboard optional
+* 10/02/09: v1.2 - Fixed cloud bug, updated graphics, lotsa polish
 
 ABOUT
-=====
+-----
 
 This game is our entry to the 2009 Global Game Jam (http://globalgamejam.org/).
 We started with the "Kranzky Engine"; a simple C++ framework that integrates
@@ -40,7 +29,7 @@ this are the basic engine code, and the splash screen graphics, which Aladar
 Apponyi drew as part of Lloyd Kranzky's previous gamejam entries.
 
 CONTROLS
-========
+--------
 
 The overall aim of the game is to build a single brown cloud by collecting and
 spitting clouds of different colours from different levels of the atmosphere.
@@ -48,7 +37,7 @@ Move the King of Winds around with mouse and keyboard, or an XBOX360 controller,
 which you can plug in at any time. See the in-game help screen for more info.
 
 CRITERIA
-========
+--------
 
 1. A complete play session must always last 5 minutes or less.
 
@@ -69,16 +58,16 @@ Sleepless: Kind of. Fujin sleeps when he's solved the pollution problem.
 Destined: Not really.
 
 CREDITS
-=======
+-------
 
-Jason Hutchens         - Programming
-Robert "Dodgy" Barnett - Programming
-Nigel Budden           - Programming
-Simon Boxer            - Art
-Simon Wittber          - Music
+* Jason Hutchens         - Programming
+* Robert "Dodgy" Barnett - Programming
+* Nigel Budden           - Programming
+* Simon Boxer            - Art
+* Simon Wittber          - Music
 
 THANKS
-======
+------
 
 * Our wonderful wives, girlfriends, partners, kids and so forth for giving us a
   weekend to ourselves.
